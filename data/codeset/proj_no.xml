@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<coderule pool="1"> 
+  <sec>P</sec>  
+  <sec value="20130611" format="yyyyMMdd" needbegin="1">$DATE</sec>  
+  <sec value="169" format="0000">$SERIAL</sec> 
+</coderule>

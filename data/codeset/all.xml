@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<coderule pool="1"> 
+  <sec>S</sec>  
+  <sec value="090821" format="yyyy">$DATE</sec>  
+  <sec value="090821" format="MM">$DATE</sec>  
+  <sec value="090821" format="dd">$DATE</sec>  
+  <sec value="090821" format="hh">$DATE</sec>  
+  <sec value="090821" format="mm">$DATE</sec>  
+  <sec value="090821" format="ss">$DATE</sec>  
+  <sec value="090821" format="SSSS">$DATE</sec>  
+  <sec value="090821" format="WW">$DATE</sec>  
+  <sec value="090821" format="DD">$DATE</sec>  
+  <sec value="090821" format="E">$DATE</sec>  
+  <sec value="090821" format="yyyyMMdd">$DATE</sec>  
+  <sec>-</sec>  
+  <sec value="2106" format="0000">$SERIAL</sec> 
+</coderule>

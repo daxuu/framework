@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appconfig>
+<path>codeset</path>
+<default_db_name>eq</default_db_name>
+<!--database eq for sqlite-->
+<eq_class_name>org.sqlite.JDBC</eq_class_name>
+<eq_url>jdbc:sqlite:/media/lucky/DATA/Apps/ebridge/Workspace-Man/Framework/data/EQ.db</eq_url>
+<!--database log for sqlite-->
+<log_class_name>org.sqlite.JDBC</log_class_name>
+<log_url>jdbc:sqlite:/media/lucky/DATA/Apps/ebridge/Workspace-Man/Framework/data/LOG.db</log_url>
+<!--database:test for Oracle-->
+<test_class_name>oracle.jdbc.driver.OracleDriver</test_class_name>
+<test_url>jdbc:oracle:thin:@172.18.60.114:1521:test</test_url>
+<test_user>gdi</test_user>
+<test_pwd>gdi</test_pwd>
+<open_log>0</open_log>
+</appconfig>

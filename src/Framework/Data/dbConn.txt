@@ -1,0 +1,360 @@
+Java数据库连接（JDBC）由一组用 Java 编程语言编写的类和接口组成。JDBC 为工具/数据库开发人员提供了一个标准的 API，使他们能够用纯Java API 来编写数据库应用程序。然而各个开发商的接口并不完全相同，所以开发环境的变化会带来一定的配置变化。本文主要集合了不同数据库的连接方式。
+
+一、连接各种数据库方式速查表
+
+　　下面罗列了各种数据库使用JDBC连接的方式，可以作为一个手册使用。
+
+　　1、Oracle8/8i/9i数据库（thin模式）
+
+Class.forName("oracle.jdbc.driver.OracleDriver").newInstance();
+String url="jdbc:oracle:thin:@localhost:1521:orcl"; //orcl为数据库的SID
+String user="test";
+String password="test";
+Connection conn= DriverManager.getConnection(url,user,password);
+
+　　2、DB2数据库
+
+Class.forName("com.ibm.db2.jdbc.app.DB2Driver ").newInstance();
+String url="jdbc:db2://localhost:5000/sample"; //sample为你的数据库名
+String user="admin";
+String password="";
+Connection conn= DriverManager.getConnection(url,user,password);
+
+　　3、Sql Server7.0/2000数据库
+
+Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver").newInstance();
+String url="jdbc:microsoft:sqlserver://localhost:1433;DatabaseName=mydb";
+//mydb为数据库
+String user="sa";
+String password="";
+Connection conn= DriverManager.getConnection(url,user,password);
+
+　　4、Sybase数据库
+
+Class.forName("com.sybase.jdbc.SybDriver").newInstance();
+String url =" jdbc:sybase:Tds:localhost:5007/myDB";//myDB为你的数据库名
+Properties sysProps = System.getProperties();
+SysProps.put("user","userid");
+SysProps.put("password","user_password");
+Connection conn= DriverManager.getConnection(url, SysProps);
+
+　　5、Informix数据库
+
+Class.forName("com.informix.jdbc.IfxDriver").newInstance();
+String url = "jdbc:informix-sqli://123.45.67.89:1533/myDB:INFORMIXSERVER=myserver;
+user=testuser;password=testpassword"; //myDB为数据库名
+Connection conn= DriverManager.getConnection(url);
+
+　　6、MySQL数据库
+
+Class.forName("org.gjt.mm.mysql.Driver").newInstance();
+String url ="jdbc:mysql://localhost/myDB?user=soft&password=soft1234&useUnicode=true&characterEncoding=8859_1"
+//myDB为数据库名
+Connection conn= DriverManager.getConnection(url);
+
+　　7、PostgreSQL数据库
+
+Class.forName("org.postgresql.Driver").newInstance();
+String url ="jdbc:postgresql://localhost/myDB" //myDB为数据库名
+String user="myuser";
+String password="mypassword";
+Connection conn= DriverManager.getConnection(url,user,password);
+
+　　8、access数据库直连用ODBC的
+
+Class.forName("sun.jdbc.odbc.JdbcOdbcDriver") ;
+String url="jdbc:odbc:Driver={MicroSoft Access Driver (*.mdb)};DBQ="+application.getRealPath("/Data/ReportDemo.mdb");
+Connection conn = DriverManager.getConnection(url,"","");
+Statement stmtNew=conn.createStatement() ;
+9、Sqlite
+用"org.sqlite.JDBC"作为JDBC的驱动程序类名。连接JDBC的URL格式为jdbc:sqlite:/path。这里的path为指定到SQLite数据库文件的路径，例如:
+jdbc:sqlite://dirA/dirB/dbfile
+jdbc:sqlite://DRIVE:/dirA/dirB/dbfile 
+jdbc:sqlite://COMPUTERNAME/shareA/dirB/dbfile
+
+二、JDBC连接MySql方式
+
+　　下面是使用JDBC连接MySql的一个小的教程
+
+　　1、查找驱动程序
+
+　　MySQL目前提供的java驱动程序为Connection/J，可以从MySQL官方网站下载，并找到mysql-connector-java-3.0.15-ga-bin.jar文件，此驱动程序为纯java驱动程序，不需做其他配置。
+
+　　2、动态指定classpath
+
+　　如果需要执行时动态指定classpath，就在执行时采用－cp方式。否则将上面的.jar文件加入到classpath环境变量中。
+
+　　3、加载驱动程序
+
+try{
+　Class.forName(com.mysql.jdbc.Driver);
+　System.out.println(Success loading Mysql Driver!);
+}catch(Exception e)
+{
+　System.out.println(Error loading Mysql Driver!);
+　e.printStackTrace();
+}
+
+　　4、设置连接的url
+
+jdbc：mysql：//localhost/databasename[?pa=va][＆pa=va]　　
+
+三、以下列出了在使用JDBC来连接Oracle数据库时可以使用的一些技巧
+
+　　1、在客户端软件开发中使用Thin驱动程序
+
+　　在开发Java软件方面，Oracle的数据库提供了四种类型的驱动程序，二种用于应用软件、applets、servlets等客户端软件，另外二种用于数据库中的Java存储过程等服务器端软件。在客户机端软件的开发中，我们可以选择OCI驱动程序或Thin驱动程序。OCI驱动程序利用Java本地化接口（JNI），通过Oracle客户端软件与数据库进行通讯。Thin驱动程序是纯Java驱动程序，它直接与数据库进行通讯。为了获得最高的性能，Oracle建议在客户端软件的开发中使用OCI驱动程序，这似乎是正确的。但我建议使用Thin驱动程序，因为通过多次测试发现，在通常情况下，Thin驱动程序的性能都超过了OCI驱动程序。
+
+　　2、关闭自动提交功能，提高系统性能
+
+　　在第一次建立与数据库的连接时，在缺省情况下，连接是在自动提交模式下的。为了获得更好的性能，可以通过调用带布尔值false参数的Connection类的setAutoCommit()方法关闭自动提交功能，如下所示：
+
+　　conn.setAutoCommit(false);
+
+　　值得注意的是，一旦关闭了自动提交功能，我们就需要通过调用Connection类的commit()和rollback()方法来人工的方式对事务进行管理。
+
+　　3、在动态SQL或有时间限制的命令中使用Statement对象
+
+　　在执行SQL命令时，我们有二种选择：可以使用PreparedStatement对象，也可以使用Statement对象。无论多少次地使用同一个SQL命令，PreparedStatement都只对它解析和编译一次。当使用Statement对象时，每次执行一个SQL命令时，都会对它进行解析和编译。这可能会使你认为，使用PreparedStatement对象比使用Statement对象的速度更快。然而，我进行的测试表明，在客户端软件中，情况并非如此。因此，在有时间限制的SQL操作中，除非成批地处理SQL命令，我们应当考虑使用Statement对象。
+
+　　此外，使用Statement对象也使得编写动态SQL命令更加简单，因为我们可以将字符串连接在一起，建立一个有效的SQL命令。因此，我认为，Statement对象可以使动态SQL命令的创建和执行变得更加简单。
+
+　　4、利用helper函数对动态SQL命令进行格式化
+
+　　在创建使用Statement对象执行的动态SQL命令时，我们需要处理一些格式化方面的问题。例如，如果我们想创建一个将名字O'Reilly插入表中的SQL命令，则必须使用二个相连的“''”号替换O'Reilly中的“'”号。完成这些工作的最好的方法是创建一个完成替换操作的helper方法，然后在连接字符串心服用公式表达一个SQL命令时，使用创建的helper方法。与此类似的是，我们可以让helper方法接受一个Date型的值，然后让它输出基于Oracle的to_date()函数的字符串表达式。
+
+　　5、利用PreparedStatement对象提高数据库的总体效率
+
+　　在使用PreparedStatement对象执行SQL命令时，命令被数据库进行解析和编译，然后被放到命令缓冲区。然后，每当执行同一个PreparedStatement对象时，它就会被再解析一次，但不会被再次编译。在缓冲区中可以发现预编译的命令，并且可以重新使用。在有大量用户的企业级应用软件中，经常会重复执行相同的SQL命令，使用PreparedStatement对象带来的编译次数的减少能够提高数据库的总体性能。如果不是在客户端创建、预备、执行PreparedStatement任务需要的时间长于Statement任务，我会建议在除动态SQL命令之外的所有情况下使用PreparedStatement对象。
+
+　　6、在成批处理重复的插入或更新操作中使用PreparedStatement对象
+
+　　如果成批地处理插入和更新操作，就能够显著地减少它们所需要的时间。Oracle提供的Statement和 CallableStatement并不真正地支持批处理，只有PreparedStatement对象才真正地支持批处理。我们可以使用addBatch()和executeBatch()方法选择标准的JDBC批处理，或者通过利用PreparedStatement对象的setExecuteBatch()方法和标准的executeUpdate()方法选择速度更快的Oracle专有的方法。要使用Oracle专有的批处理机制，可以以如下所示的方式调用setExecuteBatch()：
+
+PreparedStatement pstmt3D null;
+try {
+　((OraclePreparedStatement)pstmt).setExecuteBatch(30);
+　...
+　pstmt.executeUpdate();
+}
+　　调用setExecuteBatch()时指定的值是一个上限，当达到该值时，就会自动地引发SQL命令执行，标准的executeUpdate()方法就会被作为批处理送到数据库中。我们可以通过调用PreparedStatement类的sendBatch()方法随时传输批处理任务。
+
+　　7、使用Oracle locator方法插入、更新大对象（LOB）
+
+　　Oracle的PreparedStatement类不完全支持BLOB和CLOB等大对象的处理，尤其是Thin驱动程序不支持利用PreparedStatement对象的setObject()和setBinaryStream()方法设置BLOB的值，也不支持利用setCharacterStream()方法设置CLOB的值。只有locator本身中的方法才能够从数据库中获取LOB类型的值。可以使用PreparedStatement对象插入或更新LOB，但需要使用locator才能获取LOB的值。由于存在这二个问题，因此，我建议使用locator的方法来插入、更新或获取LOB的值。
+
+　　8、使用SQL92语法调用存储过程
+
+　　在调用存储过程时，我们可以使用SQL92或Oracle PL/SQL，由于使用Oracle PL/SQL并没有什么实际的好处，而且会给以后维护你的应用程序的开发人员带来麻烦，因此，我建议在调用存储过程时使用SQL92。
+
+　　9、使用Object SQL将对象模式转移到数据库中
+
+　　既然可以将Oracle的数据库作为一种面向对象的数据库来使用，就可以考虑将应用程序中的面向对象模式转到数据库中。目前的方法是创建Java bean作为伪装的数据库对象，将它们的属性映射到关系表中，然后在这些bean中添加方法。尽管这样作在Java中没有什么问题，但由于操作都是在数据库之外进行的，因此其他访问数据库的应用软件无法利用对象模式。如果利用Oracle的面向对象的技术，可以通过创建一个新的数据库对象类型在数据库中模仿其数据和操作，然后使用JPublisher等工具生成自己的Java bean类。如果使用这种方式，不但Java应用程序可以使用应用软件的对象模式，其他需要共享你的应用中的数据和操作的应用软件也可以使用应用软件中的对象模式。
+
+　　10、利用SQL完成数据库内的操作
+
+　　我要向大家介绍的最重要的经验是充分利用SQL的面向集合的方法来解决数据库处理需求，而不是使用Java等过程化的编程语言。
+
+　　如果编程人员要在一个表中查找许多行，结果中的每个行都会查找其他表中的数据，最后，编程人员创建了独立的UPDATE命令来成批地更新第一个表中的数据。与此类似的任务可以通过在set子句中使用多列子查询而在一个UPDATE命令中完成。当能够在单一的SQL命令中完成任务，何必要让数据在网上流来流去的？我建议用户认真学习如何最大限度地发挥SQL的功能。
+
+
+
+import java.sql.*;
+public class Ch09 {
+
+    private static  Connection getConnection()throws SQLException{
+     Connection conn=null;
+     conn=DriverManager.getConnection(
+      "jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=UTF-8",
+      "root","123456");
+     return conn;
+    }
+
+    public static void queryDemo1(){
+     String sql="select * from customers";
+     System.out.println("SQL:"+sql);
+     Connection conn=null;
+     Statement st=null;
+     ResultSet rs=null;
+     try{
+      conn=getConnection();
+      st=conn.createStatement();
+      rs=st.executeQuery(sql);
+      while(rs.next()){
+       System.out.println("ID:"+rs.getInt("ID"));
+       System.out.println("Name:"+rs.getString("Name"));
+       System.out.println("Age:"+rs.getInt("age"));
+       System.out.println("Phone:"+rs.getString("Phone"));
+       System.out.println("===============================\n");
+
+      }
+     }
+     catch(SQLException e)
+     {
+      System.out.println("Exception:"+e.getMessage());
+     }
+     finally{
+      try{
+
+       if(rs!=null){
+        rs.close();
+       }
+       if(st!=null){
+        st.close();
+       }
+       if(conn!=null){
+        conn.close();
+       }
+      }catch(Exception e)
+      {
+
+      }
+
+
+     }
+
+
+    }
+
+    public static void queryDemo2(int age){
+     String sql="select * from customers where Age>"+age;
+     Connection conn=null;
+     PreparedStatement pst=null;
+     ResultSet rs=null;
+     try{
+      conn=getConnection();
+      pst=conn.prepareStatement(sql);
+
+      pst.setInt(1,20);
+
+      rs=pst.executeQuery();
+      while(rs.next()){
+       System.out.println("ID:"+rs.getInt("ID"));
+       System.out.println("Name:"+rs.getString("Name"));
+       System.out.println("Age:"+rs.getInt("age"));
+       System.out.println("Phone:"+rs.getString("Phone"));
+       System.out.println("===============================\n");
+
+      }
+     }
+     catch(SQLException e)
+     {
+      System.out.println("Exception:"+e.getMessage());
+     }
+     finally{
+      try{
+
+       if(rs!=null){
+        rs.close();
+       }
+       if(pst!=null){
+        pst.close();
+       }
+       if(conn!=null){
+        conn.close();
+       }
+      }catch(Exception e)
+      {
+
+      }
+
+
+     }
+
+
+    }
+
+    public static void modifyDemo(){
+     String insertSQL="insert into Customers(Name,Age,Phone) values('贾',22,'13123423444')";
+     String updateSQL="update Customers set Name='Test02' where ID=4";
+     String deleteSQL="delete from Customers where ID=4";
+
+     Connection conn=null;
+     Statement st=null;
+
+     try{
+      conn=getConnection();
+      st=conn.createStatement();
+      int affectRec=st.executeUpdate(insertSQL);
+      if(affectRec>0){
+       System.out.println(affectRec+" Record modifed. ");
+      }
+
+     }
+     catch(SQLException e)
+     {
+      System.out.println("Exception:"+e.getMessage());
+     }
+     finally{
+      try{
+
+
+       if(st!=null){
+        st.close();
+       }
+       if(conn!=null){
+        conn.close();
+       }
+      }catch(Exception e)
+      {
+
+      }
+
+
+     }
+    }
+    public static void main(String[] args) {
+      System.out.println("DataBase Operation Demo");
+      try{
+           Class.forName("com.mysql.jdbc.Driver");
+       }catch(ClassNotFoundException e)
+       {
+        System.out.println("Driver Class:com.mysql.jdbc.Driver not found.");
+       }
+     //modifyDemo();
+    queryDemo1();
+      //queryDemo2(21);
+    }
+}
+
+
+jdbc driver 4种类型及常见jdbc连接字符串
+
+1： jdbc driver 4种类型
+     Type1：借助于JDBC-odbc桥接方式连接oracle，可移植性差
+     Type2:oracle oci ： 可移植性比较差，要依赖于oracle的oci（客户端）的安装
+但是可以获得更高的效率。效率应该是最快的。
+     Type3:主要用在中间件，提供数据连接池的服务。如使用tomcat 连接池。
+     Type:4class14.jar 直接用来连接数据库，移植性最好。
+详细见JDBC3.0规范54页 jdbc-3_0-fr-spec.pdf
+详细见JDBC4.0规范41页 jdbc-4_0-fr-spec.pdf
+http://cds.sun.com/is-bin/INTERSHOP.enfinity/WFS/CDS-CDS_JCP-Site/en_US/-/USD/VerifyItem-Start/jdbc-4_0-fr-spec.zip?BundledLineItemUUID=YHJIBe.l_4QAAAEh7wA_7HAC&OrderID=kvRIBe.lff0AAAEh4AA_7HAC&ProductID=nC3ACUFBfqQAAAEYHrk5AXuy&FileName=/jdbc-4_0-fr-spec.zip
+
+
+常见jdbc连接字符串
+1. MySQL(http://www.mysql.com)mm.mysql-2.0.2-bin.jar ;
+Class.forName( "org.gjt.mm.mysql.Driver" );
+cn = DriverManager.getConnection( "jdbc:mysql://MyDbComputerNameOrIP:3306/myDatabaseName", sUsr, sPwd );
+2. PostgreSQL(http://www.de.postgresql.org)pgjdbc2.jar ;
+Class.forName( "org.postgresql.Driver" );
+cn = DriverManager.getConnection( "jdbc:postgresql://MyDbComputerNameOrIP/myDatabaseName", sUsr, sPwd );
+3. Oracle(http://www.oracle.com/ip/deploy/database/oracle9i/)classes12.zip ;
+Class.forName( "oracle.jdbc.driver.OracleDriver" );
+cn = DriverManager.getConnection( "jdbc:oracle:thin:@MyDbComputerNameOrIP:1521:ORCL", sUsr, sPwd );
+4. Sybase(http://jtds.sourceforge.net)jconn2.jar ;
+Class.forName( "com.sybase.jdbc2.jdbc.SybDriver" );
+cn = DriverManager.getConnection( "jdbc:sybase:Tds:MyDbComputerNameOrIP:2638", sUsr, sPwd );
+// (Default-Username/Password: "dba"/"sql")
+5. Microsoft SQLServer(http://jtds.sourceforge.net) ;
+Class.forName( "net.sourceforge.jtds.jdbc.Driver" );
+cn = DriverManager.getConnection( "jdbc:jtds:sqlserver://MyDbComputerNameOrIP:1433/master", sUsr, sPwd );
+6. Microsoft SQLServer(http://www.microsoft.com) ;
+Class.forName( "com.microsoft.jdbc.sqlserver.SQLServerDriver" );
+cn = DriverManager.getConnection( "jdbc:microsoft:sqlserver://MyDbComputerNameOrIP:1433;databaseName=master", sUsr, sPwd );
+7. ODBC
+Class.forName( "sun.jdbc.odbc.JdbcOdbcDriver" );
+Connection cn = DriverManager.getConnection( "jdbc:odbc:" + sDsn, sUsr, sPwd );
+8.DB2
+Class.forName("Com.ibm.db2.jdbc.net.DB2Driver");
+String url="jdbc:db2://192.9.200.108:6789/SAMPLE"
+cn = DriverManager.getConnection( url, sUsr, sPwd ); 

@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>升级文档</title>
+<style type="text/css">
+body,td,th {
+	font-size: 14px;
+	line-height: 28px;
+}
+p {
+	padding-left: 20px;
+}
+body {
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+}
+</style>
+</head>
+
+<body>
+<p>ckplayer6.0升级说明<br />
+  因为本次升级增加了html5方面的兼容，所以改动比较大，想从5.9升级到6.0难度相当的大，还不如重新下载使用，如果你之前使用5.9而又没有改动过默认的配置文件ckplayer.js和ckplayer.xml的话，那升级就简单了，直接替换掉ckplayer.js,ckplayer.xml,ckplayer.swf和aeeets文件夹里的内容<br />
+  升级内容列表<br />
+  HTML5方面<br />
+  增加html5播放器的兼容，详细的使用方法请参考网站上的帮助说明<br />
+  html5第一版功能上比较简陋，但基本功能比较完整。会在以后的版本中进一步根据大家的要求进行增强<br />
+  使用html5播放器只能使用ckplayer.js做为配置文件，ckplayer.xml无效。<br />
+  Flash方面<br />
+  1、配置参数pm_spac现在只对f值和a值有效，其它的地方需要使用组数的，都将以|隔开<br />
+  2、增加了前置广告可以通过网址或文本形式调用的方式，y值调用<br />
+  3、增加了前置广告可以播放多个广告的功能（可以swf,图片,视频广告交叉使用，各广告之间使用|分隔）<br />
+  4、增加了前置广告可以顺序播放或随机播放的功能<br />
+  5、增加了暂停广告可以设置多个广告随机播放的功能<br />
+  6、增加了暂停广告可以使用关闭按钮的功能,setup里开启<br />
+  7、增加了暂停广告和前置广告可以自己控制缩放方式的功能<br />
+  8、增加了缓冲时是否显示广告的功能，z值设置缓冲广告将只能使用一个flash广告，位置的定义方式参考暂停广告的定位方式，并且该广告不允许有声音，原因请到网站查看<br />
+  9、增强了滚动文字广告的功能，新的滚动文字广告在原来的基础上增加了可以选择向左/向右滚动，向上/向下滚动<br />
+  10、强化了视频地址调用方式中的xml调用方式，经过强化过的xml方式，可以只列出多段视频地址，播放器自动读取时间和字节，也可以在xml文件里配置好每段视频的时间（秒数）和字节数，播放器将不再进行预加载，而是直接进行播放视频，大大节省资源，示例地址：<a href="http://www.ckplayer.com/view.php?id=161" target="_blank">xml示例调用.xml</a><br />
+  11、改进了坐标控制体系，因为要兼容html5的功能，所以控制坐标时在原来4个参数的后面增加了宽高的设置<br />
+  12、完善了界面上的按钮元素，前置广告的跳过广告按钮和静音，取消静音，进度栏拖动按钮，音量调节按钮都将使用二个图片进行控制，一是普通按钮图片，一是鼠标经过按钮时显示的图片<br />
+  13、修正了键盘左右键控制快进后退，上下键控制音量的功能<br />
+  14、增加了开启关闭键盘控制播放器的选项（可以单独控制是否允许按空格键播放/暂停切换，快进/快退，调节音量）<br />
+  15、合并了单独开启功能的参数到setup参数里<br />
+  16、增强了视频区域控制，采用新的机制，即在控制栏显示和不显示的情况下单独计算视频参考区域离播放器左、上、右、下的距离，为插件的放置提供更加灵活的空间<br />
+  17、改进了插件的功能，6.0里将只有预览插件和播放结束精彩视频推荐为ckplayer内置插件，其它（如调整大小插件，分享插件，右边控制插件）均放到自定义插件部分<br />
+  18、加载进度和缓冲进度的坐标控制被单独列出，以使配置文件更加工整。<br />
+  API部份<br />
+  1、ckplayer_getstatus()/getStatus()，recStatus()二个接口里的参数myflashvars将不再是文本(形如{}{})格式，而是一个对象，<br />
+  2、ckplayer_getstatus()/getStatus()，recStatus()二个接口里新增加一个对象变量mystyles，保存配置文件的对象<br />
+  3、ckplayer_getstatus(str:string)/getstatus(str:string)接口将不再使用之前的传值方式，而是采用新的方式，比如getstatus('{f-&gt;新的广告地址}')<br />
+  4、新增加了一个接口 ckplayer_playorpause()/PlayorPause()可以直接切换视频的播放和暂停<br />
+  5、新增加了一个接口ckplayer_changeface(show:true/false)/changeFace(true/false);//显示或隐藏控制栏<br />
+  6、修正了videoWAndH(width,height)接口在全屏切换时重置的错误<br />
+  7、修正了videoWHXY(width,height,x,y);接口在全屏切换时重置的错误<br />
+  8、plugin()接口增加了一个控制变量plugin(Name:String,showorhide:Boolean=true,width:int=-1,height:int=-1,x:int=-1,y:int=-1,index:int=-1)，index控制插件的显示层级，使用此功能时请注意不要无限高层，不然会出错，同时该功能不提供使用0层的功能，0指显示在顶层<br />
+  9、修改了newAddress()接口的使用功能，不再使用之前的方式，而是使用如newAddress('{f-&gt;新的f值}{a-&gt;新的a值}{s-&gt;新的s值}');<br />
+  10、前面版本的：getMyObject(Object)修改成changMyObject(Property,value)使用</p>
+<p>11、增强了回调函数的功能，可以<a href="http://www.ckplayer.com/view.php?id=170" target="_blank">点击查看</a></p>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<xconfig>
+  <student>
+    <id s="22" d="2" n="false" k="false"/>
+    <stu_no s="8" d="12" n="true" k="false"/>
+    <name s="20" d="12" n="true" k="false"/>
+    <sex s="2" d="12" n="true" k="false"/>
+    <age s="22" d="2" n="true" k="false"/>
+    <birthday s="7" d="93" n="true" k="false"/>
+    <update_date s="7" d="93" n="true" k="false"/>
+  </student>
+</xconfig>
