@@ -1,5 +1,6 @@
 package Framework.Data;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.locks.Condition;
 
@@ -34,6 +35,8 @@ public class DBTable {
     String nextKeyValue;
     String databaseName;
     String dataSourceName;
+    //String fldName_Adder = "adder";
+    //String 
     int dataBaseType;
 
 
@@ -263,7 +266,7 @@ public class DBTable {
         DataSet ret = null;
 
         //直接傳SQL
-        if (s_condorsql.ToLower().IndexOf("select ") == 0)
+        if (s_condorsql.toLowerCase().IndexOf("select ") == 0)
         {
             ret = ExecuteDataSet(dbName, s_condorsql);
         }
@@ -309,7 +312,7 @@ public class DBTable {
         DataSet ret = null;
         String sql="",dbName=this.getDatabaseName();
         //第二個參數傳入的是Sql:arg1=DbName,arg2=sql
-        if (s_arg2.Trim().ToLower().IndexOf("select ") == 0)
+        if (s_arg2.trim().toLowerCase().IndexOf("select ") == 0)
         {
             //database 
             dbName = s_arg1;
@@ -347,7 +350,7 @@ public class DBTable {
         String sql = "SELECT {0} FROM {1} WHERE {2}"; ;
 
         //为xml格式字段与条件参数
-        if (s_conds.Trim().IndexOf('<') == 0 && s_conds.Trim().IndexOf("</") > 0)
+        if (s_conds.trim().IndexOf('<') == 0 && s_conds.trim().IndexOf("</") > 0)
         {
             XmlDocModel xField = new XmlDocModel("<field>" + s_fields + "</field>");
             XmlDocModel xCond = new XmlDocModel("<cond>" + s_conds + "</cond>");
@@ -494,7 +497,7 @@ public class DBTable {
         String tp = "", iskey = "", size = "", defValue = "", val = "";
         StringBuilder sbFields = new StringBuilder();
         StringBuilder sbValues = new StringBuilder();
-        Element el;
+        Element xRow;
         
 		Document doc = this.getTableSchema().getDocument();
 		Element root = doc.getRootElement();
@@ -506,82 +509,75 @@ public class DBTable {
         //foreach (XmlNode xRow in argData.ChildNodes)
         //foreach (XmlNode xRow in this.getTableSchema().ChildNodes[1].FirstChild.ChildNodes)
         //{
-			el = (Element) it.next();
+			xRow = (Element) it.next();
             //XmlNode xdCol = argConf.SelectSingleNode("col[@id='" + xRow.Name + "']");
-            Node xdCol = argData.SelectSingleNode(xRow.Name.ToLower());
+            Node xdCol = argData.selectSingleNode(xRow.getName().toLowerCase());
 
             //已有值
             if (xdCol != null)
             {
-                val = xdCol.InnerText.Replace("'", "''");
+                val = xdCol.getText().replace("'", "''");
 
                 //一欄不需加","
                 if (i > 0)
                 {
-                    sbFields.Append(",");
-                    sbValues.Append(",");
+                    sbFields.append(",");
+                    sbValues.append(",");
                 }
                 i++;
 
-                sbFields.Append(xRow.Name);
+                sbFields.append(xRow.getName());
 
-                tp = (xRow.Attributes["d"] == null) ? "system.String" : xRow.Attributes["d"].Value;
-                iskey = (xRow.Attributes["n"] == null) ? "0" : (xRow.Attributes["n"].Value == "false") ? "1" : "0";
-                defValue = (xRow.Attributes["k"] == null) ? "0" : xRow.Attributes["k"].Value;
-                size = (xRow.Attributes["s"] == null) ? "0" : xRow.Attributes["s"].Value;
+                tp = (xRow.attribute("d") == null) ? "system.String" : xRow.attribute("d").getValue();
+                iskey = (xRow.attribute("n") == null) ? "0" : (xRow.attribute("n").getValue() == "false") ? "1" : "0";
+                defValue = (xRow.attribute("k") == null) ? "0" : xRow.attribute("k").getValue();
+                size = (xRow.attribute("s") == null) ? "0" : xRow.attribute("s").getValue();
                 //temp
-                switch (tp.ToLower())
-                {
-                    case "system.String":
+                if(tp.equals("system.String")){
 
-                        if (val == "")
-                        {
-                            sbValues.Append("null");
-                        }
-                        else
-                        {
-                            sbValues.Append("'");
-                            sbValues.Append(val);//update 2009-09-14 by lucky
-                            sbValues.Append("'");
-                        }
+                    if (val == "")
+                    {
+                        sbValues.append("null");
+                    }
+                    else
+                    {
+                        sbValues.append("'");
+                        sbValues.append(val);//update 2009-09-14 by lucky
+                        sbValues.append("'");
+                    }
 
-                        break;
-                    case "system.decimal":
-                        sbValues.Append(xdCol.InnerText.Trim() == String.Empty ? "null" : xdCol.InnerText.Trim());
+                } else if (tp.equals("system.decimal")) {
+                    sbValues.append(xdCol.getText().trim().equals("") ? "null" : xdCol.getText().trim());
 
-                        break;
-                    case "system.datetime":
-                        switch (this.DatabaseType)
-                        {
-                            case (int)dbType.sqlserver:
-                                sbValues.Append(String.IsNullOrEmpty(xdCol.InnerText.Trim()) ? "getdate()" : "'"+xdCol.InnerText.Trim()+"'");
-                                break;
+                } else if (tp.endsWith("system.datetime")) {
+                    switch (this.getDatabaseType())
+                    {
+                        case sqlserver:
+                            sbValues.append(xdCol.getText().trim().equals("") ? "getdate()" : "'"+xdCol.getText().trim()+"'");
+                            break;
 
-                            case (int)dbType.sqlite:
-                                sbValues.Append(String.IsNullOrEmpty(xdCol.InnerText.Trim()) ? "CURRENT_TIMESTAMP" : "'" + xdCol.InnerText.Trim() + "'");
+                        case sqlite:
+                            sbValues.append(xdCol.getText().trim().equals("") ? "CURRENT_TIMESTAMP" : "'" + xdCol.getText().trim() + "'");
+                            break;
+					default:
+						break;
+                    }
+					
+				} else if (tp.equals("blob")){
+					//
+				}else{
 
-                                break;
-                        }
-
-                        break;
-                    case "blob":
-                        sbValues.Append(xdCol.InnerText.Trim() == String.Empty ? "null" : xdCol.InnerText.Trim());
-                        break;
-                    default:
-                        if (val == "")
-                        {
-                            sbValues.Append("null");
-                        }
-                        else
-                        {
-                            sbValues.Append("'");
-                            sbValues.Append(val);//update 2009-09-14 by lucky
-                            sbValues.Append("'");
-                        }
-                        break;
-                }
-
-
+                    if (val == "")
+                    {
+                        sbValues.append("null");
+                    }
+                    else
+                    {
+                        sbValues.append("'");
+                        sbValues.append(val);//update 2009-09-14 by lucky
+                        sbValues.append("'");
+                    }
+				}
             }
             else
             {
@@ -590,25 +586,33 @@ public class DBTable {
             }
 
         }
-        
-        if (sbFields.ToString().IndexOf("adder") == -1 
-            &&this.TableSchema.ChildNodes[1].FirstChild.SelectSingleNode("adder")!=null)
+        /*
+        if (sbFields.toString().indexOf("adder") == -1 
+            &&this.getTableSchema().ChildNodes[1].FirstChild.SelectSingleNode("adder")!=null)
         {
-            sbFields.Append(" , ADDER");
-            sbValues.Append(" ,'" + Manuan.eBridge.Framework.Data.Global.AccountID + "'");
+            sbFields.append(" , ADDER");
+            sbValues.append(" ,'" + Global.getAccountId() + "'");
         }
-        return this.AddRow(this.getTableName(), sbFields.ToString(), sbValues.ToString());
+        */
+        return this.AddRow(this.getTableName(), sbFields.toString(), sbValues.toString());
     }
-    /// <summary>
-    /// 新增一资料行，默认当前TABLE
-    /// </summary>
-    /// <param name="argFieldList">栏位清单</param>
-    /// <param name="argValueList">值清单</param>
-    /// <returns>成功新增行数</returns>
-    public  int AddRow(StringDictionary argData)
+    
+    /**
+     * 
+     * 功能概述：新增一数据行，根据传入的数据
+     * @param argData
+     * @return 成功新增行数
+     * @author lucky  
+     * 创建时间：Jun 18, 2013 11:06:51 AM  
+     * 修改人：lucky
+     * 修改时间：Jun 18, 2013 11:06:51 AM  
+     * 修改备注：  
+     * @version  
+     *
+     */
+    public  int AddRow(HashMap<String, String> argData)
     {
-
-        XmlNode xnData = Convert2.ToXmlNode(argData, this.TableSchema.ChildNodes[1].FirstChild);
+        Node xnData =null; 
         return this.AddRow(xnData);
     }
 
@@ -694,7 +698,7 @@ public class DBTable {
         int j = 0;
         String tp = "", iskey = "";
         String firstName = argData.FirstChild.Name;
-        String firstValue = argData.FirstChild.InnerText;
+        String firstValue = argData.FirstChild.getText();
 
         StringBuilder sbWhere = new StringBuilder();
 
@@ -705,15 +709,15 @@ public class DBTable {
             //已有設定
             if (xdCol != null)
             {
-                tp = (xRow.Attributes["d"] == null) ? "system.String" : xRow.Attributes["d"].Value;
-                iskey = (xRow.Attributes["n"] == null) ? "0" : (xRow.Attributes["n"].Value == "false") ? "1" : "0";
+                tp = (xRow.attribute("d") == null) ? "system.String" : xRow.attribute("d").getValue();
+                iskey = (xRow.attribute("n") == null) ? "0" : (xRow.attribute("n").getValue() == "false") ? "1" : "0";
                 if (iskey == "1")
                 {
                     if (j > 0)
                     {
-                        sbWhere.Append(" and ");
+                        sbWhere.append(" and ");
                     }
-                    sbWhere.Append(xdCol.Name).Append("='").Append(xdCol.InnerText).Append("'");
+                    sbWhere.append(xdCol.Name).append("='").append(xdCol.getText()).append("'");
                     j++;
                 }
             }
@@ -726,10 +730,10 @@ public class DBTable {
         //當沒有產生條件時，default為第一個欄位為KEY的條件
         if (sbWhere.Length == 0)
         {
-            sbWhere.Append(firstName).Append("='").Append(firstValue).Append("'");
+            sbWhere.append(firstName).append("='").append(firstValue).append("'");
         }
 
-        return this.DeleteRow(sbWhere.ToString(), false);
+        return this.DeleteRow(sbWhere.toString(), false);
     }
     // <summary>
     /// 删除一资料行，依KEY栏
@@ -805,7 +809,7 @@ public class DBTable {
         String tp = "", iskey = "", size = "", defValue = "", val = "";
         //String xpath = "[@ischanged='2']";
         String firstName = argData.FirstChild.Name;
-        String firstValue = argData.FirstChild.InnerText;
+        String firstValue = argData.FirstChild.getText();
 
         StringBuilder sbSet = new StringBuilder();
         StringBuilder sbWhere = new StringBuilder();
@@ -818,28 +822,28 @@ public class DBTable {
             //已有設定
             if (xdCol != null)
             {
-                //sbFields.Append(xRow.Name);
-                //sbSet.Append(xRow.Name).Append("=").Append("value").Append(",");
+                //sbFields.append(xRow.Name);
+                //sbSet.append(xRow.Name).append("=").append("value").append(",");
 
-                tp = (xRow.Attributes["d"] == null) ? "system.String" : xRow.Attributes["d"].Value;
-                iskey = (xRow.Attributes["n"] == null) ? "0" : (xRow.Attributes["n"].Value == "false") ? "1" : "0";
-                defValue = (xRow.Attributes["k"] == null) ? "0" : xRow.Attributes["k"].Value;
-                size = (xRow.Attributes["s"] == null) ? "0" : xRow.Attributes["s"].Value;
+                tp = (xRow.attribute("d") == null) ? "system.String" : xRow.attribute("d").getValue();
+                iskey = (xRow.attribute("n") == null) ? "0" : (xRow.attribute("n").getValue() == "false") ? "1" : "0";
+                defValue = (xRow.attribute("k") == null) ? "0" : xRow.attribute("k").getValue();
+                size = (xRow.attribute("s") == null) ? "0" : xRow.attribute("s").getValue();
                 if (iskey == "1")
                 {
                     if (j > 0)
                     {
-                        sbWhere.Append(" and ");
+                        sbWhere.append(" and ");
                     }
-                    sbWhere.Append(xdCol.Name).Append("='").Append(xdCol.InnerText).Append("'");
+                    sbWhere.append(xdCol.Name).append("='").append(xdCol.getText()).append("'");
                     j++;
                 }
                 else
                 {
                     //值被改變
-                    //if (xdCol.Attributes["ischanged"] != null && xdCol.Attributes["ischanged"].Value == "2")
+                    //if (xdCol.attribute("ischanged") != null && xdCol.attribute("ischanged").getValue() == "2")
                     //{
-                        val = xdCol.InnerText.Replace("'", "''");
+                        val = xdCol.getText().Replace("'", "''");
                         //第一次不需加","
                         if (i == 0)
                         {
@@ -847,45 +851,45 @@ public class DBTable {
                         }
                         else
                         {
-                            sbSet.Append(",");
+                            sbSet.append(",");
                         }
                         i++;
 
-                        sbSet.Append(xRow.Name).Append("=");
+                        sbSet.append(xRow.Name).append("=");
 
                         //temp
-                        switch (tp.ToLower())
+                        switch (tp.toLowerCase())
                         {
                             case "system.String":
 
-                                sbSet.Append("'");
-                                sbSet.Append(val);
-                                sbSet.Append("'");
+                                sbSet.append("'");
+                                sbSet.append(val);
+                                sbSet.append("'");
                                 break;
                             case "system.decimal":
-                                sbSet.Append(xdCol.InnerText.Trim() == String.Empty ? "null" : xdCol.InnerText.Trim());
+                                sbSet.append(xdCol.getText().trim() == String.Empty ? "null" : xdCol.getText().trim());
 
                                 break;
                             case "system.datetime":
                                 switch (this.DatabaseType)
                                 {
                                     case (int)dbType.sqlserver:
-                                        sbSet.Append(String.IsNullOrEmpty(xdCol.InnerText.Trim()) ? "getdate()" : "'" + xdCol.InnerText.Trim() +"'");
+                                        sbSet.append(String.IsNullOrEmpty(xdCol.getText().trim()) ? "getdate()" : "'" + xdCol.getText().trim() +"'");
                                         break;
 
                                     case (int)dbType.sqlite:
-                                        sbSet.Append(String.IsNullOrEmpty(xdCol.InnerText.Trim()) ? "CURRENT_TIMESTAMP" : "'" + xdCol.InnerText.Trim() + "'");
+                                        sbSet.append(String.IsNullOrEmpty(xdCol.getText().trim()) ? "CURRENT_TIMESTAMP" : "'" + xdCol.getText().trim() + "'");
 
                                         break;
                                 }
                                 break;
                             case "blob":
-                                sbSet.Append(xdCol.InnerText.Trim() == String.Empty ? "null" : xdCol.InnerText.Trim());
+                                sbSet.append(xdCol.getText().trim() == String.Empty ? "null" : xdCol.getText().trim());
                                 break;
                             default:
-                                sbSet.Append("'");
-                                sbSet.Append(val);
-                                sbSet.Append("'");
+                                sbSet.append("'");
+                                sbSet.append(val);
+                                sbSet.append("'");
 
                                 break;
                         }
@@ -900,15 +904,15 @@ public class DBTable {
         //當沒有產生條件時，default為第一個欄位為KEY的條件
         if (sbWhere.Length == 0)
         {
-            sbWhere.Append(firstName).Append("='").Append(firstValue).Append("'");
+            sbWhere.append(firstName).append("='").append(firstValue).append("'");
         }
-        if (!sbSet.ToString().Equals(""))
+        if (!sbSet.toString().Equals(""))
         {
             //有updater栏
             if (this.TableSchema.ChildNodes[1].FirstChild.SelectSingleNode("updater") != null 
-                && sbSet.ToString().IndexOf("updater") == -1)
+                && sbSet.toString().IndexOf("updater") == -1)
             {
-                sbSet.Append(" , UPDATER = '" + Manuan.eBridge.Framework.Data.Global.AccountID + "'");
+                sbSet.append(" , UPDATER = '" + Manuan.eBridge.Framework.Data.Global.AccountID + "'");
 
             }
         }
@@ -916,7 +920,7 @@ public class DBTable {
         {
             return 0;
         }
-        return this.UpdateRow(this.getTableName(), sbSet.ToString(), sbWhere.ToString());
+        return this.UpdateRow(this.getTableName(), sbSet.toString(), sbWhere.toString());
     }
 
     /// <summary>
@@ -994,101 +998,101 @@ public class DBTable {
         StringBuilder sbOrder = new StringBuilder();
         StringBuilder sbFixWhere = new StringBuilder();
         XmlNode xnCond = argCond.ChildNodes[1].FirstChild;
-        //if (xnCond.Attributes["top"] != null)
+        //if (xnCond.attribute("top") != null)
         //{
-        //    sbFields.Append(" top ")
-        //        .Append(xnCond.Attributes["top"].Value)
-        //        .Append(" ");
+        //    sbFields.append(" top ")
+        //        .append(xnCond.attribute("top").getValue())
+        //        .append(" ");
         //}
 
         //where
         foreach (XmlNode xRow in xnCond.ChildNodes)
         {
-            if (!String.IsNullOrEmpty(xRow.InnerText))
+            if (!String.IsNullOrEmpty(xRow.getText()))
             {
                 if (j != 0)
                 {
                     //在PCM中可設定 AND或OR
-                    if (xRow.Attributes["link"] == null)
+                    if (xRow.attribute("link") == null)
                     {
-                        sbWhere.Append(" AND ");
+                        sbWhere.append(" AND ");
                     }
                     else
                     {
-                        sbWhere.Append(" ");
-                        sbWhere.Append(xRow.Attributes["link"].Value);
-                        sbWhere.Append(" ");
+                        sbWhere.append(" ");
+                        sbWhere.append(xRow.attribute("link").getValue());
+                        sbWhere.append(" ");
                     }
                 }
                 j++;
-                tp = (xRow.Attributes["type"] == null) ? "String" : xRow.Attributes["type"].Value;
+                tp = (xRow.attribute("type") == null) ? "String" : xRow.attribute("type").getValue();
 
                 //支持多个关键字，用 | 好分隔
-                words = xRow.InnerText.Split('|');
-                sbWhere.Append("(");
+                words = xRow.getText().Split('|');
+                sbWhere.append("(");
                 m = 0;
                 foreach (String item in words)
                 {
                     if (m != 0)
                     {
-                        sbWhere.Append(" OR ");
+                        sbWhere.append(" OR ");
                     }
                     m++;
 
-                    sbWhere.Append("(");
-                    word = item.Replace("*", "%").Trim();
+                    sbWhere.append("(");
+                    word = item.Replace("*", "%").trim();
                     if (word.IndexOf(',') >= 0)//IN
                     {
-                        sbWhere.Append(MakeSqlIN(xRow.Name, tp, word));
+                        sbWhere.append(MakeSqlIN(xRow.Name, tp, word));
                     }
                     else if (word.IndexOf('~') >= 0)//between
                     {
-                        sbWhere.Append(MakeSqlBETWEEN(xRow.Name, tp, word));
+                        sbWhere.append(MakeSqlBETWEEN(xRow.Name, tp, word));
                     }
                     else if (word.IndexOf('=') == 0)//等于（=）
                     {
                         sybol = " = ";
-                        sbWhere.Append(xRow.Name)
-                        .Append(sybol)
-                        .Append((tp == "String" ? "'" : ""))
-                        .Append(word.Substring(1))
-                        .Append((tp == "String" ? "'" : ""));
+                        sbWhere.append(xRow.Name)
+                        .append(sybol)
+                        .append((tp == "String" ? "'" : ""))
+                        .append(word.Substring(1))
+                        .append((tp == "String" ? "'" : ""));
                     }
                     else if (word.IndexOf('>') == 0)//大于（>）
                     {
                         sybol = " > ";
-                        sbWhere.Append(xRow.Name)
-                        .Append(sybol)
-                        .Append((tp == "String" ? "'" : ""))
-                        .Append(word.Substring(1))
-                        .Append((tp == "String" ? "'" : ""));
+                        sbWhere.append(xRow.Name)
+                        .append(sybol)
+                        .append((tp == "String" ? "'" : ""))
+                        .append(word.Substring(1))
+                        .append((tp == "String" ? "'" : ""));
                     }
                     else if (word.IndexOf('<') == 0)//小于（>）
                     {
                         sybol = " < ";
-                        sbWhere.Append(xRow.Name)
-                        .Append(sybol)
-                        .Append((tp == "String" ? "'" : ""))
-                        .Append(word.Substring(1))
-                        .Append((tp == "String" ? "'" : ""));
+                        sbWhere.append(xRow.Name)
+                        .append(sybol)
+                        .append((tp == "String" ? "'" : ""))
+                        .append(word.Substring(1))
+                        .append((tp == "String" ? "'" : ""));
                     }
                     else if (word.IndexOf('!') == 0)//不等于（<>）
                     {
                         sybol = " <> ";
-                        sbWhere.Append(xRow.Name)
-                        .Append(sybol)
-                        .Append((tp == "String" ? "'" : ""))
-                        .Append(word.Substring(1))
-                        .Append((tp == "String" ? "'" : ""));
+                        sbWhere.append(xRow.Name)
+                        .append(sybol)
+                        .append((tp == "String" ? "'" : ""))
+                        .append(word.Substring(1))
+                        .append((tp == "String" ? "'" : ""));
                     }
                     else if (word.IndexOf("<>") == 0)//不等于（<>）
                     {
                         sybol = " <> ";
-                        sbWhere.Append(xRow.Name)
-                        .Append(sybol)
-                        .Append((tp == "String" ? "'" : ""))
-                        .Append(word.Substring(2))
-                        .Append((tp == "String" ? "'" : ""));
+                        sbWhere.append(xRow.Name)
+                        .append(sybol)
+                        .append((tp == "String" ? "'" : ""))
+                        .append(word.Substring(2))
+                        .append((tp == "String" ? "'" : ""));
                     }
 
                     //if (word.IndexOf('%') >= 0 && tp == "String")//含%号且为字符型态时
@@ -1096,36 +1100,36 @@ public class DBTable {
                     {
                         sybol = " LIKE ";
 
-                        sbWhere.Append(xRow.Name)
-                        .Append(sybol)
-                        .Append("'")
-                        .Append(word)
-                        .Append("%'");
+                        sbWhere.append(xRow.Name)
+                        .append(sybol)
+                        .append("'")
+                        .append(word)
+                        .append("%'");
                     }
                     else if (tp == "date")//字符型態用LIKE'value%'
                     {
                         sybol = " LIKE ";
 
-                        sbWhere.Append(xRow.Name)
-                        .Append(sybol)
-                        .Append("'")
-                        .Append(word)
-                        .Append("%'");
+                        sbWhere.append(xRow.Name)
+                        .append(sybol)
+                        .append("'")
+                        .append(word)
+                        .append("%'");
                     }
 
                     else
                     {
                         sybol = " = ";
-                        sbWhere.Append(xRow.Name)
-                        .Append(sybol)
-                        .Append((tp == "String" ? "'" : ""))
-                        .Append(word)
-                        .Append((tp == "String" ? "'" : ""));
+                        sbWhere.append(xRow.Name)
+                        .append(sybol)
+                        .append((tp == "String" ? "'" : ""))
+                        .append(word)
+                        .append((tp == "String" ? "'" : ""));
 
                     }
-                    sbWhere.Append(")");
+                    sbWhere.append(")");
                 }
-                sbWhere.Append(")");
+                sbWhere.append(")");
             }
         }
 
@@ -1140,79 +1144,79 @@ public class DBTable {
             {
                 if (i != 0)
                 {
-                    sbFields.Append(",");
+                    sbFields.append(",");
                 }
                 i++;
-                sbFields.Append(xRow.Name);
+                sbFields.append(xRow.Name);
 
-                if (xRow.Attributes["sort"] != null)
+                if (xRow.attribute("sort") != null)
                 {
                     if (k == 0)
                     {
-                        sbOrder.Append(" ORDER BY ");
+                        sbOrder.append(" ORDER BY ");
 
                     }
                     else
                     {
-                        sbOrder.Append(",");
+                        sbOrder.append(",");
 
                     }
                     k++;
-                    sbOrder.Append(xRow.Name)
-                        .Append(" ")
-                        .Append(xRow.Attributes["sort"].Value);
+                    sbOrder.append(xRow.Name)
+                        .append(" ")
+                        .append(xRow.attribute("sort").getValue());
 
                 }
             }
         }
         else
         {
-            sbFields.Append(" * ");
+            sbFields.append(" * ");
         }
-        //Framework.MyLogger.Write(sbFixWhere.ToString());
+        //Framework.MyLogger.Write(sbFixWhere.toString());
         //沒有條件
         if (sbWhere.Length == 0)
         {
-            sbWhere.Append(" 1=1 ");
+            sbWhere.append(" 1=1 ");
         }
         if (sbOrder.Length > 0)
         {
-            sbWhere.Append(sbOrder.ToString());
+            sbWhere.append(sbOrder.toString());
         }
 
         //设定了取前面几笔功能
         //sqlserver:SELECT top 100 （在最前）
         //sqlite:limit 100 (在最后)
-        if (xnCond.Attributes["top"] != null)
+        if (xnCond.attribute("top") != null)
         {
             switch (this.DatabaseType)
             {
                 case (int)dbType.sqlserver:
 
-                    //sbFields.Append(" top ")
-                    //    .Append(xnCond.Attributes["top"].Value)
-                    //    .Append(" ");
+                    //sbFields.append(" top ")
+                    //    .append(xnCond.attribute("top").getValue())
+                    //    .append(" ");
 
                     //"SELECT TOP 10"
-                    sbFields.Insert(0, " TOP " + xnCond.Attributes["top"].Value + " ");
+                    sbFields.Insert(0, " TOP " + xnCond.attribute("top").getValue() + " ");
 
                     break;
 
                 case (int)dbType.sqlite:
-                    sbWhere.Append(" limit ")
-                        .Append(xnCond.Attributes["top"].Value)
-                        .Append(" ");
+                    sbWhere.append(" limit ")
+                        .append(xnCond.attribute("top").getValue())
+                        .append(" ");
 
                     break;
             }
         }
         if (sbFields.Length > 0)
         {
-            ret[0] = sbFields.ToString();
+            ret[0] = sbFields.toString();
         }
         if (sbWhere.Length > 0)
         {
-            ret[1] = sbWhere.ToString();
+            ret[1] = sbWhere.toString();
         }
         
         return ret;
@@ -1233,9 +1237,9 @@ public class DBTable {
         StringBuilder sbSQL = new StringBuilder();
         String[] values = argValue.Split(',');
 
-        sbSQL.Append(argFldName)
-            .Append(" IN ")
-            .Append("(");
+        sbSQL.append(argFldName)
+            .append(" IN ")
+            .append("(");
 
         foreach (String val in values)
         {
@@ -1243,21 +1247,21 @@ public class DBTable {
             //當不是第一個元素，且有值時
             if (i > 0 && (!String.IsNullOrEmpty(val)))
             {
-                sbSQL.Append(",");
+                sbSQL.append(",");
             }
             i++;
             //有值
             if (!String.IsNullOrEmpty(val))
             {
-                sbSQL.Append((argType == "String" ? "'" : ""));
-                sbSQL.Append(val);
-                sbSQL.Append((argType == "String" ? "'" : ""));
+                sbSQL.append((argType == "String" ? "'" : ""));
+                sbSQL.append(val);
+                sbSQL.append((argType == "String" ? "'" : ""));
             }
         }
 
-        sbSQL.Append(")");
+        sbSQL.append(")");
 
-        ret = sbSQL.ToString();
+        ret = sbSQL.toString();
         return ret;
 
     }
@@ -1277,8 +1281,8 @@ public class DBTable {
         StringBuilder sbSQL = new StringBuilder();
         String[] values = argValue.Split('~');
 
-        sbSQL.Append(argFldName)
-            .Append(" BETWEEN ");
+        sbSQL.append(argFldName)
+            .append(" BETWEEN ");
         if (values.Length != 2)
         {
             throw new Manuan.eBridge.Framework.MyException.BLLException("bl0010", new String[] { argValue });
@@ -1293,20 +1297,20 @@ public class DBTable {
             //當不是第一個元素，且有值時
             if (i > 0 && (!String.IsNullOrEmpty(val)))
             {
-                sbSQL.Append(" AND ");
+                sbSQL.append(" AND ");
             }
             i++;
             //有值
             if (!String.IsNullOrEmpty(val))
             {
-                sbSQL.Append((argType == "String" ? "'" : ""));
-                sbSQL.Append(val);
-                sbSQL.Append((argType == "String" ? "'" : ""));
+                sbSQL.append((argType == "String" ? "'" : ""));
+                sbSQL.append(val);
+                sbSQL.append((argType == "String" ? "'" : ""));
             }
         }
 
 
-        ret = sbSQL.ToString();
+        ret = sbSQL.toString();
         return ret;
 
     }
@@ -1340,7 +1344,7 @@ public class DBTable {
         //int count = 0;    
         String sql = "SELECT '*' FROM {0} WHERE {1}";
 
-        if (argSql.ToLower().IndexOf("select") < 0)
+        if (argSql.toLowerCase().IndexOf("select") < 0)
         {
             sql = String.Format(sql, new String[] { this.getTableName(), argSql });
         }else{
@@ -1410,7 +1414,7 @@ public class DBTable {
         //StringBuilder sbSql = new StringBuilder();
         //for (count = 0;count<argCond.Count;count++)
         //{
-        //    //sbSql.Append(cond.
+        //    //sbSql.append(cond.
         //}
         //String sql = "SELECT {1} FROM {0} WHERE {1} = '{2}'";
         //sql = String.Format(sql, new String[] { this.getTableName(), argField, argValue });
@@ -1462,7 +1466,7 @@ public class DBTable {
 
         if (ret)
         {
-            s_ret = ds.Tables[0].Rows[0][s_retfld].ToString();
+            s_ret = ds.Tables[0].Rows[0][s_retfld].toString();
         }
         return ret;
 
@@ -1490,7 +1494,7 @@ public class DBTable {
 
         if (ret)
         {
-            s_ret = ds.Tables[0].Rows[0][s_retfld].ToString();
+            s_ret = ds.Tables[0].Rows[0][s_retfld].toString();
         }
         return ret;
 
@@ -1552,7 +1556,7 @@ public class DBTable {
         ds = ExecuteDataSet(dbName, s_sql);
         if (ds != null && ds.Tables.Count != 0 && ds.Tables[0].Rows.Count >= 0)
         {
-            ret = ds.Tables[0].Rows[0][0].ToString();
+            ret = ds.Tables[0].Rows[0][0].toString();
 
         }
         return ret;
@@ -1599,7 +1603,7 @@ public class DBTable {
         String sql = "select {0} from {1} where {2} = '{3}'";
 
         String dbName = this.getDatabaseName();
-        //foreach (XmlNode fld in this.TableSchema.SelectSingleNode("xconfig/records/" + this.getTableName().ToLower()).ChildNodes)
+        //foreach (XmlNode fld in this.TableSchema.SelectSingleNode("xconfig/records/" + this.getTableName().toLowerCase()).ChildNodes)
         //{
 
         //}
@@ -1680,7 +1684,7 @@ public class DBTable {
         String sql = "select {0} from {1} where {2} = '{3}'";
 
         String dbName = this.getDatabaseName();
-        foreach (XmlNode fld in this.TableSchema.SelectSingleNode("xconfig/records/" + this.getTableName().ToLower()).ChildNodes)
+        foreach (XmlNode fld in this.TableSchema.SelectSingleNode("xconfig/records/" + this.getTableName().toLowerCase()).ChildNodes)
         {
             
         }
@@ -1736,7 +1740,7 @@ public class DBTable {
 
         //execute
         db = DALHelper.CreateDatabase(s_dbName);
-        if (s_sql != "" && s_sql.ToLower().Trim().IndexOf("select")==0)
+        if (s_sql != "" && s_sql.toLowerCase().trim().IndexOf("select")==0)
         {
 
             DbCommand dbCommand = db.GetSqlStringCommand(s_sql);

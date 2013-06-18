@@ -311,7 +311,7 @@ public class DALHelper {
 									String.format("%1$s",
 											rsmd.getColumnDisplaySize(i)));
 					colElement.addAttribute("d",
-							String.format("%1$s", rsmd.getColumnType(i)));
+							String.format("%1$s", rsmd.getColumnTypeName(i)));
 					colElement.addAttribute("n",
 							rsmd.isNullable(i) == 0 ? "false" : "true");
 					colElement

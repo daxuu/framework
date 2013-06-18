@@ -31,8 +31,8 @@ import Framework.Xml.XmlDocModel;
 public class Global {
 
 	private String appDir="";
-	private String accountId="";
-	private String accountName="";
+	private static String accountId="";
+	private static String accountName="";
 	
 	/**
 	 * 
@@ -123,14 +123,14 @@ public class Global {
 	/**
 	 * @return 当前帐号ID
 	 */
-	public String getAccountId() {
+	public static String getAccountId() {
 		return accountId;
 	}
 
 	/**
 	 * @return 当前帐号名称
 	 */
-	public String getAccountName() {
+	public static String getAccountName() {
 		return accountName;
 	}
 
