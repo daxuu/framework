@@ -1,5 +1,9 @@
 package Framework.Helper;
 
+import java.util.HashMap;
+
+import org.dom4j.Node;
+
 public class Tools {
 
 	
@@ -25,5 +29,26 @@ public class Tools {
         } 
  
         return sbOut.toString();
+    }
+    
+    /**
+     * 
+     * 功能概述：  
+     * @param hm_row
+     * @return
+     * @author lucky  
+     * 创建时间：Jun 18, 2013 11:26:47 AM  
+     * 修改人：lucky
+     * 修改时间：Jun 18, 2013 11:26:47 AM  
+     * 修改备注：  
+     * @version  
+     *
+     */
+    public static Node list2Node(HashMap<String, String> hm_row){
+    	
+    	Node ret = null;
+    	
+    	return ret;
+    	
     }
 }

@@ -80,6 +80,12 @@ public class XmlDocModel {
         try {
             /* 将document中的内容写入文件中 */
             //默认为UTF-8格式"
+        	String path = fileName.substring(0,fileName.lastIndexOf('/'));
+    		File dir = new File(path);
+    		if(!dir.exists()){
+    			dir.mkdirs();
+    		}
+    		
             OutputFormat format = OutputFormat.createPrettyPrint();
             format.setEncoding("utf-8");
             XMLWriter writer = new XMLWriter(new FileWriter(new File(fileName)), format);

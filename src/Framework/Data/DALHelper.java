@@ -221,7 +221,7 @@ public class DALHelper {
 	 */
 	public static XmlDocModel GetSchema(String argDatabaseName,
 			String argDataSourceName) {
-		String path = Global.AppDir() + "/data/schema/"
+		String path = Global.AppDir() + "/data/schema/" + argDatabaseName.toLowerCase() + "/"
 				+ argDataSourceName.toLowerCase() + ".xml";
 		XmlDocModel xmlDoc = new XmlDocModel();
 		File file = new File(path);
@@ -295,7 +295,7 @@ public class DALHelper {
 
 			ResultSetMetaData rsmd = rs.getMetaData();
 			DatabaseMetaData dbmd = conn.getMetaData();
-			rsKeys = dbmd.getPrimaryKeys(null, null, dsn);
+			//rsKeys = dbmd.getPrimaryKeys(null, null, dsn);
 			int cols = rsmd.getColumnCount(); // 得到数据集的列数
 			Element tableElement = doc.getRootElement().addElement(
 					dsn.toLowerCase());
@@ -311,7 +311,7 @@ public class DALHelper {
 									String.format("%1$s",
 											rsmd.getColumnDisplaySize(i)));
 					colElement.addAttribute("d",
-							String.format("%1$s", rsmd.getColumnTypeName(i)));
+							String.format("%1$s", rsmd.getColumnTypeName(i).toLowerCase()));
 					colElement.addAttribute("n",
 							rsmd.isNullable(i) == 0 ? "false" : "true");
 					colElement
