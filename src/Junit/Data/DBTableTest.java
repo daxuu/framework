@@ -40,5 +40,22 @@ public class DBTableTest {
 	public void testGetViewSchema() {
 		//fail("Not yet implemented");
 	}
+	
+
+	@Test
+	public void testGetTableSchema() {
+		String exp = "xconfig";
+		XmlDocModel tbSchema = new XmlDocModel();
+		
+		DBTable tb = new DBTable();
+		tb.setDatabaseName("test");
+		tb.setTableName("STUDENT");
+		tb.setDataSourceName("STUDENT");
+		tbSchema = tb.getTableSchema();
+		Document doc =tbSchema.getDocument();
+		String act = doc.selectSingleNode(exp).getName();
+		
+		assertEquals(exp, act);
+	}
 
 }
