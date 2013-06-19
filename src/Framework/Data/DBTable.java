@@ -8,6 +8,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
+import Framework.Exception.DALException;
 import Framework.Xml.*;
 import Framework.logger.MyLogger;
 
@@ -1291,56 +1292,76 @@ public class DBTable {
 	
 	  //#region PUBLIC Function 
 	
-	
-      public boolean IsExist(String s_where , String s_retfields, out XmlDocModel x_ret)
+	  
+	/**
+	 * 
+	 * 功能概述：判断指定表达式条件的值是否存在，若存在，返回指定字段的值
+	 * @param s_where
+	 * @param s_retfieldst
+	 * @return
+	 * @author rayd 
+	 * 创建时间：Jun 19, 2013 10:31:00 AM  
+	 * 修改人：rayd
+	 * 修改时间：Jun 19, 2013 10:31:00 AM  
+	 * 修改备注：  
+	 * @version 1.0 
+	 *
+	 */
+      public HashMap<String, String> IsExistValue(String s_sqlorwhere , String s_retfields)
         {
             boolean ret = false;
+            HashMap<String, String> hm = new HashMap<String, String>();
+            StringBuffer sbSelect = new StringBuffer("select");
+            
             String sql = "select %1$s from %2$s where %3$s";
-            sql = String.Format(sql, new String[] { s_retfields,this.DataSourceName,s_where });
-            DataSet ds = ExecuteDataSet(this.DatabaseName, sql);
-            
-            x_ret = Helper.Tools.DataSetToXML(ds);
-
-            if (ds != null && ds.Tables.Count != 0 && ds.Tables[0].Rows.Count > 0)
-            {
-                ret = true;
-            }
-
-            return ret;
-
-        }
-        public boolean IsExist(String argSql,out DataSet ds_ret)
-        {
-            boolean ret = false;
-            DataSet ds = null;
-            Database db;
-            String dbName=this.DatabaseName;
-
-            //int count = 0;    
-            String sql = "SELECT '*' FROM {0} WHERE {1}";
-
-            if (argSql.ToLower().IndexOf("select") < 0)
-            {
-                sql = String.Format(sql, new String[] { this.TableName, argSql });
+            //传入select表达式
+            if(s_sqlorwhere.contentEquals(sbSelect)){
+            	sql = s_sqlorwhere;
             }else{
-                sql = argSql;
+            	sql = String.format(sql,s_retfields,this.getDataSourceName(),s_sqlorwhere);
             }
-            ds = ExecuteDataSet(this.DatabaseName, sql);
-            if (ds != null && ds.Tables.Count>0 && ds.Tables[0].Rows.Count > 0)
+            String val = DALHelper.GetValue(this.getDatabaseName(), sql);
+
+            
+            if (val!=null)
             {
                 ret = true;
             }
-            ds_ret = ds;
-            return ret;
+            hm.put("result", Boolean.toString(ret));
+            hm.put("value", val);
+            
+            return hm;
 
         }
+//        public boolean IsExist(String argSql,out DataSet ds_ret)
+//        {
+//            boolean ret = false;
+//            DataSet ds = null;
+//            Database db;
+//            String dbName=this.DatabaseName;
+//
+//            //int count = 0;    
+//            String sql = "SELECT '*' FROM {0} WHERE {1}";
+//
+//            if (argSql.ToLower().IndexOf("select") < 0)
+//            {
+//                sql = String.Format(sql, new String[] { this.TableName, argSql });
+//            }else{
+//                sql = argSql;
+//            }
+//            ds = ExecuteDataSet(this.DatabaseName, sql);
+//            if (ds != null && ds.Tables.Count>0 && ds.Tables[0].Rows.Count > 0)
+//            {
+//                ret = true;
+//            }
+//            ds_ret = ds;
+//            return ret;
+//
+//        }
 
-        public boolean IsExist(String s_sqlorwhere)
+        public HashMap<String, String> IsExistValue(String s_sqlorwhere)
         {
-            boolean ret = false;
-            DataSet ds = null;
-            
-            return IsExist(s_sqlorwhere,out ds);
+            return IsExistValue(s_sqlorwhere,"*");
 
         }
         /// <summary>
@@ -1353,13 +1374,13 @@ public class DBTable {
         {
             boolean ret = false;
             //int count = 0;
-            String sql = "SELECT {0} FROM {1} WHERE {2} ";
+            String sql = "SELECT %1$s FROM %2$s WHERE %3$s ";
             //+号两边一定需要一个空格
-            String[] saFields = argField.Split('+');
-            String[] saValues = argValue.Split('+');
+            String[] saFields = argField.split("+");
+            String[] saValues = argValue.split("+");
             String s_fields="", s_conds="";
 
-            for (int i=0;i<saValues.Length;i++)
+            for (int i=0;i<saValues.length;i++)
             {
                 s_conds += "<" + saFields[i] + ">=" + saValues[i] + "</" + saFields[i] + ">";
                 s_fields += "<" + saFields[i] + "/>";
@@ -1368,57 +1389,58 @@ public class DBTable {
             XmlDocModel xField = new XmlDocModel("<field>" + s_fields + "</field>");
             XmlDocModel xCond = new XmlDocModel("<cond>" + s_conds + "</cond>");
             String[] fw = MakeFieldAndWhere(xField, xCond);
-            sql = String.Format(sql, fw[0], this.DataSourceName, fw[1]);
-
-            /*
-            XmlDocModel xData = DALHelper.ExecuteReader(sql,this.DatabaseName );
-            if (xData.ChildNodes[1].FirstChild.HasChildNodes)
+            sql = String.format(sql, fw[0], this.getDataSourceName(), fw[1]);
+            XmlDocModel xData = DALHelper.Query(sql, this.getDatabaseName());
+            
+            
+            if (!xData.isEmpty())
             {
                 ret = true;
             }
-            */
-
-            return IsExist(sql);
-
-        }
-        public boolean IsExist(StringDictionary argCond)
-        {
-            boolean ret = false;
-            //int count =0;
-            ////int count = 0;
-            //StringBuilder sbSql = new StringBuilder();
-            //for (count = 0;count<argCond.Count;count++)
-            //{
-            //    //sbSql.Append(cond.
-            //}
-            //String sql = "SELECT {1} FROM {0} WHERE {1} = '{2}'";
-            //sql = String.Format(sql, new String[] { this.TableName, argField, argValue });
-            //XmlDocModel xData = DALHelper.ExecuteReader(sql);
-
-            //if (xData.ChildNodes[1].FirstChild.HasChildNodes)
-            //{
-            //    ret = true;
-            //}
+            
             return ret;
 
         }
+        
+        
+//        public boolean IsExist(StringDictionary argCond)
+//        {
+//            boolean ret = false;
+//            //int count =0;
+//            ////int count = 0;
+//            //StringBuilder sbSql = new StringBuilder();
+//            //for (count = 0;count<argCond.Count;count++)
+//            //{
+//            //    //sbSql.Append(cond.
+//            //}
+//            //String sql = "SELECT {1} FROM {0} WHERE {1} = '{2}'";
+//            //sql = String.Format(sql, new String[] { this.TableName, argField, argValue });
+//            //XmlDocModel xData = DALHelper.ExecuteReader(sql);
+//
+//            //if (xData.ChildNodes[1].FirstChild.HasChildNodes)
+//            //{
+//            //    ret = true;
+//            //}
+//            return ret;
+//
+//        }
         /// <summary>
         /// 判斷是否存在數據，并返回指定栏位值
         /// </summary>
         /// <param name="Cond">條件</param>
         /// <param name="retDate" 返回數據>
         /// <returns>欄值，當沒有找到，返回null</returns>
-        public boolean IsExist(String s_sqlwhere, out XmlDocModel x_ret)
-        {
-            DataSet ds = null;
-            XmlDocument xRet = new XmlDocument();
-            boolean ret = false;
-            ret = IsExist(s_sqlwhere, out ds);
-
-            x_ret = Helper.Tools.DataSetToXML(ds);
-            return ret;
-
-        }
+//        public boolean IsExist(String s_sqlwhere, out XmlDocModel x_ret)
+//        {
+//            DataSet ds = null;
+//            XmlDocument xRet = new XmlDocument();
+//            boolean ret = false;
+//            ret = IsExist(s_sqlwhere, out ds);
+//
+//            x_ret = Helper.Tools.DataSetToXML(ds);
+//            return ret;
+//
+//        }
 
 
         /// <summary>
@@ -1427,53 +1449,53 @@ public class DBTable {
         /// <param name="Cond">條件</param>
         /// <param name="retDate" 返回數據>
         /// <returns>欄值，當沒有找到，返回null</returns>
-        public boolean IsExist(String s_where, String s_retfld, out String s_ret)
-        {
-            DataSet ds = null;
-            //XmlDocument xRet = new XmlDocument();
-            boolean ret = false;
-            String sql = "SELECT {0} FROM {1} WHERE {2} ";
-
-            sql = String.Format(sql, s_retfld, this.DataSourceName, s_where);
-
-            ret = IsExist(sql, out ds);
-            s_ret = ""; 
-
-            if (ret)
-            {
-                s_ret = ds.Tables[0].Rows[0][s_retfld].ToString();
-            }
-            return ret;
-
-        }
+//        public boolean IsExist(String s_where, String s_retfld, out String s_ret)
+//        {
+//            DataSet ds = null;
+//            //XmlDocument xRet = new XmlDocument();
+//            boolean ret = false;
+//            String sql = "SELECT {0} FROM {1} WHERE {2} ";
+//
+//            sql = String.Format(sql, s_retfld, this.DataSourceName, s_where);
+//
+//            ret = IsExist(sql, out ds);
+//            s_ret = ""; 
+//
+//            if (ret)
+//            {
+//                s_ret = ds.Tables[0].Rows[0][s_retfld].ToString();
+//            }
+//            return ret;
+//
+//        }
         /// <summary>
         /// 判斷是否存在數據，并返回指定栏位值
         /// </summary>
         /// <param name="Cond">條件</param>
         /// <param name="retDate" 返回數據>
         /// <returns>欄值，當沒有找到，返回null</returns>
-        public boolean IsExist(String s_field,String s_value,String s_retfld, out String s_ret)
-        {
-            DataSet ds = null;
-            boolean ret = false;
-            String sql = "SELECT {0} FROM {1} WHERE {2} ";
-
-            XmlDocModel xField = new XmlDocModel("<field><" + s_retfld + "/></field>");
-            XmlDocModel xCond = new XmlDocModel("<cond><" + s_field +">" + s_value + "</" + s_field+ "></cond>");
-            String[] fw = MakeFieldAndWhere(xField, xCond);
-            sql = String.Format(sql, fw[0], this.DataSourceName, fw[1]);
-
-
-            ret = IsExist(sql, out ds);
-            s_ret = ""; 
-
-            if (ret)
-            {
-                s_ret = ds.Tables[0].Rows[0][s_retfld].ToString();
-            }
-            return ret;
-
-        }
+//        public boolean IsExist(String s_field,String s_value,String s_retfld, out String s_ret)
+//        {
+//            DataSet ds = null;
+//            boolean ret = false;
+//            String sql = "SELECT {0} FROM {1} WHERE {2} ";
+//
+//            XmlDocModel xField = new XmlDocModel("<field><" + s_retfld + "/></field>");
+//            XmlDocModel xCond = new XmlDocModel("<cond><" + s_field +">" + s_value + "</" + s_field+ "></cond>");
+//            String[] fw = MakeFieldAndWhere(xField, xCond);
+//            sql = String.Format(sql, fw[0], this.DataSourceName, fw[1]);
+//
+//
+//            ret = IsExist(sql, out ds);
+//            s_ret = ""; 
+//
+//            if (ret)
+//            {
+//                s_ret = ds.Tables[0].Rows[0][s_retfld].ToString();
+//            }
+//            return ret;
+//
+//        }
         /*
         /// <summary>
         /// 判斷是否存在數據
@@ -1523,17 +1545,8 @@ public class DBTable {
         public String GetValue(String s_sql)
         {
             String ret = null;
-            String sql = s_sql;
 
-            DataSet ds = null;
-            String dbName = this.DatabaseName;
-
-            ds = ExecuteDataSet(dbName, s_sql);
-            if (ds != null && ds.Tables.Count != 0 && ds.Tables[0].Rows.Count >= 0)
-            {
-                ret = ds.Tables[0].Rows[0][0].ToString();
-
-            }
+            ret = DALHelper.GetValue(this.getDatabaseName(), s_sql);
             return ret;
 
         }
@@ -1548,16 +1561,16 @@ public class DBTable {
         public String GetValue(String s_keyfld, String s_keyvalue, String s_retfld)
         {
             String ret = null;
-            String sql = "select {0} from {1} where {2} = '{3}'";
+            String sql = "select %1$s from %2$s where %3$s = '%4$s'";
 
-            String dbName = this.DatabaseName;
+            String dbName = this.getDatabaseName();
 
-            sql = String.Format(sql, new String[] { 
+            sql = String.format(sql, 
                 s_retfld,
-                this.TableName,
+                this.getTableName(),
                 s_keyfld,
                 s_keyvalue
-            });
+            );
 
             ret = GetValue(sql);
             return ret;
@@ -1575,20 +1588,20 @@ public class DBTable {
         public String GetValue(String s_keyvalue, String s_retfld)
         {
             String ret = null;
-            String sql = "select {0} from {1} where {2} = '{3}'";
+            String sql = "select %1$s from %2$s where %3$s = '%4$s'";
 
-            String dbName = this.DatabaseName;
+            String dbName = this.getDatabaseName();
             //foreach (XmlNode fld in this.TableSchema.SelectSingleNode("xconfig/records/" + this.TableName.ToLower()).ChildNodes)
             //{
 
             //}
 
-            sql = String.Format(sql, new String[] { 
+            sql = String.format(sql,  
                 s_retfld,
-                this.TableName,
-                this.KeyName,
+                this.getTableName(),
+                this.getKeyName(),
                 s_keyvalue
-            });
+            );
 
             ret = GetValue(sql);
             return ret;
@@ -1608,12 +1621,7 @@ public class DBTable {
             XmlDocModel ret = new XmlDocModel();
             String sql = s_sql;
 
-            DataSet ds = null;
-            String dbName = this.DatabaseName;
-
-            ds = ExecuteDataSet(dbName, s_sql);
-
-            ret = Tools.DataSetToXML(ds); 
+            ret = DALHelper.ExecuteReader(this.getDatabaseName(),sql);
 
             return ret;
 
@@ -1629,16 +1637,16 @@ public class DBTable {
         public XmlDocModel GetValues(String s_keyfld, String s_keyvalue, String s_retfld)
         {
             XmlDocModel ret = null;
-            String sql = "select {0} from {1} where {2} = '{3}'";
+            String sql = "select %1$s from %2$s where %3$s = '%4$s'";
 
-            String dbName = this.DatabaseName;
+            String dbName = this.getDatabaseName();
 
-            sql = String.Format(sql, new String[] { 
+            sql = String.format(sql,  
                 s_retfld,
-                this.TableName,
+                this.getTableName(),
                 s_keyfld,
                 s_keyvalue
-            });
+            );
 
             ret = GetValues(sql);
             return ret;
@@ -1656,20 +1664,20 @@ public class DBTable {
         public XmlDocModel GetValues(String s_keyvalue, String s_retfld)
         {
             XmlDocModel ret = null;
-            String sql = "select {0} from {1} where {2} = '{3}'";
+            String sql = "select %1$s from %2$2 where %3$s = '%4$s'";
 
-            String dbName = this.DatabaseName;
-            foreach (XmlNode fld in this.TableSchema.SelectSingleNode("xconfig/records/" + this.TableName.ToLower()).ChildNodes)
-            {
-                
-            }
+            String dbName = this.getDatabaseName();
+//            foreach (XmlNode fld in this.getTableSchema().SelectSingleNode("xconfig/records/" + this.getTableName().toLowerCase()).ChildNodes)
+//            {
+//                
+//            }
 
-            sql = String.Format(sql, new String[] { 
+            sql = String.format(sql, 
                 s_retfld,
-                this.TableName,
-                this.KeyName,
+                this.getTableName(),
+                this.getKeyName(),
                 s_keyvalue
-            });
+            );
 
             ret = GetValues(sql);
             return ret;
@@ -1685,7 +1693,7 @@ public class DBTable {
         /// <returns>欄值，當沒有找到，返回null</returns>
         public String GetMaxValue(String argField, String argCond)
         {
-            return DALHelper.GetMaxValue(this.DatabaseName, this.DataSourceName, argField, argCond);
+            return DALHelper.GetMaxValue(this.getDatabaseName(), this.getDataSourceName(), argField, argCond);
         }
         /// <summary>
         /// 取得某一欄位最大值
@@ -1696,51 +1704,6 @@ public class DBTable {
         public String GetMaxValue(String argField, String argCondName,
             String argCondValue)
         {
-            return DALHelper.GetMaxValue(this.DatabaseName, this.DataSourceName, argField, argCondName, argCondValue);
+            return DALHelper.GetMaxValue(this.getDatabaseName(), this.getDataSourceName(), argField, argCondName, argCondValue);
         }
-        #endregion
-
-
-                /// <summary>
-        /// 執行SELECT語句返回DataSet
-        /// </summary>
-        /// <param name="s_dbName"></param>
-        /// <param name="s_dsn"></param>
-        /// <param name="s_sql"></param>
-        /// <returns>DataSet</returns>
-        private DataSet ExecuteDataSet(String s_dbName,String s_sql)
-        {
-            DataSet ret = null;
-            Database db;
-
-            //execute
-            db = DALHelper.CreateDatabase(s_dbName);
-            if (s_sql != "" && s_sql.ToLower().Trim().IndexOf("select")==0)
-            {
-
-                DbCommand dbCommand = db.GetSqlStringCommand(s_sql);
-                //dbCommand.CommandTimeout = 6000;
-                try
-                {
-                    ret = db.ExecuteDataSet(dbCommand);
-
-                }
-                catch (Exception ex)
-                {
-                    MyException.DbAccessException exDb =
-                        new MyException.DbAccessException("DB00", s_dbName, ex, s_sql);
-                    throw exDb;
-                }
-                finally
-                {
-                    //若在Config中設定開啟Log功能
-                    if (Manuan.eBridge.Framework.Data.Global.AppConfig("open_log") == "1")
-                    {
-                        Manuan.eBridge.Framework.MyLogger.Write(s_sql, "", "Message", s_dbName);
-                    }
-                }
-            }
-            return ret;
-        }
-	
 }
