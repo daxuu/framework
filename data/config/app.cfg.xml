@@ -14,4 +14,5 @@
 <test_user>gdi</test_user>
 <test_pwd>gdi</test_pwd>
 <open_log>0</open_log>
+<ajax_dll_name></ajax_dll_name>
 </appconfig>

@@ -43,7 +43,7 @@ public class DBTableTest {
 	
 
 	@Test
-	public void testGetTableSchema() {
+	public void testQueryXml() {
 		String exp = "xconfig";
 		XmlDocModel tbSchema = new XmlDocModel();
 		
