@@ -41,4 +41,8 @@ public class PM_LOG extends DbObject {
     public void setDatabaseName(String _DatabaseName) {
         this._DatabaseName = _DatabaseName;
     }
+    
+    public String Test(String s_word){
+    	return String.format("Hello,%1$s", s_word);
+    }
 }
