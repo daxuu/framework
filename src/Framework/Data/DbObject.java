@@ -14,8 +14,18 @@ import java.sql.SQLException;
 import org.dom4j.*;
 
 /**
- *通用的Database對象類，如Table，View等
- * @author Adminjstrator
+ * 
+ * 
+ * 项目名称：Framework  
+ * 类名称：DbObject  
+ * 类描述：通用的Database對象類，如Table，View等  
+ * @author lucky  
+ * 创建时间：Jun 28, 2013 4:16:28 PM  
+ * 修改人：lucky
+ * 修改时间：Jun 28, 2013 4:16:28 PM  
+ * 修改备注：  
+ * @version  
+ *
  */
 public class DbObject {
 
@@ -79,12 +89,9 @@ public class DbObject {
         String path = "config//" + tableName + ".xml";
         //沒有緩存
         if (ret.load(path) == null) {
-
-        	//remark temp
-            //_TableSchema = ret.CreateSchema(tableName, dbName);
+        	_TableSchema = DALHelper.CreateSchema(tableName, dbName);
         } else {
             _TableSchema = ret;
-
         }
 
         return _TableSchema;
@@ -95,246 +102,201 @@ public class DbObject {
         this._TableSchema = _TableSchema;
     }
 
-    /// <summary>
-    /// 取得資料，指定DB，TABLE，Field,條件，封裝類型
-    /// </summary>
-    /// <param name="argDbName">资料庫名称</param>
-    /// <param name="argDataSourceName">资料来源名称，如TABLE、View名称</param>
-    /// <param name="argFields">栏位清单，以","号分隔</param>
-    /// <param name="argCond">条件表达式，如：LastName = 'Rose' AND Birday = '2000/09/01'</param>
-    /// <param name="argIsFlat">將欄位的節點變成屬性</param>
-    /// <returns>将资料封装成XmlDocModel返回.</returns>
-    /// <remarks>
-    /// <para>[規格說明]
-    /// 指定DB，TABLE，Field,條件，封裝類型
-    /// </para>
-    /// <para>[異動記錄]
-    /// AUTHOR     DATE       NOTE
-    /// ========== ========== ========================================
-    /// Lucky      2005-02-11 Create
-    /// </para>
-    /// <example>
-    ///	<code>
-    ///	    String cond = String.format("projectid={0}",new String[]{'1'});
-    ///		XmlDocModel xProject = Query("CRM","PROJECT","PROJECTID,PROJECTNAME",cond,false);
-    ///	</code>
-    ///	</example>
-    /// </remarks>
+    
+    /**
+     * 
+     * 功能概述：取得資料，指定DB，TABLE，Field,條件，封裝類型  
+     * @param argDbName:数据库名称
+     * @param argDataSourceName：数据来源名称，如TABLE、View名称
+     * @param argFields：栏位清单，以","号分隔
+     * @param argCond：条件表达式，如：LastName = 'Rose' AND Birday = '2000/09/01'
+     * @param argIsFlat：將字段的值变成节点的属性
+     * @return 查找的数据（XmlDocModel）包，若没有找到返回null
+     * @author rayd 
+     * 创建时间：Jun 28, 2013 4:15:04 PM  
+     * 修改人：rayd
+     * 修改时间：Jun 28, 2013 4:15:04 PM  
+     * 修改备注：  
+     * @version 1.0 
+     *
+     */
     public XmlDocModel Query(String argDbName, String argDataSourceName, String argFields, String argCond, boolean argIsFlat) {
-        XmlDocModel ret = DbHelper.Query(argDbName, argDataSourceName, argFields,
-                argCond, argIsFlat);
+        XmlDocModel ret = DALHelper.Query(argDbName, argDataSourceName, argFields,argCond);
         return ret;
     }
 
-    /// <summary>
-    /// 取得資料，指定DB，TABLE，Field,條件
-    /// </summary>
-    /// <param name="argDbName">资料庫名称</param>
-    /// <param name="argDataSourceName">资料来源名称，如TABLE、View名称</param>
-    /// <param name="argFields">栏位清单，以","号分隔</param>
-    /// <param name="argCond">条件表达式，如：LastName = 'Rose' AND Birday = '2000/09/01'</param>
-    /// <returns>将资料封装成XmlDocModel返回.</returns>
-    /// <remarks>
-    /// <para>[規格說明]
-    /// 重載調用Query,指定DB，TABLE，Field,條件,
-    /// </para>
-    /// <para>[異動記錄]
-    /// AUTHOR     DATE       NOTE
-    /// ========== ========== ========================================
-    /// Lucky      2005-02-11 Create
-    /// </para>
-    /// <example>
-    ///	<code>
-    ///	    String cond = String.format("projectid={0}",new String[]{'1'});
-    ///		XmlDocModel xProject = Query("CRM","PROJECT","PROJECTID,PROJECTNAME",cond);
-    ///	</code>
-    ///	</example>
-    /// </remarks>
+    /**
+     * 
+     * 功能概述：取得資料，指定DB，TABLE，Field,條件，封裝類型  
+     * @param argDbName:数据库名称
+     * @param argDataSourceName：数据来源名称，如TABLE、View名称
+     * @param argFields：栏位清单，以","号分隔
+     * @param argCond：条件表达式，如：LastName = 'Rose' AND Birday = '2000/09/01'
+     * @return 查找的数据（XmlDocModel）包，若没有找到返回null
+     * @author rayd 
+     * 创建时间：Jun 28, 2013 4:15:04 PM  
+     * 修改人：rayd
+     * 修改时间：Jun 28, 2013 4:15:04 PM  
+     * 修改备注：  
+     * @version 1.0 
+     *
+     */
     public XmlDocModel Query(String argDbName, String argDataSourceName, String argFields, String argCond) {
         return Query(argDbName, argDataSourceName, argFields, argCond);
     }
 
-    /// <summary>
-    /// 取得資料（默認為當前的DAL類指定的DB）
-    /// </summary>
-    /// <param name="argDataSourceName">资料来源名称，如TABLE、View名称</param>
-    /// <param name="argFields">栏位清单，以","号分隔</param>
-    /// <param name="argCond">条件表达式，如：LastName = 'Rose' AND Birday = '2000/09/01'</param>
-    /// <param name="argIsFlat">將欄位的節點變成屬性</param>
-    /// <returns>将资料封装成XmlDocModel返回.</returns>
-    /// <remarks>
-    /// <para>[規格說明]
-    /// 重載調用Query，默認為當前的DAL類指定的DB，若該DAL類沒有指定，則為Config中設定的Default DB
-    /// </para>
-    /// <para>[異動記錄]
-    /// AUTHOR     DATE       NOTE
-    /// ========== ========== ========================================
-    /// Lucky      2005-02-11 Create
-    /// </para>
-    /// <example>
-    ///	<code>
-    ///	    String cond = String.format("projectid={0}",new String[]{'1'});
-    ///		XmlDocModel xProject = Query("PROJECT","PROJECTID,PROJECTNAME",cond,false);
-    ///	</code>
-    ///	</example>
-    /// </remarks>
+
+    
+    /**
+     * 
+     * 功能概述：取得資料，指定DB，TABLE，Field,條件，封裝類型  
+     * @param argDbName:数据库名称
+     * @param argDataSourceName：数据来源名称，如TABLE、View名称
+     * @param argFields：栏位清单，以","号分隔
+     * @param argCond：条件表达式，如：LastName = 'Rose' AND Birday = '2000/09/01'
+     * @param argIsFlat：將字段的值变成节点的属性
+     * @return 查找的数据（XmlDocModel）包，若没有找到返回null
+     * @author rayd 
+     * 创建时间：Jun 28, 2013 4:15:04 PM  
+     * 修改人：rayd
+     * 修改时间：Jun 28, 2013 4:15:04 PM  
+     * 修改备注：  
+     * @version 1.0 
+     *
+     */
     public XmlDocModel Query(String argDataSourceName, String argFields, String argCond, boolean argIsFlat) {
         String dbName = this.getDatabaseName();
-        MyLogger.Write(dbName);
+        //MyLogger.Write(dbName);
         return Query(dbName, argDataSourceName, argFields, argCond, argIsFlat);
     }
 
-    /// <summary>
-    /// 取得資料，資料對象為當前DAL對象指定名稱
-    /// </summary>
-    /// <param name="argFields">栏位清单，以","号分隔</param>
-    /// <param name="argCond">条件表达式，如：LastName = 'Rose' AND Birday = '2000/09/01'</param>
-    /// <param name="argIsFlat">將欄位的節點變成屬性</param>
-    /// <returns>将资料封装成XML返回.</returns>
-    /// <remarks>
-    /// <para>[規格說明]
-    /// 重載調用Query
-    /// </para>
-    /// <para>[異動記錄]
-    /// AUTHOR     DATE       NOTE
-    /// ========== ========== ========================================
-    /// Lucky      2005-02-11 Create
-    /// </para>
-    /// <example>
-    ///	<code>
-    ///	    String cond = String.format("projectid={0}",new String[]{'1'});
-    ///		XmlDocModel xProject = Query("PROJECTID,PROJECTNAME",cond,false);
-    ///	</code>
-    ///	</example>
-    /// </remarks>
+    /**
+     * 
+     * 功能概述：取得資料，指定Field,條件，封裝類型  
+     * @param argDbName:数据库名称
+     * @param argDataSourceName：数据来源名称，如TABLE、View名称
+     * @param argFields：栏位清单，以","号分隔
+     * @param argCond：条件表达式，如：LastName = 'Rose' AND Birday = '2000/09/01'
+     * @param argIsFlat：將字段的值变成节点的属性
+     * @return 查找的数据（XmlDocModel）包，若没有找到返回null
+     * @author rayd 
+     * 创建时间：Jun 28, 2013 4:15:04 PM  
+     * 修改人：rayd
+     * 修改时间：Jun 28, 2013 4:15:04 PM  
+     * 修改备注：  
+     * @version 1.0 
+     *
+     */
     public XmlDocModel Query(String argFields, String argCond, boolean argIsFlat) {
 
         return this.Query(this.getDataSourceName(), argFields, argCond, argIsFlat);
     }
 
-    /// <summary>
-    /// 取得資料，資料對象為當前DAL對象指定名稱，欄資料以節點封裝
-    /// </summary>
-    /// <param name="argFields">栏位清单，以","号分隔</param>
-    /// <param name="argCond">条件表达式，如：LastName = 'Rose' AND Birday = '2000/09/01'</param>
-    /// <param name="argIsFlat">將欄位的節點變成屬性</param>
-    /// <returns>将资料封装成XML返回.</returns>
-    /// <remarks>
-    /// <para>[規格說明]
-    /// 重載調用Query
-    /// 欄位不封裝成屬性
-    /// </para>
-    /// <para>[異動記錄]
-    /// AUTHOR     DATE       NOTE
-    /// ========== ========== ========================================
-    /// Lucky      2005-02-11 Create
-    /// </para>
-    /// <example>
-    ///	<code>
-    ///	    String cond = String.format("projectid={0}",new String[]{'1'});
-    ///		XmlDocModel xProject = Query("PROJECTID,PROJECTNAME",cond);
-    ///	</code>
-    ///	</example>
-    /// </remarks>
+    /**
+     * 
+     * 功能概述：取得資料，指定Field,條件，封裝類型  
+     * @param argDbName:数据库名称
+     * @param argDataSourceName：数据来源名称，如TABLE、View名称
+     * @param argFields：栏位清单，以","号分隔
+     * @param argCond：条件表达式，如：LastName = 'Rose' AND Birday = '2000/09/01'
+     * @param argIsFlat：將字段的值变成节点的属性
+     * @return 查找的数据（XmlDocModel）包，若没有找到返回null
+     * @author rayd 
+     * 创建时间：Jun 28, 2013 4:15:04 PM  
+     * 修改人：rayd
+     * 修改时间：Jun 28, 2013 4:15:04 PM  
+     * 修改备注：  
+     * @version 1.0 
+     *
+     */
     public XmlDocModel Query(String argFields, String argCond) {
         return this.Query(this.getDataSourceName(), argFields, argCond, false);
     }
 
-    /// <summary>
-    /// 取得資料:指定条件,所有栏位
-    /// </summary>
-    /// <param name="argCond">条件表达式，如：LastName = 'Rose' AND Birday = '2000/09/01'</param>
-    /// <returns>将资料封装成XML返回.</returns>
-    /// <remarks>
-    /// <para>[規格說明]
-    /// 重載調用Query
-    ///
-    /// </para>
-    /// <para>[異動記錄]
-    /// AUTHOR     DATE       NOTE
-    /// ========== ========== ========================================
-    /// Lucky      2005-02-11 Create
-    /// </para>
-    /// <example>
-    ///	<code>
-    ///	    String cond = String.format("projectid={0}",new String[]{'1'});
-    ///		XmlDocModel xProject = Query(cond,false);
-    ///	</code>
-    ///	</example>
-    /// </remarks>
+    /**
+     * 
+     * 功能概述：取得資料，指定條件  
+     * @param argDbName:数据库名称
+     * @param argDataSourceName：数据来源名称，如TABLE、View名称
+     * @param argFields：栏位清单，以","号分隔
+     * @param argCond：条件表达式，如：LastName = 'Rose' AND Birday = '2000/09/01'
+     * @param argIsFlat：將字段的值变成节点的属性
+     * @return 查找的数据（XmlDocModel）包，若没有找到返回null
+     * @author rayd 
+     * 创建时间：Jun 28, 2013 4:15:04 PM  
+     * 修改人：rayd
+     * 修改时间：Jun 28, 2013 4:15:04 PM  
+     * 修改备注：  
+     * @version 1.0 
+     *
+     */
     public XmlDocModel Query(String argCond, boolean argIsFlat) {
         return this.Query("*", argCond, argIsFlat);
     }
-    /// <summary>
-    /// 取得資料:指定条件,所有栏位，欄資料以節點封裝
-    /// </summary>
-    /// <param name="argCond">条件表达式，如：LastName = 'Rose' AND Birday = '2000/09/01'</param>
-    /// <returns>将资料封装成XML返回.</returns>
-    /// <remarks>
-    /// <para>[規格說明]
-    /// 重載調用Query
-    ///
-    /// </para>
-    /// <para>[異動記錄]
-    /// AUTHOR     DATE       NOTE
-    /// ========== ========== ========================================
-    /// Lucky      2005-02-11 Create
-    /// </para>
-    /// <example>
-    ///	<code>
-    ///	    String cond = String.format("projectid={0}",new String[]{'1'});
-    ///		XmlDocModel xProject = Query(cond);
-    ///	</code>
-    ///	</example>
-    /// </remarks>
-
+    
+    /**
+     * 
+     * 功能概述：取得資料，指定DB，TABLE，Field,條件，封裝類型  
+     * @param argDbName:数据库名称
+     * @param argDataSourceName：数据来源名称，如TABLE、View名称
+     * @param argFields：栏位清单，以","号分隔
+     * @param argCond：条件表达式，如：LastName = 'Rose' AND Birday = '2000/09/01'
+     * @param argIsFlat：將字段的值变成节点的属性
+     * @return 查找的数据（XmlDocModel）包，若没有找到返回null
+     * @author rayd 
+     * 创建时间：Jun 28, 2013 4:15:04 PM  
+     * 修改人：rayd
+     * 修改时间：Jun 28, 2013 4:15:04 PM  
+     * 修改备注：  
+     * @version 1.0 
+     *
+     */
     public XmlDocModel Query(String argCond) {
         return this.Query(argCond, false);
     }
-    /// <summary>
-    /// 查询功能:指定条件,所有栏位
-    /// </summary>
-    /// <param name="argCond">条件表达式，如：LastName = 'Rose' AND Birday = '2000/09/01'</param>
-    /// <param name="argIsFlat">將欄位的節點變成屬性</param>
-    /// <returns>将资料封装成XML返回.</returns>
-    /// <remarks>
-    /// <para>[規格說明]
-    /// 1.默认的条件运算符为  '='
-    /// 2.若接收到的条件中有'%'或'*'，则用Like
-    /// 3.若接收到的条件中有','，则用IN
-    /// 4.若接收到的条件中有空格' '，则分成两个条件，并以OR运算
-    /// 5.若接收到的条件中有‘&’，则分成两个条件，并以AND运算
-    /// 6.若接收到的条件第一个字符为等于（=）、大于（>）、小于（<）、不等于(<>)号，则以其替换默认运算符
-    /// 7.若接收到的条件有'~',则用Between
-    /// </para>
-    /// <para>[異動記錄]
-    /// AUTHOR     DATE       NOTE
-    /// ========== ========== ========================================
-    /// Lucky      2009-08-18 Create
-    /// Lucky      2009-09-09 增加第7點規格
-    /// </para>
-    ///
-    /// <example>
-    ///   <?xml version="1.0" encoding="utf-8" ?>
-    ///   <xconfig>
-    ///     <cond>
-    ///         <project_id />
-    ///         <proj_name>PM</proj_name>
-    ///         <proj_nm />
-    ///     </cond>
-    ///     <def>
-    ///         <project_id />
-    ///         <proj_name>PM</proj_name>
-    ///         <proj_nm />
-    ///     </def>
-    ///     <fixcond>
-    ///         <item link="AND">qty=oqty</item>
-    ///         <item link="AND">qty&lt0</item>
-    ///     </fixcond>
-    ///   </xconfig>
-    /// </example>
-    /// </remarks>
-
+    
+    /**
+     * 
+     * 功能概述：取得資料，根据XML传入的条件,自动生产查询SQL语句 
+     * @param argCond:以XML封装的条件
+     * <rem>xml格式：   
+     *   <?xml version="1.0" encoding="utf-8" ?>
+     *   <xconfig>
+     *     <cond>
+     *         <project_id />
+     *         <proj_name>PM</proj_name>
+     *         <proj_nm />
+     *     </cond>
+	 *     <def>
+	 *         <project_id />
+	 *         <proj_name>PM</proj_name>
+	 *         <proj_nm />
+	 *     </def>
+	 *     <fixcond>
+	 *         <item link="AND">qty=oqty</item>
+	 *         <item link="AND">qty&lt0</item>
+	 *     </fixcond>
+	 *   </xconfig>
+     * </rem>
+     * @param argIsFlat：將字段的值变成节点的属性
+     * @return 查找的数据（XmlDocModel）包，若没有找到返回null
+     * @author rayd 
+     * 创建时间：Jun 28, 2013 4:15:04 PM  
+     * 修改人：rayd
+     * 修改时间：Jun 28, 2013 4:15:04 PM  
+     * 修改备注：
+     * <rem>[規格說明]
+     * 1.默认的条件运算符为  '='
+     * 2.若接收到的条件中有'%'或'*'，则用Like
+     * 3.若接收到的条件中有','，则用IN
+     * 4.若接收到的条件中有空格' '，则分成两个条件，并以OR运算
+     * 5.若接收到的条件中有‘&’，则分成两个条件，并以AND运算
+     * 6.若接收到的条件第一个字符为等于（=）、大于（>）、小于（<）、不等于(<>)号，则以其替换默认运算符
+     * 7.若接收到的条件有'~',则用Between
+     * </rem>  
+     * @version 1.0 
+     *
+     */    
     public XmlDocModel Query(XmlDocModel argCond, boolean argIsFlat) {
         int i = 0, j = 0, k = 0, m = 0;
         String[] words = new String[]{};
@@ -358,7 +320,7 @@ public class DbObject {
             sbFields.append(" top ").append(xnCond.attribute("top").getValue()).append(" ");
         }
         //for every cond node
-        for (Iterator it = xnCond.elementIterator(); it.hasNext();) {
+        for (Iterator<?> it = xnCond.elementIterator(); it.hasNext();) {
             el = (Element) it.next();
             if (i != 0) {
                 sbFields.append(",");
@@ -454,7 +416,7 @@ public class DbObject {
 
         //for every FixCond node
         //加上PCM中设定的固定条件
-        for (Iterator it = xnFixCond.elementIterator(); it.hasNext();) {
+        for (Iterator<?> it = xnFixCond.elementIterator(); it.hasNext();) {
             el = (Element) it.next();
 
             //沒有條件
@@ -466,9 +428,6 @@ public class DbObject {
             }
             sbWhere.append(el.getText());
         }
-
-
-
         //沒有條件
         if (sbWhere.length() == 0) {
             sbWhere.append(" 1=1 ");
@@ -609,7 +568,7 @@ public class DbObject {
     public int AddRow(String argDbName, String argTableName, String argFieldList, String argValueList) {
         int ret = 0;
 
-        ret = DbHelper.AddRow(argDbName, argTableName, argFieldList, argValueList);
+        ret = DALHelper.AddRow(argDbName, argTableName, argFieldList, argValueList);
         return ret;
 
     }
@@ -634,7 +593,7 @@ public class DbObject {
     /// <param name="argData">栏位清单</param>
     /// <param name="argValueList">值清单</param>
     /// <returns>成功新增行数</returns>
-    public int AddRow(XmlDocModel argData, XmlDocModel argConf) throws SQLException {
+    public int AddRow(XmlDocModel argData, XmlDocModel argConf)  {
         return AddRow(argData);
     }
     /// <summary>
@@ -644,7 +603,7 @@ public class DbObject {
     /// <param name="argValueList">值清单</param>
     /// <returns>成功新增行数</returns>
 
-    public int AddRow(XmlDocModel argData) throws SQLException {
+    public int AddRow(XmlDocModel argData) {
 
         int i = 0;
 
@@ -655,8 +614,6 @@ public class DbObject {
                 Element node = (Element) list.get(j);
                 i = AddRow(node);
             }
-        } catch (SQLException exSQL) {
-            exSQL.printStackTrace();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -665,7 +622,7 @@ public class DbObject {
         return i;
     }
 
-    public int AddRow(Element argData) throws SQLException {
+    public int AddRow(Element argData) {
 
         int i = 0;
         String tp = "", iskey = "", size = "", defValue = "", val = "";
@@ -786,7 +743,7 @@ public class DbObject {
     /// </remarks>
     public int DeleteRow(String argDbName, String argTableName, String argWhere, boolean argIsKey) {
         int ret = 0;
-        ret = DbHelper.DeleteRow(argDbName, argTableName, argWhere, argIsKey);
+        ret = DALHelper.DeleteRow(argDbName, argTableName, argWhere);
         return ret;
     }
 
@@ -864,7 +821,7 @@ public class DbObject {
         //find table name node
         Element fldSchdma = rootSchema.element(this.getTableName().toLowerCase());
 
-        for (Iterator it = argData.elementIterator(); it.hasNext();) {
+        for (Iterator<?> it = argData.elementIterator(); it.hasNext();) {
             elParam = (Element) it.next();
             if (i == 0) {
                 firstName = elParam.getName();
@@ -931,7 +888,7 @@ public class DbObject {
     /// </remarks>
     public int UpdateRow(String argDbName, String argTableName, String argSet, String argWhere) {
         int ret = 0;
-        ret = DbHelper.UpdateRow(argDbName, argTableName, argSet, argWhere);
+        ret = DALHelper.UpdateRow(argDbName, argTableName, argSet, argWhere);
         return ret;
     }
 
@@ -982,7 +939,7 @@ public class DbObject {
 
     public int UpdateRow(Element argData) throws SQLException {
         int i = 0, j = 0, m = 0;
-        String tp = "", iskey = "", size = "", defValue = "", val = "";
+        String tp = "", iskey = "",size = "", defValue = "", val = "";  
         //String xpath = "[@ischanged='2']";
         String firstName = "";
         String firstValue = "";
@@ -1000,7 +957,7 @@ public class DbObject {
         Element fldSchdma = rootSchema.element(this.getTableName().toLowerCase());
 
         //for every cond node
-        for (Iterator it = fldSchdma.elementIterator(); it.hasNext();) {
+        for (Iterator<?> it = fldSchdma.elementIterator(); it.hasNext();) {
 
             //Element xdCol = argData.SelectSingleNode(el.getName());
             elSchema = (Element) it.next();
@@ -1097,15 +1054,19 @@ public class DbObject {
     public boolean IsExist(String argField, String argValue) {
         boolean ret = false;
         //int count = 0;
-        String sql = "SELECT {1} FROM {0} WHERE {1} = '{2}'";
+        String sql = "SELECT %2$s FROM %1$s WHERE %2$s = '%3$s'";
         sql = String.format(sql, this.getTableName(), argField, argValue);
-        XmlDocModel xData = DbHelper.ExecuteQuery(sql);
+        XmlDocModel xData = DALHelper.ExecuteReader(sql,this.getDatabaseName());
 
         if (xData!=null) {
             ret = true;
         }
         return ret;
 
+    }
+    
+    public String Test(String s_word){
+    	return String.format("Hello,%1$s", s_word);
     }
     
     /// <summary>

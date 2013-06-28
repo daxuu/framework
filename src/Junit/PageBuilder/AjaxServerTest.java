@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runners.model.FrameworkField;
 
+import Framework.Data.Global;
 import Framework.PageBuilder.AjaxServer;
 import Framework.logger.PM_LOG;
 
@@ -35,11 +36,20 @@ public class AjaxServerTest {
 	@Test
 	public void testInvoke() {
 		//String exp = "PM.BLL.PM_PROJECT,PM.BLL:Save";
-		String exp = "Hello,Lucky";
+		String exp = "1";
 		AjaxServer ajax = AjaxServer.GetInvoker();
-		//String act = (String)ajax.invoke("Framework.logger.PM_LOG", "GetValue", new String[]{"string","string","string"}, new String[]{"log_id","31b99904-35ab-4d1b-bd5c-743dbb6ecc1a","log_msg"});
-		String act = (String)ajax.invoke("Framework.logger.PM_LOG", "Test", new String[]{"string"}, new String[]{"Lucky"});
-		assertEquals(exp, act);
+		//String act = (String)ajax.invoke("Framework.logger.PM_LOG", "IsExist", new String[]{"string","string"}, new String[]{"log_id","31b99904-35ab-4d1b-bd5c-743dbb6ecc1a"});
+		//String act = (String)ajax.invoke("Framework.logger.PM_LOG", "Test", new String[]{"string"}, new String[]{"Lucky"});
+		//AddRow
+		Integer act = (Integer)ajax.invoke("Framework.logger.PM_LOG", "AddRow", 
+				new String[]{
+				"log",
+				"pm_log",
+				"log_id,log_msg",
+				"'" + Framework.CodeRobot.NORobot.Guid() +"','test msg :" + Framework.CodeRobot.NORobot.Guid()+ "'"
+				}
+		);
+		assertEquals(exp, Integer.toString(act));
 	}
 
 	@Test

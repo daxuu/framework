@@ -42,7 +42,5 @@ public class PM_LOG extends DbObject {
         this._DatabaseName = _DatabaseName;
     }
     
-    public String Test(String s_word){
-    	return String.format("Hello,%1$s", s_word);
-    }
+
 }

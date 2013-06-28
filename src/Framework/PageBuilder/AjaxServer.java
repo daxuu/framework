@@ -55,6 +55,22 @@ public class AjaxServer {
 		return invoker;
 	}
 
+	/**
+	 * 
+	 * 功能概述：动态调用 
+	 * @param cName
+	 * @param MethodName
+	 * @param type
+	 * @param param
+	 * @return
+	 * @author rayd 
+	 * 创建时间：Jun 28, 2013 5:14:25 PM  
+	 * 修改人：rayd
+	 * 修改时间：Jun 28, 2013 5:14:25 PM  
+	 * 修改备注：  
+	 * @version 1.0 
+	 *
+	 */
 	public Object invoke(String cName, String MethodName, String[] type, String[] param) {
 		
 		Object retobj = null;
@@ -72,7 +88,7 @@ public class AjaxServer {
 
 			// 在指定类中获取指定的方法
 			Method meth = cls.getMethod(MethodName, partypes);
-
+			//cls.getMethod(name, parameterTypes)
 			// 构建方法的参数值
 			Object arglist[] = this.getMethodObject(type, param);
 
@@ -83,6 +99,15 @@ public class AjaxServer {
 			System.err.println(e);
 		}
 		return retobj;
+	}
+	
+	public Object invoke(String cName, String MethodName,  String[] param) {
+		String[] types = new String[param.length];
+		for(int i=0;i<param.length;i++){
+			types[i]="string";
+		}
+		
+		return invoke(cName, MethodName,types, param);
 	}
 
 	// 获取参数类型Class[]的方法

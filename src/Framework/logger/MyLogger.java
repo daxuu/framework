@@ -5,7 +5,7 @@
  */
 package Framework.logger;
 
-import Framework.Data.DbHelper;
+import Framework.Data.DALHelper;
 import Framework.util.Tools;
 import Framework.Xml.*;
 import java.sql.*;
@@ -38,7 +38,7 @@ public class MyLogger {
         //DbCommand dbCommand = db.GetSqlStringCommand(argSql);
         try {
 
-            conn = DbHelper.createConnection("LOG");
+            conn = DALHelper.CreateDatabase("LOG");
 
             st = conn.createStatement();
             Integer count = st.executeUpdate(sql);
