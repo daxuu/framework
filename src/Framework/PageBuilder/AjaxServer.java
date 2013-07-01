@@ -57,18 +57,25 @@ public class AjaxServer {
 
 	/**
 	 * 
-	 * 功能概述：动态调用 
-	 * @param cName
-	 * @param MethodName
-	 * @param type
-	 * @param param
-	 * @return
+	 * 功能概述：动态调用方法，用反射动态加载类，并动态调用指定名称与参数的方法
+	 *
+	 *[示例] 
+	 * <blockquote><pre>
+	 * String act = (String)ajax.invoke("Framework.logger.PM_LOG", "IsExist", new String[]{"string","string"}, new String[]{"log_id","31b99904-35ab-4d1b-bd5c-743dbb6ecc1a"});
+	 *</pre></blockquote> 
+	 * @param cName 类名，包含命名空间
+	 * @param MethodName 方法名称
+	 * @param type 参数型态列表
+	 * @param param 参数值列表
+	 * @return 方法实际返回值
 	 * @author rayd 
-	 * 创建时间：Jun 28, 2013 5:14:25 PM  
+	 * 创建时间：Jul 1, 2013 9:23:40 AM  
 	 * 修改人：rayd
-	 * 修改时间：Jun 28, 2013 5:14:25 PM  
-	 * 修改备注：  
-	 * @version 1.0 
+	 * 修改时间：Jul 1, 2013 9:23:40 AM  
+	 * 修改备注：
+	 * @throws N/A
+	 * @see   
+	 * @since 1.0 
 	 *
 	 */
 	public Object invoke(String cName, String MethodName, String[] type, String[] param) {
@@ -100,7 +107,29 @@ public class AjaxServer {
 		}
 		return retobj;
 	}
-	
+
+	/**
+	 * 
+	 * 功能概述：动态调用方法，用反射动态加载类，并动态调用指定名称与参数的方法，参数类型全部为string
+	 *
+	 *[示例] 
+	 * <blockquote><pre>
+	 * String act = (String)ajax.invoke("Framework.logger.PM_LOG", "IsExist", new String[]{"string","string"}, new String[]{"log_id","31b99904-35ab-4d1b-bd5c-743dbb6ecc1a"});
+	 *</pre></blockquote> 
+	 * @param cName 类名，包含命名空间
+	 * @param MethodName 方法名称
+	 * @param param 参数值列表
+	 * @return 方法实际返回值
+	 * @author rayd 
+	 * 创建时间：Jul 1, 2013 9:23:40 AM  
+	 * 修改人：rayd
+	 * 修改时间：Jul 1, 2013 9:23:40 AM  
+	 * 修改备注：
+	 * @throws N/A
+	 * @see   
+	 * @since 1.0 
+	 *
+	 */
 	public Object invoke(String cName, String MethodName,  String[] param) {
 		String[] types = new String[param.length];
 		for(int i=0;i<param.length;i++){
@@ -110,6 +139,35 @@ public class AjaxServer {
 		return invoke(cName, MethodName,types, param);
 	}
 
+	/**
+	 * 
+	 * 功能概述：动态调用方法，用反射动态加载类，并动态调用指定名称与参数的方法，单个String传入值，如xml数据
+	 *
+	 *[示例] 
+	 * <blockquote><pre>
+	 * String act = (String)ajax.invoke("Framework.logger.PM_LOG", "IsExist", new String[]{"string","string"}, new String[]{"log_id","31b99904-35ab-4d1b-bd5c-743dbb6ecc1a"});
+	 *</pre></blockquote> 
+	 * @param cName 类名，包含命名空间
+	 * @param MethodName 方法名称
+	 * @param param 参数值列表
+	 * @return 方法实际返回值
+	 * @author rayd 
+	 * 创建时间：Jul 1, 2013 9:23:40 AM  
+	 * 修改人：rayd
+	 * 修改时间：Jul 1, 2013 9:23:40 AM  
+	 * 修改备注：
+	 * @throws N/A
+	 * @see   
+	 * @since 1.0 
+	 *
+	 */
+	public Object invoke(String cName, String MethodName,  String s_param) {
+		String[] types = new String[1];
+		String[] params = new String[]{s_param};
+		types[0] = "string";
+		return invoke(cName, MethodName,types, params);
+	}
+	
 	// 获取参数类型Class[]的方法
 	public Class<?>[] getMethodClass(String[] type) {
 		Class<?>[] cs = new Class[type.length];

@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.dom4j.Node;
 
 import Framework.Exception.DALException;
 import Framework.Xml.*;
@@ -183,20 +184,54 @@ public class DALHelper {
 		return ret;
 	}
 
+	public static ArrayList<String> getPrimaryKey(String s_tableName, String s_dbName){
+		ArrayList<String> ret = new ArrayList<String>();
+		Connection db = null;
+		ResultSet ids = null;
+		DatabaseMetaData dbmd = null;
+		
+		try {
+			db = CreateDatabase(s_dbName);
+			dbmd = db.getMetaData();
+			ids = dbmd.getPrimaryKeys(null, null, s_tableName.toUpperCase());
+			while (ids != null && ids.next()) {
+				String col = ids.getString("COLUMN_NAME");
+				
+				ret.add(col.toLowerCase());
+				//String key = ids.getString("PK_NAME");
+				//System.out.println(col + "########" + key);
+			}
+
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+			// TODO: handle exception
+		}catch (Exception e2) {
+			System.out.println(e2.getMessage());
+				// TODO: handle exception
+			
+		} finally {
+			closeReultSet(ids);
+			closeDatabase(db);
+			dbmd = null;
+		}
+		return ret;
+	}
+
 	// 判斷是否為Primary Key欄
 	private static boolean isPrimaryKey(ResultSet rsKeys, String fldName)
 			throws SQLException {
 		boolean ret = false;
 		// int i =1;
 		// MyLogger.Write(rsKeys.);
-		while (rsKeys.next()) {
-
+		while (rsKeys != null && rsKeys.next()) {
+			String pk = rsKeys.getString(1);
 			if (rsKeys.getString("column_name").toLowerCase() == fldName
 					.toLowerCase()) {
 				ret = true;
 			}
 			// i++;
 		}
+
 		return ret;
 	}
 
@@ -221,7 +256,8 @@ public class DALHelper {
 	 */
 	public static XmlDocModel GetSchema(String argDatabaseName,
 			String argDataSourceName) {
-		String path = Global.AppDir() + "/data/schema/" + argDatabaseName.toLowerCase() + "/"
+		String path = Global.AppDir() + "/data/schema/"
+				+ argDatabaseName.toLowerCase() + "/"
 				+ argDataSourceName.toLowerCase() + ".xml";
 		XmlDocModel xmlDoc = new XmlDocModel();
 		File file = new File(path);
@@ -287,6 +323,7 @@ public class DALHelper {
 		XmlDocModel xSchema = new XmlDocModel();
 		// ResultSet rs;
 		Document doc = xSchema.getDocument();
+		ArrayList<String> pksArrayList = getPrimaryKey(dsn, dbName);
 		try {
 
 			conn = DALHelper.CreateDatabase(dbName);
@@ -295,7 +332,7 @@ public class DALHelper {
 
 			ResultSetMetaData rsmd = rs.getMetaData();
 			DatabaseMetaData dbmd = conn.getMetaData();
-			//rsKeys = dbmd.getPrimaryKeys(null, null, dsn);
+			rsKeys = dbmd.getPrimaryKeys(null, null, dsn);
 			int cols = rsmd.getColumnCount(); // 得到数据集的列数
 			Element tableElement = doc.getRootElement().addElement(
 					dsn.toLowerCase());
@@ -310,19 +347,13 @@ public class DALHelper {
 									"s",
 									String.format("%1$s",
 											rsmd.getColumnDisplaySize(i)));
-					colElement.addAttribute("d",
-							String.format("%1$s", rsmd.getColumnTypeName(i).toLowerCase()));
+					colElement.addAttribute("d", String.format("%1$s", rsmd
+							.getColumnTypeName(i).toLowerCase()));
 					colElement.addAttribute("n",
 							rsmd.isNullable(i) == 0 ? "false" : "true");
-					colElement
-							.addAttribute(
-									"k",
-									(isPrimaryKey(rsKeys, rsmd.getColumnName(i)) ? "true"
-											: "false"));
+					colElement.addAttribute("k",pksArrayList.contains(colElement.getName())?"true":"false");
 				}
 			}
-
-			// conn.close();
 		} catch (SQLException exSql) {
 			MyLogger.Write(exSql.getMessage());
 			exSql.printStackTrace();
@@ -334,10 +365,9 @@ public class DALHelper {
 
 		}
 		// MyLogger.Write(doc.asXML());
-
-		// Save(xSchema, "//data//schema//" + dsn + ".xml");
-		xSchema.Save(doc, Global.AppDir() + "/data/schema/" + dbName.toLowerCase() + "/" + dsn.toLowerCase()
-				+ ".xml");
+		xSchema.Save(doc,
+				Global.AppDir() + "/data/schema/" + dbName.toLowerCase() + "/"
+						+ dsn.toLowerCase() + ".xml");
 
 		return xSchema;
 	}
@@ -544,7 +574,7 @@ public class DALHelper {
 			rs = st.executeQuery(argSql);
 			ret = ToXml(rs);
 		} catch (Exception ex) {
-			String dsn = getDSN(argSql,true);
+			String dsn = getDSN(argSql, true);
 			DALException exDb = new DALException("DB01", dsn, ex, argSql);
 			// throw exDb;
 		} finally {
@@ -800,22 +830,25 @@ public class DALHelper {
 		return QueryRow(sql, argDbName);
 	}
 
-
 	/**
 	 * 
 	 * 功能概述：
 	 * 
 	 * @param argDbName
-	 * @param argTableName 表名
-	 * @param argFieldList 字段名称表达式
-	 * @param argValueList 新增值表达式
+	 * @param argTableName
+	 *            表名
+	 * @param argFieldList
+	 *            字段名称表达式
+	 * @param argValueList
+	 *            新增值表达式
 	 * @return
 	 * @author lucky 创建时间：Jun 13, 2013 5:28:07 PM 修改人：lucky 修改时间：Jun 13, 2013
 	 *         5:28:07 PM 修改备注：
 	 * @version
 	 * 
 	 */
-	public static int AddRow(String argDbName, String argTableName,	String argFieldList, String argValueList) {
+	public static int AddRow(String argDbName, String argTableName,
+			String argFieldList, String argValueList) {
 		int ret = 0;
 		Connection db = null;
 		Statement st = null;
@@ -853,9 +886,12 @@ public class DALHelper {
 	 * 
 	 * 功能概述：新增一行数据
 	 * 
-	 * @param argTableName 表名
-	 * @param argFieldList 字段名称表达式
-	 * @param argValueList 新增值表达式
+	 * @param argTableName
+	 *            表名
+	 * @param argFieldList
+	 *            字段名称表达式
+	 * @param argValueList
+	 *            新增值表达式
 	 * @return 增加成功笔数
 	 * @author lucky 创建时间：Jun 13, 2013 5:28:07 PM 修改人：lucky 修改时间：Jun 13, 2013
 	 *         5:28:07 PM 修改备注：
@@ -900,20 +936,22 @@ public class DALHelper {
 
 	/**
 	 * 
-	 * 功能概述：删除数据，依指定条件 Database名称，表名 
-	 * @param argDbName DataBase 名稱
-	 * @param argTableName 表名
-	 * @param argWhere 条件
+	 * 功能概述：删除数据，依指定条件 Database名称，表名
+	 * 
+	 * @param argDbName
+	 *            DataBase 名稱
+	 * @param argTableName
+	 *            表名
+	 * @param argWhere
+	 *            条件
 	 * @return 被删除的行数
-	 * @author lucky  
-	 * 创建时间：Jun 17, 2013 11:15:06 AM  
-	 * 修改人：lucky
-	 * 修改时间：Jun 17, 2013 11:15:06 AM  
-	 * 修改备注：  
-	 * @version  
-	 *
+	 * @author lucky 创建时间：Jun 17, 2013 11:15:06 AM 修改人：lucky 修改时间：Jun 17, 2013
+	 *         11:15:06 AM 修改备注：
+	 * @version
+	 * 
 	 */
-	public static int DeleteRow(String argDbName, String argTableName, String argWhere) {
+	public static int DeleteRow(String argDbName, String argTableName,
+			String argWhere) {
 		int ret = 0;
 		Connection db = null;
 		Statement st = null;
@@ -948,17 +986,17 @@ public class DALHelper {
 
 	/**
 	 * 
-	 * 功能概述： 删除数据，依指定条件，表名 
-	 * @param argTableName 表名
-	 * @param argWhere 条件
+	 * 功能概述： 删除数据，依指定条件，表名
+	 * 
+	 * @param argTableName
+	 *            表名
+	 * @param argWhere
+	 *            条件
 	 * @return 被删除的行数
-	 * @author lucky  
-	 * 创建时间：Jun 17, 2013 11:20:57 AM  
-	 * 修改人：lucky
-	 * 修改时间：Jun 17, 2013 11:20:57 AM  
-	 * 修改备注：  
-	 * @version  
-	 *
+	 * @author lucky 创建时间：Jun 17, 2013 11:20:57 AM 修改人：lucky 修改时间：Jun 17, 2013
+	 *         11:20:57 AM 修改备注：
+	 * @version
+	 * 
 	 */
 	public static int DeleteRow(String argTableName, String argWhere) {
 		return DeleteRow("_DEFAULT_DATABASE", argTableName, argWhere);
@@ -1037,22 +1075,20 @@ public class DALHelper {
 	// / <param name="argField">欄名稱</param>
 	// / <param name="argCond">條件</param>
 	// / <returns>欄值，當沒有找到，返回null</returns>
-	
+
 	/**
 	 * 
-	 * 功能概述：  
+	 * 功能概述：
+	 * 
 	 * @param argDbName
 	 * @param argDSN
 	 * @param argFields
 	 * @param argCond
 	 * @return
-	 * @author lucky  
-	 * 创建时间：Jun 17, 2013 1:55:54 PM  
-	 * 修改人：lucky
-	 * 修改时间：Jun 17, 2013 1:55:54 PM  
-	 * 修改备注：  
-	 * @version  
-	 *
+	 * @author lucky 创建时间：Jun 17, 2013 1:55:54 PM 修改人：lucky 修改时间：Jun 17, 2013
+	 *         1:55:54 PM 修改备注：
+	 * @version
+	 * 
 	 */
 	public static String GetValue(String argDbName, String argDSN,
 			String argFields, String argCond) {
@@ -1086,7 +1122,8 @@ public class DALHelper {
 			Iterator<?> it = list.entrySet().iterator();
 			while (it.hasNext()) {
 				@SuppressWarnings("unchecked")
-				Map.Entry<String,String> testDemo = (Map.Entry<String,String>) it.next();
+				Map.Entry<String, String> testDemo = (Map.Entry<String, String>) it
+						.next();
 
 				ret = testDemo.getValue().toString();
 
@@ -1152,32 +1189,32 @@ public class DALHelper {
 			cols = rsmd.getColumnCount(); // 得到数据集的列数
 			while (rs.next()) {
 				for (int i = 1; i < cols + 1; i++) {
-					switch (rsmd.getColumnType(i))
-					{
+					switch (rsmd.getColumnType(i)) {
 					case Types.ARRAY:
-						list.put(rsmd.getColumnName(i).toLowerCase(),rs.getArray(i).toString());
+						list.put(rsmd.getColumnName(i).toLowerCase(), rs
+								.getArray(i).toString());
 						/*
-						java.sql.Array values = rs.getArray(i);
-						//ary.
-						StringBuilder sb= new StringBuilder();
-						for（int j=0；i<rs.values;j++){
-						    //sb.append(rs.getArray(i)[j]);
-
-						}
-						*/
+						 * java.sql.Array values = rs.getArray(i); //ary.
+						 * StringBuilder sb= new StringBuilder(); for（int
+						 * j=0；i<rs.values;j++){ //sb.append(rs.getArray(i)[j]);
+						 * 
+						 * }
+						 */
 						break;
 					case Types.BINARY:
-						list.put(rsmd.getColumnName(i).toLowerCase(),Byte.toString(rs.getByte(i)));
+						list.put(rsmd.getColumnName(i).toLowerCase(),
+								Byte.toString(rs.getByte(i)));
 						break;
 					case Types.VARBINARY:
-						break;						
+						break;
 					case Types.BIT:
-						//list.put(rsmd.getColumnName(i).toLowerCase(),Byte.toString(rs.getb));
+						// list.put(rsmd.getColumnName(i).toLowerCase(),Byte.toString(rs.getb));
 						break;
 					case Types.BLOB:
 						break;
 					case Types.BOOLEAN:
-						list.put(rsmd.getColumnName(i).toLowerCase(),Boolean.toString(rs.getBoolean(i)));
+						list.put(rsmd.getColumnName(i).toLowerCase(),
+								Boolean.toString(rs.getBoolean(i)));
 						break;
 					case Types.CHAR:
 						break;
@@ -1194,7 +1231,7 @@ public class DALHelper {
 					case Types.NCLOB:
 						break;
 					case Types.NULL:
-						list.put(rsmd.getColumnName(i).toLowerCase(),"NULL");						
+						list.put(rsmd.getColumnName(i).toLowerCase(), "NULL");
 						break;
 					case Types.OTHER:
 						break;
@@ -1203,68 +1240,85 @@ public class DALHelper {
 					case Types.ROWID:
 						break;
 					case Types.SQLXML:
-						list.put(rsmd.getColumnName(i).toLowerCase(),rs.getSQLXML(i).toString());
+						list.put(rsmd.getColumnName(i).toLowerCase(), rs
+								.getSQLXML(i).toString());
 						break;
 					case Types.STRUCT:
-						//list.put(rsmd.getColumnName(i).toLowerCase(),rs.gets.toString());
+						// list.put(rsmd.getColumnName(i).toLowerCase(),rs.gets.toString());
 						break;
 					case Types.DATE:
-						list.put(rsmd.getColumnName(i).toLowerCase(),(rs.getDate(i).toString()));
+						list.put(rsmd.getColumnName(i).toLowerCase(),
+								(rs.getDate(i).toString()));
 						break;
 					case Types.TIME:
-						list.put(rsmd.getColumnName(i).toLowerCase(),(rs.getTime(i).toString()));
+						list.put(rsmd.getColumnName(i).toLowerCase(),
+								(rs.getTime(i).toString()));
 						break;
 					case Types.TIMESTAMP:
-						list.put(rsmd.getColumnName(i).toLowerCase(),(rs.getTimestamp(i).toString()));
+						list.put(rsmd.getColumnName(i).toLowerCase(),
+								(rs.getTimestamp(i).toString()));
 						break;
-						
+
 					case Types.DECIMAL:
-						list.put(rsmd.getColumnName(i).toLowerCase(),(rs.getBigDecimal(i).toString()));
+						list.put(rsmd.getColumnName(i).toLowerCase(),
+								(rs.getBigDecimal(i).toString()));
 						break;
 					case Types.NUMERIC:
-						list.put(rsmd.getColumnName(i).toLowerCase(),(rs.getBigDecimal(i).toString()));
+						list.put(rsmd.getColumnName(i).toLowerCase(),
+								(rs.getBigDecimal(i).toString()));
 						break;
 					case Types.BIGINT:
-						list.put(rsmd.getColumnName(i).toLowerCase(),Integer.toString(rs.getInt(i)));
+						list.put(rsmd.getColumnName(i).toLowerCase(),
+								Integer.toString(rs.getInt(i)));
 						break;
 					case Types.DOUBLE:
-						list.put(rsmd.getColumnName(i).toLowerCase(),Double.toString(rs.getDouble(i)));
+						list.put(rsmd.getColumnName(i).toLowerCase(),
+								Double.toString(rs.getDouble(i)));
 						break;
 					case Types.FLOAT:
-						list.put(rsmd.getColumnName(i).toLowerCase(),Float.toString(rs.getFloat(i)));
+						list.put(rsmd.getColumnName(i).toLowerCase(),
+								Float.toString(rs.getFloat(i)));
 						break;
 					case Types.SMALLINT:
-						list.put(rsmd.getColumnName(i).toLowerCase(),Integer.toString(rs.getInt(i)));
+						list.put(rsmd.getColumnName(i).toLowerCase(),
+								Integer.toString(rs.getInt(i)));
 						break;
 					case Types.INTEGER:
-						list.put(rsmd.getColumnName(i).toLowerCase(),Integer.toString(rs.getInt(i)));
+						list.put(rsmd.getColumnName(i).toLowerCase(),
+								Integer.toString(rs.getInt(i)));
 						break;
 					case Types.TINYINT:
-						list.put(rsmd.getColumnName(i).toLowerCase(),Integer.toString(rs.getInt(i)));
+						list.put(rsmd.getColumnName(i).toLowerCase(),
+								Integer.toString(rs.getInt(i)));
 						break;
 
 					case Types.LONGNVARCHAR:
-						list.put(rsmd.getColumnName(i).toLowerCase(),rs.getNString(i));
+						list.put(rsmd.getColumnName(i).toLowerCase(),
+								rs.getNString(i));
 						break;
 					case Types.NCHAR:
-						list.put(rsmd.getColumnName(i).toLowerCase(),rs.getNString(i));
+						list.put(rsmd.getColumnName(i).toLowerCase(),
+								rs.getNString(i));
 						break;
 					case Types.NVARCHAR:
-						list.put(rsmd.getColumnName(i).toLowerCase(),rs.getNString(i));
+						list.put(rsmd.getColumnName(i).toLowerCase(),
+								rs.getNString(i));
 						break;
 					case Types.VARCHAR:
 						if (rs.getString(i) != null) {
-							list.put(rsmd.getColumnName(i).toLowerCase(),rs.getString(i));
+							list.put(rsmd.getColumnName(i).toLowerCase(),
+									rs.getString(i));
 						}
 						break;
 					case Types.LONGVARCHAR:
-						list.put(rsmd.getColumnName(i).toLowerCase(),rs.getString(i));
+						list.put(rsmd.getColumnName(i).toLowerCase(),
+								rs.getString(i));
 						break;
 					default:
 						break;
 					}
 				}
-				//只取第一行
+				// 只取第一行
 				break;
 			}
 		} catch (SQLException exSql) {
@@ -1277,56 +1331,54 @@ public class DALHelper {
 		}
 		return list;
 	}
-	
-    //
-    //select * FROM  PROJECT WHERE....
-    //insert into tablename(...) values(...);
-    //update tablename set fld1=value,fld2=value2;
-    //delete tablename where ...
-    //可改用Regex的方式
-	
+
+	//
+	// select * FROM PROJECT WHERE....
+	// insert into tablename(...) values(...);
+	// update tablename set fld1=value,fld2=value2;
+	// delete tablename where ...
+	// 可改用Regex的方式
+
 	/**
 	 * 
-	 * 功能概述： 從基本的簡單的Sql語句中取得Table Name或View Name:SELECT /UPDATE/INSERT/DELETE 
+	 * 功能概述： 從基本的簡單的Sql語句中取得Table Name或View Name:SELECT /UPDATE/INSERT/DELETE
+	 * 
 	 * @param sql
 	 * @param isQuery
-	 * @return DSN 
-	 * @author lucky  
-	 * 创建时间：Jun 17, 2013 11:50:23 AM  
-	 * 修改人：lucky
-	 * 修改时间：Jun 17, 2013 11:50:23 AM  
-	 * 修改备注：可改用Regex的方式  
-	 * @version  
-	 *
+	 * @return DSN
+	 * @author lucky 创建时间：Jun 17, 2013 11:50:23 AM 修改人：lucky 修改时间：Jun 17, 2013
+	 *         11:50:23 AM 修改备注：可改用Regex的方式
+	 * @version
+	 * 
 	 */
-    private static String getDSN(String sql, boolean isQuery) {
-        String ret = null;
-        if (isQuery) {
-            //select * FROM  PROJECT WHERE....
-            int pos1 = sql.toLowerCase().indexOf("from ");
-            int pos2 = sql.toLowerCase().indexOf(" ", pos1 + 6);
+	private static String getDSN(String sql, boolean isQuery) {
+		String ret = null;
+		if (isQuery) {
+			// select * FROM PROJECT WHERE....
+			int pos1 = sql.toLowerCase().indexOf("from ");
+			int pos2 = sql.toLowerCase().indexOf(" ", pos1 + 6);
 
-            if (pos1 > 0 && pos2 > 0) {
-                ret = sql.substring(pos1 + 6, pos2 - pos1);
-            }
-        } else {
-            //insert into tablename(...) values(...);
-            //update tablename set fld1=value,fld2=value2;
-            //delete tablename where ...
-            int pos1 = sql.toLowerCase().indexOf("insert into ");
-            if (pos1 < 0) {
-                pos1 = sql.toLowerCase().indexOf("update ");
-            }
-            int pos2 = sql.toLowerCase().indexOf(" ", pos1 + 6);
-            //處理FROM后連續多個空格現象，如from    project
-            //while (argSql.Substring(pos2, 1)==" ")
-            //{
-            //    pos2 = argSql.toLowerCase().indexOf(" ", pos2+1);
-            //}
-            if (pos1 > 0 && pos2 > 0) {
-                ret = sql.substring(pos1 + 6, pos2 - pos1);
-            }
-        }
-        return ret;
-    }
+			if (pos1 > 0 && pos2 > 0) {
+				ret = sql.substring(pos1 + 6, pos2 - pos1);
+			}
+		} else {
+			// insert into tablename(...) values(...);
+			// update tablename set fld1=value,fld2=value2;
+			// delete tablename where ...
+			int pos1 = sql.toLowerCase().indexOf("insert into ");
+			if (pos1 < 0) {
+				pos1 = sql.toLowerCase().indexOf("update ");
+			}
+			int pos2 = sql.toLowerCase().indexOf(" ", pos1 + 6);
+			// 處理FROM后連續多個空格現象，如from project
+			// while (argSql.Substring(pos2, 1)==" ")
+			// {
+			// pos2 = argSql.toLowerCase().indexOf(" ", pos2+1);
+			// }
+			if (pos1 > 0 && pos2 > 0) {
+				ret = sql.substring(pos1 + 6, pos2 - pos1);
+			}
+		}
+		return ret;
+	}
 }

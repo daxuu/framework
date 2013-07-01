@@ -24,18 +24,57 @@ import Framework.logger.MyLogger;
  */
 public class DBTable {
 
+	//private static final String DEF_FLD_ADDER = "adder";
+
 	String tableName;
 	XmlDocModel tableSchema;
 	XmlDocModel viewSchema;
 	String currentKeyValue;
 	String keyName;
-	String keyValue;
+	String keyValue ;
 	String nextKeyValue;
 	String databaseName;
 	String dataSourceName = "";
-	// String fldName_Adder = "adder";
+	String FieldAdder = "adder";
+	String FieldAddTime = "addtime";
+	String FieldUpdater = "updater";
+	String FieldUpdateTime = "updatetime";
 	// String
 	int dataBaseType;
+
+	
+	
+	public String getFieldAdder() {
+		return FieldAdder;
+	}
+
+	public void setFieldAdder(String fieldAdder) {
+		FieldAdder = fieldAdder;
+	}
+
+	public String getFieldAddTime() {
+		return FieldAddTime;
+	}
+
+	public void setFieldAddTime(String fieldAddTime) {
+		FieldAddTime = fieldAddTime;
+	}
+
+	public String getFieldUpdater() {
+		return FieldUpdater;
+	}
+
+	public void setFieldUpdater(String fieldUpdater) {
+		FieldUpdater = fieldUpdater;
+	}
+
+	public String getFieldUpdateTime() {
+		return FieldUpdateTime;
+	}
+
+	public void setFieldUpdateTime(String fieldUpdateTime) {
+		FieldUpdateTime = fieldUpdateTime;
+	}
 
 	// / <summary>
 	// / 表名稱
@@ -215,14 +254,14 @@ public class DBTable {
 	 * @version
 	 * 
 	 */
-//	public String GetValue(String argFieldName, String argKeyValue) {
-//		String ret = null;
-//		String cond = this.getKeyName() + "= '" + argKeyValue + "'";
-//		ret = DALHelper.GetValue(this.getDatabaseName(), this.getTableName(),
-//				argFieldName, cond);
-//		return ret;
-//
-//	}
+	// public String GetValue(String argFieldName, String argKeyValue) {
+	// String ret = null;
+	// String cond = this.getKeyName() + "= '" + argKeyValue + "'";
+	// ret = DALHelper.GetValue(this.getDatabaseName(), this.getTableName(),
+	// argFieldName, cond);
+	// return ret;
+	//
+	// }
 
 	/*
 	 * 
@@ -351,30 +390,37 @@ public class DBTable {
 	// #endregion
 
 	// #region AddRow
-	// / <summary>
-	// / 新增一资料行，通用
-	// / </summary>
-	// / <param name="argDbName">Data Basec名稱</param>
-	// / <param name="argTableName">待新增的TABLE</param>
-	// / <param name="argFieldList">栏位清单</param>
-	// / <param name="argValueList">值清单</param>
-	// / <returns>成功新增行数</returns>
-	// / <remarks>
-	// / <para>[規格說明]
-	// / 指定DB，TABLE，Field,值
-	// / </para>
-	// / <para>[異動記錄]
-	// / AUTHOR DATE NOTE
-	// / ========== ========== ========================================
-	// / Rayd 2005-02-11 Create
-	// / </para>
-	// / <example>
-	// / <code>
-	// / int count =
-	// dalProject.AddRow("EQ","PROJECT","PROJECTID,PROJECTNAME","'1','test name'");
-	// / </code>
-	// / </example>
-	// / </remarks>
+
+	/**
+	 * 
+	 * 功能概述：新增一笔记录，指定DB名、Table名，字段列表与值列表
+	 * 
+	 * [示例] <blockquote>
+	 * 
+	 * <pre>
+	 * PM_LOG log = new PM_LOG();
+	 * int count = log.AddRow(&quot;log&quot;, &quot;pm_log&quot;, &quot;log_id,log_msg&quot;, &quot;'01','test msg'&quot;);
+	 * </pre>
+	 * 
+	 * </blockquote>
+	 * 
+	 * @param argDbName
+	 *            Database name
+	 * @param argTableName
+	 *            Table name
+	 * @param argFieldList
+	 *            字段列表
+	 * @param argValueList
+	 *            值列表
+	 * @return 新增成功的记录笔数
+	 * @author rayd 创建时间：Jul 1, 2013 8:47:25 AM 修改人：rayd 修改时间：Jul 1, 2013
+	 *         8:47:25 AM 修改备注：
+	 * @throws N
+	 *             /A
+	 * @see #AddRow(String, String, String)
+	 * @since 1.0
+	 * 
+	 */
 	public int AddRow(String argDbName, String argTableName,
 			String argFieldList, String argValueList) {
 		int ret = 0;
@@ -385,30 +431,128 @@ public class DBTable {
 
 	}
 
+	/**
+	 * 
+	 * 功能概述：新增一笔记录，Table名，字段列表与值列表
+	 * 
+	 * [示例] <blockquote>
+	 * 
+	 * <pre>
+	 * PM_LOG log = new PM_LOG();
+	 * int count = log.AddRow(&quot;pm_log&quot;, &quot;log_id,log_msg&quot;, &quot;'01','test msg'&quot;);
+	 * </pre>
+	 * 
+	 * </blockquote>
+	 * 
+	 * @param argTableName
+	 *            Table name
+	 * @param argFieldList
+	 *            字段列表
+	 * @param argValueList
+	 *            值列表
+	 * @return 新增成功的记录笔数
+	 * @author rayd 创建时间：Jul 1, 2013 8:47:25 AM 修改人：rayd 修改时间：Jul 1, 2013
+	 *         8:47:25 AM 修改备注：
+	 * @throws N
+	 *             /A
+	 * @see #AddRow(String, String, String,String)
+	 * @since 1.0
+	 * 
+	 */
 	public int AddRow(String argTableName, String argFieldList,
 			String argValueList) {
 		return AddRow(this.getDatabaseName(), argTableName, argFieldList,
 				argValueList);
 	}
 
-	// / <summary>
-	// / 新增一资料行，默认当前TABLE
-	// / </summary>
-	// / <param name="argFieldList">栏位清单</param>
-	// / <param name="argValueList">值清单</param>
-	// / <returns>成功新增行数</returns>
+	/**
+	 * 
+	 * 功能概述：新增一笔记录，指定字段列表与值列表
+	 * 
+	 * [示例] <blockquote>
+	 * 
+	 * <pre>
+	 * PM_LOG log = new PM_LOG();
+	 * int count = log.AddRow(&quot;pm_log&quot;, &quot;log_id,log_msg&quot;, &quot;'01','test msg'&quot;);
+	 * </pre>
+	 * 
+	 * </blockquote>
+	 * 
+	 * @param argFieldList
+	 *            字段列表
+	 * @param argValueList
+	 *            值列表
+	 * @return 新增成功的记录笔数
+	 * @author rayd 创建时间：Jul 1, 2013 8:47:25 AM 修改人：rayd 修改时间：Jul 1, 2013
+	 *         8:47:25 AM 修改备注：
+	 * @throws N
+	 *             /A
+	 * @see #AddRow(String, String, String)
+	 * @since 1.0
+	 * 
+	 */
 	public int AddRow(String argFieldList, String argValueList) {
 		return this.AddRow(this.getTableName(), argFieldList, argValueList);
 	}
 
-	// / <summary>
-	// / 新增一资料行，默认当前TABLE
-	// / </summary>
-	// / <param name="argData">栏位清单</param>
-	// / <param name="argValueList">值清单</param>
-	// / <returns>成功新增行数</returns>
+	/**
+	 * 
+	 * 功能概述：新增一笔记录，指定字段列表与值列表
+	 * 
+	 * [示例] <blockquote>
+	 * 
+	 * <pre>
+	 * PM_LOG log = new PM_LOG();
+	 * int count = log.AddRow(&quot;pm_log&quot;, &quot;log_id,log_msg&quot;, &quot;'01','test msg'&quot;);
+	 * </pre>
+	 * 
+	 * </blockquote>
+	 * 
+	 * @param argData
+	 *            字段列表
+	 * @param argConf
+	 *            值列表
+	 * @return 新增成功的记录笔数
+	 * @author rayd 创建时间：Jul 1, 2013 8:47:25 AM 修改人：rayd 修改时间：Jul 1, 2013
+	 *         8:47:25 AM 修改备注：
+	 * @throws N
+	 *             /A
+	 * @see #AddRow(String, String, String)
+	 * @since 1.0
+	 * 
+	 */
 	public int AddRow(Node argData, Node argConf) {
 		return AddRow(argData);
+	}
+
+	/**
+	 * 
+	 * 功能概述：功能概述：新增一笔记录，用一xml包传送数据
+	 * 
+	 * [示例] <blockquote>
+	 * 
+	 * <pre>
+	 *  Strnig s_data = "<log_id>"+ Framework.CodeRobot.NORobot.Guid() +"</log_id><log_msg>Test MSG for xml data</log_msg>";
+	 *  int count = AddRow(s_data);
+	 * </pre>
+	 * 
+	 * </blockquote>
+	 * 
+	 * @param s_data
+	 *            xml格式子串
+	 * @return 新增成功的记录笔数
+	 * @author rayd 创建时间：Jul 1, 2013 9:06:51 AM 修改人：rayd 修改时间：Jul 1, 2013
+	 *         9:06:51 AM 修改备注：
+	 * @throws N/A
+	 *             
+	 * @see
+	 * @since 1.0
+	 * 
+	 */
+	public int AddRow(String s_data) {
+		XmlDocModel xdata = new XmlDocModel(s_data);
+
+		return AddRow(xdata.getDocument().selectSingleNode("xconfig"));
 	}
 
 	// / <summary>
@@ -417,9 +561,33 @@ public class DBTable {
 	// / <param name="argFieldList">栏位清单</param>
 	// / <param name="argValueList">值清单</param>
 	// / <returns>成功新增行数</returns>
+	
+	
+	/**
+	 * 
+	 * 功能概述：新增一笔资料记录，以xml包传入数据
+	 *
+	 *[示例] 
+	 * <blockquote><pre>
+	 * int count = AddRow(xdata.getDocument().selectSingleNode("xconfig"));
+	 *</pre></blockquote> 
+	 * @param argData
+	 * @return
+	 * @author rayd 
+	 * 创建时间：Jul 1, 2013 11:49:33 AM  
+	 * 修改人：rayd
+	 * 修改时间：Jul 1, 2013 11:49:33 AM  
+	 * 修改备注：
+	 * @throws N/A
+	 * @see   
+	 * @since 1.0 
+	 *
+	 */
 	public int AddRow(org.dom4j.Node argData) {
 
 		int i = 0;
+		// String def_fld_adder = "adder";
+		boolean has_adder = false;
 		String tp = "", iskey = "", size = "", defValue = "", val = "";
 		StringBuilder sbFields = new StringBuilder();
 		StringBuilder sbValues = new StringBuilder();
@@ -428,93 +596,91 @@ public class DBTable {
 		Document doc = this.getTableSchema().getDocument();
 		Element root = doc.getRootElement();
 
-		for (Iterator<?> it = root.elementIterator(); it.hasNext();) {
-			// this.TableSchema
-			// foreach (Node xRow in argData.ChildNodes)
-			// foreach (Node xRow in
-			// this.getTableSchema().ChildNodes[1].FirstChild.ChildNodes)
-			// {
-			xRow = (Element) it.next();
-			// Node xdCol = argConf.SelectSingleNode("col[@id='" + xRow.getName() +
-			// "']");
-			Node xdCol = argData.selectSingleNode(xRow.getName().toLowerCase());
+		for (Iterator<?> iter = root.elementIterator(); iter.hasNext();) {
+			Element e = (Element) iter.next();
+			for (Iterator<?> it = e.elementIterator(); it.hasNext();) {
 
-			// 已有值
-			if (xdCol != null) {
-				val = xdCol.getText().replace("'", "''");
-
-				// 一欄不需加","
-				if (i > 0) {
-					sbFields.append(",");
-					sbValues.append(",");
+				xRow = (Element) it.next();
+				Node xdCol = argData.selectSingleNode(xRow.getName()
+						.toLowerCase());
+				if (this.getFieldAdder().equals(xRow.getName().toLowerCase())) {
+					has_adder = true;
 				}
-				i++;
+				// 已有值
+				if (xdCol != null) {
+					val = xdCol.getText().replace("'", "''");
 
-				sbFields.append(xRow.getName());
+					// 第一个字段不需在前面加","
+					if (i > 0) {
+						sbFields.append(",");
+						sbValues.append(",");
+					}
+					i++;
 
-				tp = (xRow.attribute("d") == null) ? "system.String" : xRow
-						.attribute("d").getValue();
-				iskey = (xRow.attribute("n") == null) ? "0" : (xRow.attribute(
-						"n").getValue() == "false") ? "1" : "0";
-				defValue = (xRow.attribute("k") == null) ? "0" : xRow
-						.attribute("k").getValue();
-				size = (xRow.attribute("s") == null) ? "0" : xRow
-						.attribute("s").getValue();
-				// temp
-				if (tp.equals("system.String")) {
+					sbFields.append(xRow.getName());
 
-					if (val == "") {
-						sbValues.append("null");
+					tp = (xRow.attribute("d") == null) ? "system.String" : xRow
+							.attribute("d").getValue();
+					iskey = (xRow.attribute("n") == null) ? "0" : (xRow
+							.attribute("n").getValue() == "false") ? "1" : "0";
+					defValue = (xRow.attribute("k") == null) ? "0" : xRow
+							.attribute("k").getValue();
+					size = (xRow.attribute("s") == null) ? "0" : xRow
+							.attribute("s").getValue();
+					// temp
+					if (tp.equals("system.String")) {
+
+						if (val == "") {
+							sbValues.append("null");
+						} else {
+							sbValues.append("'");
+							sbValues.append(val);
+							sbValues.append("'");
+						}
+
+					} else if (tp.equals("system.decimal")) {
+						sbValues.append(xdCol.getText().trim().equals("") ? "null"
+								: xdCol.getText().trim());
+
+					} else if (tp.endsWith("system.datetime")) {
+						switch (this.getDatabaseType()) {
+						case sqlserver:
+							sbValues.append(xdCol.getText().trim().equals("") ? "getdate()"
+									: "'" + xdCol.getText().trim() + "'");
+							break;
+
+						case sqlite:
+							sbValues.append(xdCol.getText().trim().equals("") ? "CURRENT_TIMESTAMP"
+									: "'" + xdCol.getText().trim() + "'");
+							break;
+						default:
+							break;
+						}
+
+					} else if (tp.equals("blob")) {
+						//
 					} else {
-						sbValues.append("'");
-						sbValues.append(val);// update 2009-09-14 by lucky
-						sbValues.append("'");
+
+						if (val == "") {
+							sbValues.append("null");
+						} else {
+							sbValues.append("'");
+							sbValues.append(val);
+							sbValues.append("'");
+						}
 					}
-
-				} else if (tp.equals("system.decimal")) {
-					sbValues.append(xdCol.getText().trim().equals("") ? "null"
-							: xdCol.getText().trim());
-
-				} else if (tp.endsWith("system.datetime")) {
-					switch (this.getDatabaseType()) {
-					case sqlserver:
-						sbValues.append(xdCol.getText().trim().equals("") ? "getdate()"
-								: "'" + xdCol.getText().trim() + "'");
-						break;
-
-					case sqlite:
-						sbValues.append(xdCol.getText().trim().equals("") ? "CURRENT_TIMESTAMP"
-								: "'" + xdCol.getText().trim() + "'");
-						break;
-					default:
-						break;
-					}
-
-				} else if (tp.equals("blob")) {
-					//
 				} else {
-
-					if (val == "") {
-						sbValues.append("null");
-					} else {
-						sbValues.append("'");
-						sbValues.append(val);// update 2009-09-14 by lucky
-						sbValues.append("'");
-					}
+					// 設定PCM
+					// SetPCM();
 				}
-			} else {
-				// 設定PCM
-				// SetPCM();
 			}
-
 		}
-		/*
-		 * if (sbFields.toString().indexOf("adder") == -1
-		 * &&this.getTableSchema()
-		 * .ChildNodes[1].FirstChild.SelectSingleNode("adder")!=null) {
-		 * sbFields.append(" , ADDER"); sbValues.append(" ,'" +
-		 * Global.getAccountId() + "'"); }
-		 */
+		//记录数据新增人员
+		if (sbFields.toString().indexOf(this.getFieldAdder()) == -1 && has_adder) {
+			sbFields.append(" , "+this.getFieldAdder());
+			sbValues.append(" ,'" + Global.getAccountId() + "'");
+		}
+
 		return this.AddRow(this.getTableName(), sbFields.toString(),
 				sbValues.toString());
 	}
@@ -641,8 +807,8 @@ public class DBTable {
 	 * 
 	 * foreach (Node xRow in argData.ChildNodes) {
 	 * 
-	 * Node xdCol = argData.SelectSingleNode(xRow.getName()); //已有設定 if (xdCol !=
-	 * null) { tp = (xRow.attribute("d") == null) ? "system.String" :
+	 * Node xdCol = argData.SelectSingleNode(xRow.getName()); //已有設定 if (xdCol
+	 * != null) { tp = (xRow.attribute("d") == null) ? "system.String" :
 	 * xRow.attribute("d").getValue(); iskey = (xRow.attribute("n") == null) ?
 	 * "0" : (xRow.attribute("n").getValue() == "false") ? "1" : "0"; if (iskey
 	 * == "1") { if (j > 0) { sbWhere.append(" and "); }
@@ -720,19 +886,17 @@ public class DBTable {
 	// / </summary>
 	// / <param name="argData"></param>
 	// / <returns></returns>
-	
+
 	/**
 	 * 
-	 * 功能概述：修改一资料行,依KEY栏  
+	 * 功能概述：修改一资料行,依KEY栏
+	 * 
 	 * @param argData
 	 * @return 修改成功笔数
-	 * @author rayd 
-	 * 创建时间：Jun 18, 2013 3:26:57 PM  
-	 * 修改人：rayd
-	 * 修改时间：Jun 18, 2013 3:26:57 PM  
-	 * 修改备注：  
-	 * @version 1.0 
-	 *
+	 * @author rayd 创建时间：Jun 18, 2013 3:26:57 PM 修改人：rayd 修改时间：Jun 18, 2013
+	 *         3:26:57 PM 修改备注：
+	 * @version 1.0
+	 * 
 	 */
 	public int UpdateRow(Node argData) {
 		int i = 0, j = 0;
@@ -923,50 +1087,46 @@ public class DBTable {
 	// / </xconfig>
 	// / </example>
 	// / </remarks>
-	
+
 	/**
 	 * 
 	 * 功能概述：組裝Sql語句的Fields與Where段
-	 * @param x_field :
-	 * @param argCond :條件資料包
+	 * 
+	 * @param x_field
+	 *            :
+	 * @param argCond
+	 *            :條件資料包
 	 * @return 欄位(fields)與條件(where)
-	 * @author rayd 
-	 * 创建时间：Jun 18, 2013 3:36:18 PM  
-	 * 修改人：rayd
-	 * 修改时间：Jun 18, 2013 3:36:18 PM  
-	 * 修改备注：  
-	 *  1.默认的条件运算符为 '='
-	 *  2.若接收到的条件中有'%'或'*'，则用Like
-	 *  3.若接收到的条件中有','，则用IN
-	 *  4.若接收到的条件中有空格' '，则分成两个条件，并以OR运算
-	 *  5.若接收到的条件中有‘&’，则分成两个条件，并以AND运算
-	 *  6.若接收到的条件第一个字符为等于（=）、大于（>）、小于（<）、不等于(<>)号，则以其替换默认运算符
-	 *  7.若接收到的条件有'~',则用Between
-	 * @version 1.0 
-	 *
+	 * @author rayd 创建时间：Jun 18, 2013 3:36:18 PM 修改人：rayd 修改时间：Jun 18, 2013
+	 *         3:36:18 PM 修改备注： 1.默认的条件运算符为 '=' 2.若接收到的条件中有'%'或'*'，则用Like
+	 *         3.若接收到的条件中有','，则用IN 4.若接收到的条件中有空格' '，则分成两个条件，并以OR运算
+	 *         5.若接收到的条件中有‘&’，则分成两个条件，并以AND运算
+	 *         6.若接收到的条件第一个字符为等于（=）、大于（>）、小于（<）、不等于(<>)号，则以其替换默认运算符
+	 *         7.若接收到的条件有'~',则用Between
+	 * @version 1.0
+	 * 
 	 */
-	private String[] MakeFieldAndWhere(XmlDocModel x_field, XmlDocModel argCond)
-    {
-        String[] ret = new String[] { "*", "1=1"};
-        int i = 0, j = 0, k = 0, m = 0, n = 0;
-        String[] words = new String[] { };
-        String sybol = " = ", word = "", tp;
+	private String[] MakeFieldAndWhere(XmlDocModel x_field, XmlDocModel argCond) {
+		String[] ret = new String[] { "*", "1=1" };
+		int i = 0, j = 0, k = 0, m = 0, n = 0;
+		String[] words = new String[] {};
+		String sybol = " = ", word = "", tp;
 
-        StringBuilder sbFields = new StringBuilder();
-        StringBuilder sbWhere = new StringBuilder();
-        StringBuilder sbOrder = new StringBuilder();
-        StringBuilder sbFixWhere = new StringBuilder();
-        //Node xnCond = argCond.ChildNodes[1].FirstChild;
-        Node xnCond = argCond.getDocument();
-        Document docField = x_field.getDocument();
-        //if (xnCond.attribute("top") != null)
-        //{
-        //    sbFields.append(" top ")
-        //        .append(xnCond.attribute("top").getValue())
-        //        .append(" ");
-        //}
+		StringBuilder sbFields = new StringBuilder();
+		StringBuilder sbWhere = new StringBuilder();
+		StringBuilder sbOrder = new StringBuilder();
+		StringBuilder sbFixWhere = new StringBuilder();
+		// Node xnCond = argCond.ChildNodes[1].FirstChild;
+		Node xnCond = argCond.getDocument();
+		Document docField = x_field.getDocument();
+		// if (xnCond.attribute("top") != null)
+		// {
+		// sbFields.append(" top ")
+		// .append(xnCond.attribute("top").getValue())
+		// .append(" ");
+		// }
 
-        //where
+		// where
 		Element xRow;
 
 		Document doc = argCond.getDocument();
@@ -975,228 +1135,190 @@ public class DBTable {
 		for (Iterator<?> it = root.elementIterator(); it.hasNext();) {
 			xRow = (Element) it.next();
 
-            if (!xRow.getText().equals(""))
-            {
-                if (j != 0)
-                {
-                    //在PCM中可設定 AND或OR
-                    if (xRow.attribute("link") == null)
-                    {
-                        sbWhere.append(" AND ");
-                    }
-                    else
-                    {
-                        sbWhere.append(" ");
-                        sbWhere.append(xRow.attribute("link").getValue());
-                        sbWhere.append(" ");
-                    }
-                }
-                j++;
-                tp = (xRow.attribute("type") == null) ? "String" : xRow.attribute("type").getValue();
+			if (!xRow.getText().equals("")) {
+				if (j != 0) {
+					// 在PCM中可設定 AND或OR
+					if (xRow.attribute("link") == null) {
+						sbWhere.append(" AND ");
+					} else {
+						sbWhere.append(" ");
+						sbWhere.append(xRow.attribute("link").getValue());
+						sbWhere.append(" ");
+					}
+				}
+				j++;
+				tp = (xRow.attribute("type") == null) ? "String" : xRow
+						.attribute("type").getValue();
 
-                //支持多个关键字，用 | 好分隔
-                words = xRow.getText().split("|");
-                sbWhere.append("(");
-                m = 0;
-                for (String item : words)
-                {
-                    if (m != 0)
-                    {
-                        sbWhere.append(" OR ");
-                    }
-                    m++;
+				// 支持多个关键字，用 | 好分隔
+				words = xRow.getText().split("|");
+				sbWhere.append("(");
+				m = 0;
+				for (String item : words) {
+					if (m != 0) {
+						sbWhere.append(" OR ");
+					}
+					m++;
 
-                    sbWhere.append("(");
-                    word = item.replace("*", "%").trim();
-                    if (word.indexOf(',') >= 0)//IN
-                    {
-                        sbWhere.append(MakeSqlIN(xRow.getName(), tp, word));
-                    }
-                    else if (word.indexOf('~') >= 0)//between
-                    {
-                        sbWhere.append(MakeSqlBETWEEN(xRow.getName(), tp, word));
-                    }
-                    else if (word.indexOf('=') == 0)//等于（=）
-                    {
-                        sybol = " = ";
-                        sbWhere.append(xRow.getName())
-                        .append(sybol)
-                        .append((tp == "String" ? "'" : ""))
-                        .append(word.substring(1))
-                        .append((tp == "String" ? "'" : ""));
-                    }
-                    else if (word.indexOf('>') == 0)//大于（>）
-                    {
-                        sybol = " > ";
-                        sbWhere.append(xRow.getName())
-                        .append(sybol)
-                        .append((tp == "String" ? "'" : ""))
-                        .append(word.substring(1))
-                        .append((tp == "String" ? "'" : ""));
-                    }
-                    else if (word.indexOf('<') == 0)//小于（>）
-                    {
-                        sybol = " < ";
-                        sbWhere.append(xRow.getName())
-                        .append(sybol)
-                        .append((tp == "String" ? "'" : ""))
-                        .append(word.substring(1))
-                        .append((tp == "String" ? "'" : ""));
-                    }
-                    else if (word.indexOf('!') == 0)//不等于（<>）
-                    {
-                        sybol = " <> ";
-                        sbWhere.append(xRow.getName())
-                        .append(sybol)
-                        .append((tp == "String" ? "'" : ""))
-                        .append(word.substring(1))
-                        .append((tp == "String" ? "'" : ""));
-                    }
-                    else if (word.indexOf("<>") == 0)//不等于（<>）
-                    {
-                        sybol = " <> ";
-                        sbWhere.append(xRow.getName())
-                        .append(sybol)
-                        .append((tp == "String" ? "'" : ""))
-                        .append(word.substring(2))
-                        .append((tp == "String" ? "'" : ""));
-                    }
+					sbWhere.append("(");
+					word = item.replace("*", "%").trim();
+					if (word.indexOf(',') >= 0)// IN
+					{
+						sbWhere.append(MakeSqlIN(xRow.getName(), tp, word));
+					} else if (word.indexOf('~') >= 0)// between
+					{
+						sbWhere.append(MakeSqlBETWEEN(xRow.getName(), tp, word));
+					} else if (word.indexOf('=') == 0)// 等于（=）
+					{
+						sybol = " = ";
+						sbWhere.append(xRow.getName()).append(sybol)
+								.append((tp == "String" ? "'" : ""))
+								.append(word.substring(1))
+								.append((tp == "String" ? "'" : ""));
+					} else if (word.indexOf('>') == 0)// 大于（>）
+					{
+						sybol = " > ";
+						sbWhere.append(xRow.getName()).append(sybol)
+								.append((tp == "String" ? "'" : ""))
+								.append(word.substring(1))
+								.append((tp == "String" ? "'" : ""));
+					} else if (word.indexOf('<') == 0)// 小于（>）
+					{
+						sybol = " < ";
+						sbWhere.append(xRow.getName()).append(sybol)
+								.append((tp == "String" ? "'" : ""))
+								.append(word.substring(1))
+								.append((tp == "String" ? "'" : ""));
+					} else if (word.indexOf('!') == 0)// 不等于（<>）
+					{
+						sybol = " <> ";
+						sbWhere.append(xRow.getName()).append(sybol)
+								.append((tp == "String" ? "'" : ""))
+								.append(word.substring(1))
+								.append((tp == "String" ? "'" : ""));
+					} else if (word.indexOf("<>") == 0)// 不等于（<>）
+					{
+						sybol = " <> ";
+						sbWhere.append(xRow.getName()).append(sybol)
+								.append((tp == "String" ? "'" : ""))
+								.append(word.substring(2))
+								.append((tp == "String" ? "'" : ""));
+					}
 
-                    //if (word.indexOf('%') >= 0 && tp == "String")//含%号且为字符型态时
-                    else if (tp == "String")//字符型態用LIKE'value%'
-                    {
-                        sybol = " LIKE ";
+					// if (word.indexOf('%') >= 0 && tp == "String")//含%号且为字符型态时
+					else if (tp == "String")// 字符型態用LIKE'value%'
+					{
+						sybol = " LIKE ";
 
-                        sbWhere.append(xRow.getName())
-                        .append(sybol)
-                        .append("'")
-                        .append(word)
-                        .append("%'");
-                    }
-                    else if (tp == "date")//字符型態用LIKE'value%'
-                    {
-                        sybol = " LIKE ";
+						sbWhere.append(xRow.getName()).append(sybol)
+								.append("'").append(word).append("%'");
+					} else if (tp == "date")// 字符型態用LIKE'value%'
+					{
+						sybol = " LIKE ";
 
-                        sbWhere.append(xRow.getName())
-                        .append(sybol)
-                        .append("'")
-                        .append(word)
-                        .append("%'");
-                    }
+						sbWhere.append(xRow.getName()).append(sybol)
+								.append("'").append(word).append("%'");
+					}
 
-                    else
-                    {
-                        sybol = " = ";
-                        sbWhere.append(xRow.getName())
-                        .append(sybol)
-                        .append((tp == "String" ? "'" : ""))
-                        .append(word)
-                        .append((tp == "String" ? "'" : ""));
+					else {
+						sybol = " = ";
+						sbWhere.append(xRow.getName()).append(sybol)
+								.append((tp == "String" ? "'" : ""))
+								.append(word)
+								.append((tp == "String" ? "'" : ""));
 
-                    }
-                    sbWhere.append(")");
-                }
-                sbWhere.append(")");
-            }
-        }
+					}
+					sbWhere.append(")");
+				}
+				sbWhere.append(")");
+			}
+		}
 
-        i = 0;
-        //fields、order by、top
-        //有子节点传入，可以排除 *
-        //if (x_field.ChildNodes[1].FirstChild.HasChildNodes)
-        if (docField.selectSingleNode("/xconfig/field") != null 
-        		&& docField.selectSingleNode("/xconfig/field").hasContent()
-        		&& (!docField.selectSingleNode("/xconfig/field").getName().equals("#text"))
-        		)
-         {
+		i = 0;
+		// fields、order by、top
+		// 有子节点传入，可以排除 *
+		// if (x_field.ChildNodes[1].FirstChild.HasChildNodes)
+		if (docField.selectSingleNode("/xconfig/field") != null
+				&& docField.selectSingleNode("/xconfig/field").hasContent()
+				&& (!docField.selectSingleNode("/xconfig/field").getName()
+						.equals("#text"))) {
 
-        	
-        	docField = this.getTableSchema().getDocument();
-    		Element rootField = docField.getRootElement();
+			docField = this.getTableSchema().getDocument();
+			Element rootField = docField.getRootElement();
 
-    		for (Iterator<?> it = rootField.elementIterator(); it.hasNext();) {
-    			
-            //foreach (Node xRow in x_field.ChildNodes[1].FirstChild.ChildNodes)
-    			xRow = (Element) it.next();
-                if (i != 0)
-                {
-                    sbFields.append(",");
-                }
-                i++;
-                sbFields.append(xRow.getName());
+			for (Iterator<?> it = rootField.elementIterator(); it.hasNext();) {
 
-                if (xRow.attribute("sort") != null)
-                {
-                    if (k == 0)
-                    {
-                        sbOrder.append(" ORDER BY ");
+				// foreach (Node xRow in
+				// x_field.ChildNodes[1].FirstChild.ChildNodes)
+				xRow = (Element) it.next();
+				if (i != 0) {
+					sbFields.append(",");
+				}
+				i++;
+				sbFields.append(xRow.getName());
 
-                    }
-                    else
-                    {
-                        sbOrder.append(",");
+				if (xRow.attribute("sort") != null) {
+					if (k == 0) {
+						sbOrder.append(" ORDER BY ");
 
-                    }
-                    k++;
-                    sbOrder.append(xRow.getName())
-                        .append(" ")
-                        .append(xRow.attribute("sort").getValue());
+					} else {
+						sbOrder.append(",");
 
-                }
-            }
-        }
-        else
-        {
-            sbFields.append(" * ");
-        }
-        //Framework.MyLogger.Write(sbFixWhere.toString());
-        //沒有條件
-        if (sbWhere.length() == 0)
-        {
-            sbWhere.append(" 1=1 ");
-        }
-        if (sbOrder.length() > 0)
-        {
-            sbWhere.append(sbOrder.toString());
-        }
+					}
+					k++;
+					sbOrder.append(xRow.getName()).append(" ")
+							.append(xRow.attribute("sort").getValue());
 
-        //设定了取前面几笔功能
-        //sqlserver:SELECT top 100 （在最前）
-        //sqlite:limit 100 (在最后)
-//        if (xnCond.attribute("top") != null)
-//        {
-//            switch (this.getDatabaseType())
-//            {
-//                case sqlserver:
-//
-//                    //sbFields.append(" top ")
-//                    //    .append(xnCond.attribute("top").getValue())
-//                    //    .append(" ");
-//
-//                    //"SELECT TOP 10"
-//                    sbFields.Insert(0, " TOP " + xnCond.attribute("top").getValue() + " ");
-//
-//                    break;
-//
-//                case sqlite:
-//                    sbWhere.append(" limit ")
-//                        .append(xnCond.attribute("top").getValue())
-//                        .append(" ");
-//
-//                    break;
-//            }
-//        }
-        if (sbFields.length() > 0)
-        {
-            ret[0] = sbFields.toString();
-        }
-        if (sbWhere.length() > 0)
-        {
-            ret[1] = sbWhere.toString();
-        }
-        
-        return ret;
-    }
+				}
+			}
+		} else {
+			sbFields.append(" * ");
+		}
+		// Framework.MyLogger.Write(sbFixWhere.toString());
+		// 沒有條件
+		if (sbWhere.length() == 0) {
+			sbWhere.append(" 1=1 ");
+		}
+		if (sbOrder.length() > 0) {
+			sbWhere.append(sbOrder.toString());
+		}
+
+		// 设定了取前面几笔功能
+		// sqlserver:SELECT top 100 （在最前）
+		// sqlite:limit 100 (在最后)
+		// if (xnCond.attribute("top") != null)
+		// {
+		// switch (this.getDatabaseType())
+		// {
+		// case sqlserver:
+		//
+		// //sbFields.append(" top ")
+		// // .append(xnCond.attribute("top").getValue())
+		// // .append(" ");
+		//
+		// //"SELECT TOP 10"
+		// sbFields.Insert(0, " TOP " + xnCond.attribute("top").getValue() +
+		// " ");
+		//
+		// break;
+		//
+		// case sqlite:
+		// sbWhere.append(" limit ")
+		// .append(xnCond.attribute("top").getValue())
+		// .append(" ");
+		//
+		// break;
+		// }
+		// }
+		if (sbFields.length() > 0) {
+			ret[0] = sbFields.toString();
+		}
+		if (sbWhere.length() > 0) {
+			ret[1] = sbWhere.toString();
+		}
+
+		return ret;
+	}
 
 	// / <summary>
 	// / 組裝IN SQL語句片段
@@ -1205,41 +1327,35 @@ public class DBTable {
 	// / <param name="argType">欄類型</param>
 	// / <param name="argValue">值</param>
 	// / <returns>IN SQL語句</returns>
-	private String MakeSqlIN(String argFldName, String argType, String argValue)
-    {
-        String ret;
-        int i = 0;
-        StringBuilder sbSQL = new StringBuilder();
-        String[] values = argValue.split(",");
+	private String MakeSqlIN(String argFldName, String argType, String argValue) {
+		String ret;
+		int i = 0;
+		StringBuilder sbSQL = new StringBuilder();
+		String[] values = argValue.split(",");
 
-        sbSQL.append(argFldName)
-            .append(" IN ")
-            .append("(");
+		sbSQL.append(argFldName).append(" IN ").append("(");
 
-        for (String val : values)
-        {
-            //需處理”,A,B,,C,“等輸入狀況。
-            //當不是第一個元素，且有值時
-            if (i > 0 && (!val.equals("")))
-            {
-                sbSQL.append(",");
-            }
-            i++;
-            //有值
-            if (!val.equals(""))
-            {
-                sbSQL.append((argType == "String" ? "'" : ""));
-                sbSQL.append(val);
-                sbSQL.append((argType == "String" ? "'" : ""));
-            }
-        }
+		for (String val : values) {
+			// 需處理”,A,B,,C,“等輸入狀況。
+			// 當不是第一個元素，且有值時
+			if (i > 0 && (!val.equals(""))) {
+				sbSQL.append(",");
+			}
+			i++;
+			// 有值
+			if (!val.equals("")) {
+				sbSQL.append((argType == "String" ? "'" : ""));
+				sbSQL.append(val);
+				sbSQL.append((argType == "String" ? "'" : ""));
+			}
+		}
 
-        sbSQL.append(")");
+		sbSQL.append(")");
 
-        ret = sbSQL.toString();
-        return ret;
+		ret = sbSQL.toString();
+		return ret;
 
-    }
+	}
 
 	// / <summary>
 	// / 組裝IN SQL語句片段
@@ -1248,462 +1364,420 @@ public class DBTable {
 	// / <param name="argType">欄類型</param>
 	// / <param name="argValue">值</param>
 	// / <returns>IN SQL語句</returns>
-	private String MakeSqlBETWEEN(String argFldName, String argType, String argValue)
-    {
-        String ret;
-        int i = 0;
-        StringBuilder sbSQL = new StringBuilder();
-        String[] values = argValue.split("~");
+	private String MakeSqlBETWEEN(String argFldName, String argType,
+			String argValue) {
+		String ret;
+		int i = 0;
+		StringBuilder sbSQL = new StringBuilder();
+		String[] values = argValue.split("~");
 
-        sbSQL.append(argFldName)
-            .append(" BETWEEN ");
-        if (values.length != 2)
-        {
-            //throw new BLLException("bl0010", new String[] { argValue });
-        }
-        for (String val : values)
-        {
-            if (val.equals(""))
-            {
-                //throw new BLLException("bl0010", new String[] { argValue });
-            }
-            //需處理”A~B“等輸入狀況。
-            //當不是第一個元素，且有值時
-            if (i > 0 && (!val.equals("")))
-            {
-                sbSQL.append(" AND ");
-            }
-            i++;
-            //有值
-            if (!val.equals(""))
-            {
-                sbSQL.append((argType == "String" ? "'" : ""));
-                sbSQL.append(val);
-                sbSQL.append((argType == "String" ? "'" : ""));
-            }
-        }
+		sbSQL.append(argFldName).append(" BETWEEN ");
+		if (values.length != 2) {
+			// throw new BLLException("bl0010", new String[] { argValue });
+		}
+		for (String val : values) {
+			if (val.equals("")) {
+				// throw new BLLException("bl0010", new String[] { argValue });
+			}
+			// 需處理”A~B“等輸入狀況。
+			// 當不是第一個元素，且有值時
+			if (i > 0 && (!val.equals(""))) {
+				sbSQL.append(" AND ");
+			}
+			i++;
+			// 有值
+			if (!val.equals("")) {
+				sbSQL.append((argType == "String" ? "'" : ""));
+				sbSQL.append(val);
+				sbSQL.append((argType == "String" ? "'" : ""));
+			}
+		}
 
+		ret = sbSQL.toString();
+		return ret;
 
-        ret = sbSQL.toString();
-        return ret;
+	}
 
-    }
 	// #endregion
-	
-	  //#region PUBLIC Function 
-	
-	  
+
+	// #region PUBLIC Function
+
 	/**
 	 * 
 	 * 功能概述：判断指定表达式条件的值是否存在，若存在，返回指定字段的值
+	 * 
 	 * @param s_where
 	 * @param s_retfieldst
 	 * @return
-	 * @author rayd 
-	 * 创建时间：Jun 19, 2013 10:31:00 AM  
-	 * 修改人：rayd
-	 * 修改时间：Jun 19, 2013 10:31:00 AM  
-	 * 修改备注：  
-	 * @version 1.0 
-	 *
+	 * @author rayd 创建时间：Jun 19, 2013 10:31:00 AM 修改人：rayd 修改时间：Jun 19, 2013
+	 *         10:31:00 AM 修改备注：
+	 * @version 1.0
+	 * 
 	 */
-      public HashMap<String, String> IsExistValue(String s_sqlorwhere , String s_retfields)
-        {
-            boolean ret = false;
-            HashMap<String, String> hm = new HashMap<String, String>();
-            StringBuffer sbSelect = new StringBuffer("select");
-            
-            String sql = "select %1$s from %2$s where %3$s";
-            //传入select表达式
-            if(s_sqlorwhere.contentEquals(sbSelect)){
-            	sql = s_sqlorwhere;
-            }else{
-            	sql = String.format(sql,s_retfields,this.getDataSourceName(),s_sqlorwhere);
-            }
-            String val = DALHelper.GetValue(this.getDatabaseName(), sql);
+	public HashMap<String, String> IsExistValue(String s_sqlorwhere,
+			String s_retfields) {
+		boolean ret = false;
+		HashMap<String, String> hm = new HashMap<String, String>();
+		StringBuffer sbSelect = new StringBuffer("select");
 
-            
-            if (val!=null)
-            {
-                ret = true;
-            }
-            hm.put("result", Boolean.toString(ret));
-            hm.put("value", val);
-            
-            return hm;
+		String sql = "select %1$s from %2$s where %3$s";
+		// 传入select表达式
+		if (s_sqlorwhere.contentEquals(sbSelect)) {
+			sql = s_sqlorwhere;
+		} else {
+			sql = String.format(sql, s_retfields, this.getDataSourceName(),
+					s_sqlorwhere);
+		}
+		String val = DALHelper.GetValue(this.getDatabaseName(), sql);
 
-        }
-//        public boolean IsExist(String argSql,out DataSet ds_ret)
-//        {
-//            boolean ret = false;
-//            DataSet ds = null;
-//            Database db;
-//            String dbName=this.DatabaseName;
-//
-//            //int count = 0;    
-//            String sql = "SELECT '*' FROM {0} WHERE {1}";
-//
-//            if (argSql.ToLower().IndexOf("select") < 0)
-//            {
-//                sql = String.Format(sql, new String[] { this.TableName, argSql });
-//            }else{
-//                sql = argSql;
-//            }
-//            ds = ExecuteDataSet(this.DatabaseName, sql);
-//            if (ds != null && ds.Tables.Count>0 && ds.Tables[0].Rows.Count > 0)
-//            {
-//                ret = true;
-//            }
-//            ds_ret = ds;
-//            return ret;
-//
-//        }
+		if (val != null) {
+			ret = true;
+		}
+		hm.put("result", Boolean.toString(ret));
+		hm.put("value", val);
 
-        public HashMap<String, String> IsExistValue(String s_sqlorwhere)
-        {
-            return IsExistValue(s_sqlorwhere,"*");
+		return hm;
 
-        }
-        /// <summary>
-        /// 判断指定栏位值是否存在
-        /// </summary>
-        /// <param name="argField">栏位名称，多个用 + 分隔，其个数要与值的个数相同，+号两边一定需要一个空格</param>
-        /// <param name="argValue">值，多个用 + 分隔，其个数要与栏名的个数相同，+号两边一定需要一个空格</param>
-        /// <returns>true--存在，false--不存在</returns>
-        public boolean IsExist(String argField, String argValue)
-        {
-            boolean ret = false;
-            //int count = 0;
-            String sql = "SELECT %1$s FROM %2$s WHERE %3$s ";
-            //+号两边一定需要一个空格
-            String[] saFields = argField.split("+");
-            String[] saValues = argValue.split("+");
-            String s_fields="", s_conds="";
+	}
 
-            for (int i=0;i<saValues.length;i++)
-            {
-                s_conds += "<" + saFields[i] + ">=" + saValues[i] + "</" + saFields[i] + ">";
-                s_fields += "<" + saFields[i] + "/>";
-            }
+	// public boolean IsExist(String argSql,out DataSet ds_ret)
+	// {
+	// boolean ret = false;
+	// DataSet ds = null;
+	// Database db;
+	// String dbName=this.DatabaseName;
+	//
+	// //int count = 0;
+	// String sql = "SELECT '*' FROM {0} WHERE {1}";
+	//
+	// if (argSql.ToLower().IndexOf("select") < 0)
+	// {
+	// sql = String.Format(sql, new String[] { this.TableName, argSql });
+	// }else{
+	// sql = argSql;
+	// }
+	// ds = ExecuteDataSet(this.DatabaseName, sql);
+	// if (ds != null && ds.Tables.Count>0 && ds.Tables[0].Rows.Count > 0)
+	// {
+	// ret = true;
+	// }
+	// ds_ret = ds;
+	// return ret;
+	//
+	// }
 
-            XmlDocModel xField = new XmlDocModel("<field>" + s_fields + "</field>");
-            XmlDocModel xCond = new XmlDocModel("<cond>" + s_conds + "</cond>");
-            String[] fw = MakeFieldAndWhere(xField, xCond);
-            sql = String.format(sql, fw[0], this.getDataSourceName(), fw[1]);
-            XmlDocModel xData = DALHelper.Query(sql, this.getDatabaseName());
-            
-            
-            if (!xData.isEmpty())
-            {
-                ret = true;
-            }
-            
-            return ret;
+	public HashMap<String, String> IsExistValue(String s_sqlorwhere) {
+		return IsExistValue(s_sqlorwhere, "*");
 
-        }
-        
-        
-//        public boolean IsExist(StringDictionary argCond)
-//        {
-//            boolean ret = false;
-//            //int count =0;
-//            ////int count = 0;
-//            //StringBuilder sbSql = new StringBuilder();
-//            //for (count = 0;count<argCond.Count;count++)
-//            //{
-//            //    //sbSql.Append(cond.
-//            //}
-//            //String sql = "SELECT {1} FROM {0} WHERE {1} = '{2}'";
-//            //sql = String.Format(sql, new String[] { this.TableName, argField, argValue });
-//            //XmlDocModel xData = DALHelper.ExecuteReader(sql);
-//
-//            //if (xData.ChildNodes[1].FirstChild.HasChildNodes)
-//            //{
-//            //    ret = true;
-//            //}
-//            return ret;
-//
-//        }
-        /// <summary>
-        /// 判斷是否存在數據，并返回指定栏位值
-        /// </summary>
-        /// <param name="Cond">條件</param>
-        /// <param name="retDate" 返回數據>
-        /// <returns>欄值，當沒有找到，返回null</returns>
-//        public boolean IsExist(String s_sqlwhere, out XmlDocModel x_ret)
-//        {
-//            DataSet ds = null;
-//            XmlDocument xRet = new XmlDocument();
-//            boolean ret = false;
-//            ret = IsExist(s_sqlwhere, out ds);
-//
-//            x_ret = Helper.Tools.DataSetToXML(ds);
-//            return ret;
-//
-//        }
+	}
 
+	// / <summary>
+	// / 判断指定栏位值是否存在
+	// / </summary>
+	// / <param name="argField">栏位名称，多个用 + 分隔，其个数要与值的个数相同，+号两边一定需要一个空格</param>
+	// / <param name="argValue">值，多个用 + 分隔，其个数要与栏名的个数相同，+号两边一定需要一个空格</param>
+	// / <returns>true--存在，false--不存在</returns>
+	public boolean IsExist(String argField, String argValue) {
+		boolean ret = false;
+		// int count = 0;
+		String sql = "SELECT %1$s FROM %2$s WHERE %3$s ";
+		// +号两边一定需要一个空格
+		String[] saFields = argField.split("+");
+		String[] saValues = argValue.split("+");
+		String s_fields = "", s_conds = "";
 
-        /// <summary>
-        /// 判斷是否存在數據，并返回指定栏位值
-        /// </summary>
-        /// <param name="Cond">條件</param>
-        /// <param name="retDate" 返回數據>
-        /// <returns>欄值，當沒有找到，返回null</returns>
-//        public boolean IsExist(String s_where, String s_retfld, out String s_ret)
-//        {
-//            DataSet ds = null;
-//            //XmlDocument xRet = new XmlDocument();
-//            boolean ret = false;
-//            String sql = "SELECT {0} FROM {1} WHERE {2} ";
-//
-//            sql = String.Format(sql, s_retfld, this.DataSourceName, s_where);
-//
-//            ret = IsExist(sql, out ds);
-//            s_ret = ""; 
-//
-//            if (ret)
-//            {
-//                s_ret = ds.Tables[0].Rows[0][s_retfld].ToString();
-//            }
-//            return ret;
-//
-//        }
-        /// <summary>
-        /// 判斷是否存在數據，并返回指定栏位值
-        /// </summary>
-        /// <param name="Cond">條件</param>
-        /// <param name="retDate" 返回數據>
-        /// <returns>欄值，當沒有找到，返回null</returns>
-//        public boolean IsExist(String s_field,String s_value,String s_retfld, out String s_ret)
-//        {
-//            DataSet ds = null;
-//            boolean ret = false;
-//            String sql = "SELECT {0} FROM {1} WHERE {2} ";
-//
-//            XmlDocModel xField = new XmlDocModel("<field><" + s_retfld + "/></field>");
-//            XmlDocModel xCond = new XmlDocModel("<cond><" + s_field +">" + s_value + "</" + s_field+ "></cond>");
-//            String[] fw = MakeFieldAndWhere(xField, xCond);
-//            sql = String.Format(sql, fw[0], this.DataSourceName, fw[1]);
-//
-//
-//            ret = IsExist(sql, out ds);
-//            s_ret = ""; 
-//
-//            if (ret)
-//            {
-//                s_ret = ds.Tables[0].Rows[0][s_retfld].ToString();
-//            }
-//            return ret;
-//
-//        }
-        /*
-        /// <summary>
-        /// 判斷是否存在數據
-        /// </summary>
-        /// <param name="Cond">條件</param>
-        /// <param name="retDate" 返回數據>
-        /// <returns>欄值，當沒有找到，返回null</returns>
-        public boolean IsExist(String argDatasources,String Cond, out XmlDocModel retDate)
-        {
-            boolean ret = false;
-            //int count = 0;
-            String sql = "SELECT * FROM {0} WHERE {1}";
-            sql = String.Format(sql, new String[] { argDatasources, Cond });
-            retDate = DALHelper.ExecuteReader(sql, this.DatabaseName);
+		for (int i = 0; i < saValues.length; i++) {
+			s_conds += "<" + saFields[i] + ">=" + saValues[i] + "</"
+					+ saFields[i] + ">";
+			s_fields += "<" + saFields[i] + "/>";
+		}
 
-            if (retDate.ChildNodes[1].FirstChild.HasChildNodes)
-            {
-                ret = true;
-            }
-            return ret;
+		XmlDocModel xField = new XmlDocModel("<field>" + s_fields + "</field>");
+		XmlDocModel xCond = new XmlDocModel("<cond>" + s_conds + "</cond>");
+		String[] fw = MakeFieldAndWhere(xField, xCond);
+		sql = String.format(sql, fw[0], this.getDataSourceName(), fw[1]);
+		XmlDocModel xData = DALHelper.Query(sql, this.getDatabaseName());
 
-        }
-        /// <summary>
-        /// 判斷是否存在數據
-        /// </summary>
-        /// <param name="Cond">條件</param>
-        /// <param name="argIsView">以其View作为查找对象</param>
-        /// <param name="retDate" 返回數據>
-        /// <returns>欄值，當沒有找到，返回null</returns>
-        public boolean IsExist(String Cond, boolean argIsView)
-        {
-            boolean ret = false;
-            //int count = 0;
-            String sql = "SELECT * FROM {0} WHERE {1}";
-            sql = String.Format(sql, new String[] { argIsView ? this.DataSourceName : this.TableName, Cond });
-            XmlDocModel retDate = DALHelper.ExecuteReader(sql, this.DatabaseName);
+		if (!xData.isEmpty()) {
+			ret = true;
+		}
 
-            if (!retDate.IsEmpty)
-            {
-                ret = true;
-            }
-            return ret;
+		return ret;
 
-        }
-          */
+	}
 
-        public String GetValue(String s_sql)
-        {
-            String ret = null;
+	// public boolean IsExist(StringDictionary argCond)
+	// {
+	// boolean ret = false;
+	// //int count =0;
+	// ////int count = 0;
+	// //StringBuilder sbSql = new StringBuilder();
+	// //for (count = 0;count<argCond.Count;count++)
+	// //{
+	// // //sbSql.Append(cond.
+	// //}
+	// //String sql = "SELECT {1} FROM {0} WHERE {1} = '{2}'";
+	// //sql = String.Format(sql, new String[] { this.TableName, argField,
+	// argValue });
+	// //XmlDocModel xData = DALHelper.ExecuteReader(sql);
+	//
+	// //if (xData.ChildNodes[1].FirstChild.HasChildNodes)
+	// //{
+	// // ret = true;
+	// //}
+	// return ret;
+	//
+	// }
+	// / <summary>
+	// / 判斷是否存在數據，并返回指定栏位值
+	// / </summary>
+	// / <param name="Cond">條件</param>
+	// / <param name="retDate" 返回數據>
+	// / <returns>欄值，當沒有找到，返回null</returns>
+	// public boolean IsExist(String s_sqlwhere, out XmlDocModel x_ret)
+	// {
+	// DataSet ds = null;
+	// XmlDocument xRet = new XmlDocument();
+	// boolean ret = false;
+	// ret = IsExist(s_sqlwhere, out ds);
+	//
+	// x_ret = Helper.Tools.DataSetToXML(ds);
+	// return ret;
+	//
+	// }
 
-            ret = DALHelper.GetValue(this.getDatabaseName(), s_sql);
-            return ret;
+	// / <summary>
+	// / 判斷是否存在數據，并返回指定栏位值
+	// / </summary>
+	// / <param name="Cond">條件</param>
+	// / <param name="retDate" 返回數據>
+	// / <returns>欄值，當沒有找到，返回null</returns>
+	// public boolean IsExist(String s_where, String s_retfld, out String s_ret)
+	// {
+	// DataSet ds = null;
+	// //XmlDocument xRet = new XmlDocument();
+	// boolean ret = false;
+	// String sql = "SELECT {0} FROM {1} WHERE {2} ";
+	//
+	// sql = String.Format(sql, s_retfld, this.DataSourceName, s_where);
+	//
+	// ret = IsExist(sql, out ds);
+	// s_ret = "";
+	//
+	// if (ret)
+	// {
+	// s_ret = ds.Tables[0].Rows[0][s_retfld].ToString();
+	// }
+	// return ret;
+	//
+	// }
+	// / <summary>
+	// / 判斷是否存在數據，并返回指定栏位值
+	// / </summary>
+	// / <param name="Cond">條件</param>
+	// / <param name="retDate" 返回數據>
+	// / <returns>欄值，當沒有找到，返回null</returns>
+	// public boolean IsExist(String s_field,String s_value,String s_retfld, out
+	// String s_ret)
+	// {
+	// DataSet ds = null;
+	// boolean ret = false;
+	// String sql = "SELECT {0} FROM {1} WHERE {2} ";
+	//
+	// XmlDocModel xField = new XmlDocModel("<field><" + s_retfld +
+	// "/></field>");
+	// XmlDocModel xCond = new XmlDocModel("<cond><" + s_field +">" + s_value +
+	// "</" + s_field+ "></cond>");
+	// String[] fw = MakeFieldAndWhere(xField, xCond);
+	// sql = String.Format(sql, fw[0], this.DataSourceName, fw[1]);
+	//
+	//
+	// ret = IsExist(sql, out ds);
+	// s_ret = "";
+	//
+	// if (ret)
+	// {
+	// s_ret = ds.Tables[0].Rows[0][s_retfld].ToString();
+	// }
+	// return ret;
+	//
+	// }
+	/*
+	 * /// <summary> /// 判斷是否存在數據 /// </summary> /// <param
+	 * name="Cond">條件</param> /// <param name="retDate" 返回數據> ///
+	 * <returns>欄值，當沒有找到，返回null</returns> public boolean IsExist(String
+	 * argDatasources,String Cond, out XmlDocModel retDate) { boolean ret =
+	 * false; //int count = 0; String sql = "SELECT * FROM {0} WHERE {1}"; sql =
+	 * String.Format(sql, new String[] { argDatasources, Cond }); retDate =
+	 * DALHelper.ExecuteReader(sql, this.DatabaseName);
+	 * 
+	 * if (retDate.ChildNodes[1].FirstChild.HasChildNodes) { ret = true; }
+	 * return ret;
+	 * 
+	 * } /// <summary> /// 判斷是否存在數據 /// </summary> /// <param
+	 * name="Cond">條件</param> /// <param name="argIsView">以其View作为查找对象</param>
+	 * /// <param name="retDate" 返回數據> /// <returns>欄值，當沒有找到，返回null</returns>
+	 * public boolean IsExist(String Cond, boolean argIsView) { boolean ret =
+	 * false; //int count = 0; String sql = "SELECT * FROM {0} WHERE {1}"; sql =
+	 * String.Format(sql, new String[] { argIsView ? this.DataSourceName :
+	 * this.TableName, Cond }); XmlDocModel retDate =
+	 * DALHelper.ExecuteReader(sql, this.DatabaseName);
+	 * 
+	 * if (!retDate.IsEmpty) { ret = true; } return ret;
+	 * 
+	 * }
+	 */
 
-        }
+	public String GetValue(String s_sql) {
+		String ret = null;
 
-        /// <summary>
-        /// 取得單一欄值
-        /// </summary>
-        /// <param name="s_keyfld">Key欄名稱</param>
-        /// <param name="s_keyvalue">Key值</param>
-        /// <param name="s_retfld">返回欄，可以多個欄位，用逗號分隔</param>
-        /// <returns>欄值，當沒有找到，返回null</returns>
-        public String GetValue(String s_keyfld, String s_keyvalue, String s_retfld)
-        {
-            String ret = null;
-            String sql = "select %1$s from %2$s where %3$s = '%4$s'";
+		ret = DALHelper.GetValue(this.getDatabaseName(), s_sql);
+		return ret;
 
-            String dbName = this.getDatabaseName();
+	}
 
-            sql = String.format(sql, 
-                s_retfld,
-                this.getTableName(),
-                s_keyfld,
-                s_keyvalue
-            );
+	// / <summary>
+	// / 取得單一欄值
+	// / </summary>
+	// / <param name="s_keyfld">Key欄名稱</param>
+	// / <param name="s_keyvalue">Key值</param>
+	// / <param name="s_retfld">返回欄，可以多個欄位，用逗號分隔</param>
+	// / <returns>欄值，當沒有找到，返回null</returns>
+	public String GetValue(String s_keyfld, String s_keyvalue, String s_retfld) {
+		String ret = null;
+		String sql = "select %1$s from %2$s where %3$s = '%4$s'";
 
-            ret = GetValue(sql);
-            return ret;
-            //return DALHelper.GetValue(this.DatabaseName, this.DataSourceName, argField, argCond);
+		String dbName = this.getDatabaseName();
 
-        }
+		sql = String.format(sql, s_retfld, this.getTableName(), s_keyfld,
+				s_keyvalue);
 
-        /// <summary>
-        /// 取得單一欄值
-        /// </summary>
-        /// <param name="s_keyfld">Key欄名稱</param>
-        /// <param name="s_keyvalue">Key值</param>
-        /// <param name="s_retfld">返回欄</param>
-        /// <returns>欄值，當沒有找到，返回null</returns>
-        public String GetValue(String s_keyvalue, String s_retfld)
-        {
-            String ret = null;
-            String sql = "select %1$s from %2$s where %3$s = '%4$s'";
+		ret = GetValue(sql);
+		return ret;
+		// return DALHelper.GetValue(this.DatabaseName, this.DataSourceName,
+		// argField, argCond);
 
-            String dbName = this.getDatabaseName();
-            //foreach (XmlNode fld in this.TableSchema.SelectSingleNode("xconfig/records/" + this.TableName.ToLower()).ChildNodes)
-            //{
+	}
 
-            //}
+	// / <summary>
+	// / 取得單一欄值
+	// / </summary>
+	// / <param name="s_keyfld">Key欄名稱</param>
+	// / <param name="s_keyvalue">Key值</param>
+	// / <param name="s_retfld">返回欄</param>
+	// / <returns>欄值，當沒有找到，返回null</returns>
+	public String GetValue(String s_keyvalue, String s_retfld) {
+		String ret = null;
+		String sql = "select %1$s from %2$s where %3$s = '%4$s'";
 
-            sql = String.format(sql,  
-                s_retfld,
-                this.getTableName(),
-                this.getKeyName(),
-                s_keyvalue
-            );
+		String dbName = this.getDatabaseName();
+		// foreach (XmlNode fld in
+		// this.TableSchema.SelectSingleNode("xconfig/records/" +
+		// this.TableName.ToLower()).ChildNodes)
+		// {
 
-            ret = GetValue(sql);
-            return ret;
-            //return DALHelper.GetValue(this.DatabaseName, this.DataSourceName, argField, argCond);
+		// }
 
-        }
+		sql = String.format(sql, s_retfld, this.getTableName(),
+				this.getKeyName(), s_keyvalue);
 
-        /// <summary>
-        /// 取得單一欄值
-        /// </summary>
-        /// <param name="s_keyfld">Key欄名稱</param>
-        /// <param name="s_keyvalue">Key值</param>
-        /// <param name="s_retfld">返回欄</param>
-        /// <returns>欄值，當沒有找到，返回null</returns>
-        public XmlDocModel GetValues(String s_sql)
-        {
-            XmlDocModel ret = new XmlDocModel();
-            String sql = s_sql;
+		ret = GetValue(sql);
+		return ret;
+		// return DALHelper.GetValue(this.DatabaseName, this.DataSourceName,
+		// argField, argCond);
 
-            ret = DALHelper.ExecuteReader(this.getDatabaseName(),sql);
+	}
 
-            return ret;
+	// / <summary>
+	// / 取得單一欄值
+	// / </summary>
+	// / <param name="s_keyfld">Key欄名稱</param>
+	// / <param name="s_keyvalue">Key值</param>
+	// / <param name="s_retfld">返回欄</param>
+	// / <returns>欄值，當沒有找到，返回null</returns>
+	public XmlDocModel GetValues(String s_sql) {
+		XmlDocModel ret = new XmlDocModel();
+		String sql = s_sql;
 
-        }
+		ret = DALHelper.ExecuteReader(this.getDatabaseName(), sql);
 
-        /// <summary>
-        /// 取得單一欄值
-        /// </summary>
-        /// <param name="s_keyfld">Key欄名稱</param>
-        /// <param name="s_keyvalue">Key值</param>
-        /// <param name="s_retfld">返回欄，可以多個欄位，用逗號分隔</param>
-        /// <returns>欄值，當沒有找到，返回null</returns>
-        public XmlDocModel GetValues(String s_keyfld, String s_keyvalue, String s_retfld)
-        {
-            XmlDocModel ret = null;
-            String sql = "select %1$s from %2$s where %3$s = '%4$s'";
+		return ret;
 
-            String dbName = this.getDatabaseName();
+	}
 
-            sql = String.format(sql,  
-                s_retfld,
-                this.getTableName(),
-                s_keyfld,
-                s_keyvalue
-            );
+	// / <summary>
+	// / 取得單一欄值
+	// / </summary>
+	// / <param name="s_keyfld">Key欄名稱</param>
+	// / <param name="s_keyvalue">Key值</param>
+	// / <param name="s_retfld">返回欄，可以多個欄位，用逗號分隔</param>
+	// / <returns>欄值，當沒有找到，返回null</returns>
+	public XmlDocModel GetValues(String s_keyfld, String s_keyvalue,
+			String s_retfld) {
+		XmlDocModel ret = null;
+		String sql = "select %1$s from %2$s where %3$s = '%4$s'";
 
-            ret = GetValues(sql);
-            return ret;
-            //return DALHelper.GetValue(this.DatabaseName, this.DataSourceName, argField, argCond);
+		String dbName = this.getDatabaseName();
 
-        }
+		sql = String.format(sql, s_retfld, this.getTableName(), s_keyfld,
+				s_keyvalue);
 
-        /// <summary>
-        /// 取得單一欄值
-        /// </summary>
-        /// <param name="s_keyfld">Key欄名稱</param>
-        /// <param name="s_keyvalue">Key值</param>
-        /// <param name="s_retfld">返回欄</param>
-        /// <returns>欄值，當沒有找到，返回null</returns>
-        public XmlDocModel GetValues(String s_keyvalue, String s_retfld)
-        {
-            XmlDocModel ret = null;
-            String sql = "select %1$s from %2$2 where %3$s = '%4$s'";
+		ret = GetValues(sql);
+		return ret;
+		// return DALHelper.GetValue(this.DatabaseName, this.DataSourceName,
+		// argField, argCond);
 
-            String dbName = this.getDatabaseName();
-//            foreach (XmlNode fld in this.getTableSchema().SelectSingleNode("xconfig/records/" + this.getTableName().toLowerCase()).ChildNodes)
-//            {
-//                
-//            }
+	}
 
-            sql = String.format(sql, 
-                s_retfld,
-                this.getTableName(),
-                this.getKeyName(),
-                s_keyvalue
-            );
+	// / <summary>
+	// / 取得單一欄值
+	// / </summary>
+	// / <param name="s_keyfld">Key欄名稱</param>
+	// / <param name="s_keyvalue">Key值</param>
+	// / <param name="s_retfld">返回欄</param>
+	// / <returns>欄值，當沒有找到，返回null</returns>
+	public XmlDocModel GetValues(String s_keyvalue, String s_retfld) {
+		XmlDocModel ret = null;
+		String sql = "select %1$s from %2$2 where %3$s = '%4$s'";
 
-            ret = GetValues(sql);
-            return ret;
-            //return DALHelper.GetValue(this.DatabaseName, this.DataSourceName, argField, argCond);
+		String dbName = this.getDatabaseName();
+		// foreach (XmlNode fld in
+		// this.getTableSchema().SelectSingleNode("xconfig/records/" +
+		// this.getTableName().toLowerCase()).ChildNodes)
+		// {
+		//
+		// }
 
-        }
+		sql = String.format(sql, s_retfld, this.getTableName(),
+				this.getKeyName(), s_keyvalue);
 
-        /// <summary>
-        /// 取得某一欄位最大值
-        /// </summary>
-        /// <param name="argField">欄名稱</param>
-        /// <param name="argCond">條件</param>
-        /// <returns>欄值，當沒有找到，返回null</returns>
-        public String GetMaxValue(String argField, String argCond)
-        {
-            return DALHelper.GetMaxValue(this.getDatabaseName(), this.getDataSourceName(), argField, argCond);
-        }
-        /// <summary>
-        /// 取得某一欄位最大值
-        /// </summary>
-        /// <param name="argField">欄名稱</param>
-        /// <param name="argCond">條件</param>
-        /// <returns>欄值，當沒有找到，返回null</returns>
-        public String GetMaxValue(String argField, String argCondName,
-            String argCondValue)
-        {
-            return DALHelper.GetMaxValue(this.getDatabaseName(), this.getDataSourceName(), argField, argCondName, argCondValue);
-        }
+		ret = GetValues(sql);
+		return ret;
+		// return DALHelper.GetValue(this.DatabaseName, this.DataSourceName,
+		// argField, argCond);
+
+	}
+
+	// / <summary>
+	// / 取得某一欄位最大值
+	// / </summary>
+	// / <param name="argField">欄名稱</param>
+	// / <param name="argCond">條件</param>
+	// / <returns>欄值，當沒有找到，返回null</returns>
+	public String GetMaxValue(String argField, String argCond) {
+		return DALHelper.GetMaxValue(this.getDatabaseName(),
+				this.getDataSourceName(), argField, argCond);
+	}
+
+	// / <summary>
+	// / 取得某一欄位最大值
+	// / </summary>
+	// / <param name="argField">欄名稱</param>
+	// / <param name="argCond">條件</param>
+	// / <returns>欄值，當沒有找到，返回null</returns>
+	public String GetMaxValue(String argField, String argCondName,
+			String argCondValue) {
+		return DALHelper.GetMaxValue(this.getDatabaseName(),
+				this.getDataSourceName(), argField, argCondName, argCondValue);
+	}
 }

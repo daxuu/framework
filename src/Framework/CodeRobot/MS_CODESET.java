@@ -5,14 +5,15 @@
  */
 package Framework.CodeRobot;
 
-import Framework.Data.DbObject;
+import Framework.Data.DBTable;
+
 
 /**
  *
  * @author Administrator
  * @date 2010/4/6, 下午 02:05:33
  */
-public class MS_CODESET extends DbObject {
+public class MS_CODESET extends DBTable {
 
     String _TableName = "MS_CODESET";
     String _DatabaseName = "EQ";

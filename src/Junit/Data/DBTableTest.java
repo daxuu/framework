@@ -25,10 +25,19 @@ public class DBTableTest {
 		String exp = "xconfig";
 		XmlDocModel tbSchema = new XmlDocModel();
 		
+//		DBTable tb = new DBTable();
+//		tb.setDatabaseName("test");
+//		tb.setTableName("STUDENT");
+//		tb.setDataSourceName("STUDENT");
+//		tbSchema = tb.getTableSchema();
+//		Document doc =tbSchema.getDocument();
+//		String act = doc.selectSingleNode(exp).getName();
+		
+		
 		DBTable tb = new DBTable();
-		tb.setDatabaseName("test");
-		tb.setTableName("STUDENT");
-		tb.setDataSourceName("STUDENT");
+		tb.setDatabaseName("log");
+		tb.setTableName("pm_log");
+		//tb.setDataSourceName("STUDENT");
 		tbSchema = tb.getTableSchema();
 		Document doc =tbSchema.getDocument();
 		String act = doc.selectSingleNode(exp).getName();

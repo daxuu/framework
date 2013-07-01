@@ -27,7 +27,7 @@ import org.dom4j.*;
  * @version  
  *
  */
-public class DbObject {
+public class DbObject_bak {
 
     private String _TableName;
     private XmlDocModel _TableSchema;

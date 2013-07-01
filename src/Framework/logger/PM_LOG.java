@@ -5,20 +5,28 @@
  */
 package Framework.logger;
 
-import Framework.Data.DbObject;
+import Framework.Data.DBTable;
 
 /**
  *
  * @author Administrator
  * @date 2010/4/6, 下午 02:05:33
  */
-public class PM_LOG extends DbObject {
+public class PM_LOG extends DBTable {
 
     String _TableName = "PM_LOG";
     String _DatabaseName = "LOG";
     String _DataSourceName = "PM_LOG";
 
-    public String getTableName() {
+    
+    
+    public PM_LOG() {
+		super();
+		this.setFieldAdder("dataer");
+		this.setKeyName("log_id");
+	}
+
+	public String getTableName() {
         return _TableName;
     }
 
@@ -41,6 +49,5 @@ public class PM_LOG extends DbObject {
     public void setDatabaseName(String _DatabaseName) {
         this._DatabaseName = _DatabaseName;
     }
-    
 
 }

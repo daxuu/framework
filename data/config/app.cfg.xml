@@ -13,6 +13,12 @@
 <test_url>jdbc:oracle:thin:@172.18.60.114:1521:test</test_url>
 <test_user>gdi</test_user>
 <test_pwd>gdi</test_pwd>
+<!--database:test for Sqlserver-->
+<pfs_class_name>com.microsoft.sqlserver.jdbc.SQLServerDriver</pfs_class_name>
+<pfs_url>jdbc:sqlserver://172.18.60.57:1433;DatabaseName=pfs</pfs_url>
+<pfs_user>pubuser</pfs_user>
+<pfs_pwd>test</pfs_pwd>
+
 <open_log>0</open_log>
 <ajax_dll_name>Framework.logger.PM_LOG</ajax_dll_name>
 </appconfig>

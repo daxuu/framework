@@ -37,18 +37,47 @@ public class AjaxServerTest {
 	public void testInvoke() {
 		//String exp = "PM.BLL.PM_PROJECT,PM.BLL:Save";
 		String exp = "1";
+		Integer act = 0;
+		
 		AjaxServer ajax = AjaxServer.GetInvoker();
 		//String act = (String)ajax.invoke("Framework.logger.PM_LOG", "IsExist", new String[]{"string","string"}, new String[]{"log_id","31b99904-35ab-4d1b-bd5c-743dbb6ecc1a"});
 		//String act = (String)ajax.invoke("Framework.logger.PM_LOG", "Test", new String[]{"string"}, new String[]{"Lucky"});
 		//AddRow
-		Integer act = (Integer)ajax.invoke("Framework.logger.PM_LOG", "AddRow", 
-				new String[]{
-				"log",
-				"pm_log",
-				"log_id,log_msg",
-				"'" + Framework.CodeRobot.NORobot.Guid() +"','test msg :" + Framework.CodeRobot.NORobot.Guid()+ "'"
+//		act = (Integer)ajax.invoke("Framework.logger.PM_LOG", "AddRow", 
+//				new String[]{
+//				"log",
+//				"pm_log",
+//				"log_id,log_msg",
+//				"'" + Framework.CodeRobot.NORobot.Guid() +"','test msg :" + Framework.CodeRobot.NORobot.Guid()+ "'"
+//				}
+//		);
+//		
+//		//AddRow
+//		act = (Integer)ajax.invoke("Framework.logger.PM_LOG", "AddRow", 
+//				new String[]{
+//				"pm_log",
+//				"log_id,log_msg",
+//				"'" + Framework.CodeRobot.NORobot.Guid() +"','test msg :" + Framework.CodeRobot.NORobot.Guid()+ "'"
+//				}
+//		);
+//		//AddRow:多个参数
+//		act = (Integer)ajax.invoke("Framework.logger.PM_LOG", "AddRow", 
+//				new String[]{
+//				"log_id,log_msg",
+//				"'" + Framework.CodeRobot.NORobot.Guid() +"','test msg :" + Framework.CodeRobot.NORobot.Guid()+ "'"
+//				}
+//		);
+		
+		//AddRow:多个参数
+		act = (Integer)ajax.invoke("Framework.logger.PM_LOG", "AddRow", new String[]{
+				"<log_id>"+ Framework.CodeRobot.NORobot.Guid() +"</log_id><log_msg>Test MSG for xml data</log_msg>"
 				}
 		);
+		//AddRow：单个参数
+		act = (Integer)ajax.invoke("Framework.logger.PM_LOG", "AddRow", 
+				"<log_id>"+ Framework.CodeRobot.NORobot.Guid() +"</log_id><log_msg>Test MSG for xml data</log_msg>"
+				
+		);		
 		assertEquals(exp, Integer.toString(act));
 	}
 

@@ -54,4 +54,17 @@ public class DALHelperTest {
 		assertEquals(exp, act);
 		//DALHelper.ToXml(rs);
 	}
+	
+	
+	@Test
+	public void testGetPrimaryKey() {
+		String exp =  "0";
+		
+		
+		DALHelper.getPrimaryKey("pm_log", "log");
+		DALHelper.getPrimaryKey("STUDENT", "test");
+		//DALHelper.getPrimaryKey("pfs_usermessage", "pfs");
+		assertEquals(exp, "0");
+		//DALHelper.ToXml(rs);
+	}
 }
