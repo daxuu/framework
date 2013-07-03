@@ -1,13 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-
+<!-- 
+{"xconfig":{"records":{"redord":[{"id":"1","stu_no":"001","name":"jerry","sex":"M","age":"12","birthday":"2001-12-01","update_date":"2001-12-01"},{"id":"2","stu_no":"002","name":"sunny","sex":"F","age":"12","birthday":"2001-12-02","update_date":"2001-12-02"},{"id":"3","stu_no":"003","name":"rayd","sex":"M","age":"23","birthday":"2001-12-03","update_date":"2001-12-03"}]}},"info":{"count":"3"}}
+ -->
 <xconfig>
-  <student>
-    <id s="22" d="2" n="false" k="false"/>
-    <stu_no s="8" d="12" n="true" k="false"/>
-    <name s="20" d="12" n="true" k="false"/>
-    <sex s="2" d="12" n="true" k="false"/>
-    <age s="22" d="2" n="true" k="false"/>
-    <birthday s="7" d="93" n="true" k="false"/>
-    <update_date s="7" d="93" n="true" k="false"/>
-  </student>
+	<records>
+		<record>
+			<id>1</id>
+			<stu_no>001</stu_no>
+			<name>jerry</name>
+			<sex>M</sex>
+			<age>12</age>
+			<birthday>2001-12-01</birthday>
+			<update_date>2001-12-01</update_date>
+		</record>
+		<record>
+			<id>2</id>
+			<stu_no>002</stu_no>
+			<name>sunny</name>
+			<sex>F</sex>
+			<age>12</age>
+			<birthday>2001-12-02</birthday>
+			<update_date>2001-12-02</update_date>
+		</record>
+		<record>
+			<id>3</id>
+			<stu_no>003</stu_no>
+			<name>rayd</name>
+			<sex>M</sex>
+			<age>23</age>
+			<birthday>2001-12-03</birthday>
+			<update_date>2001-12-03</update_date>
+		</record>
+		
+	</records>
 </xconfig>

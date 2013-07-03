@@ -3,6 +3,7 @@ package Junit.Data;
 import static org.junit.Assert.*;
 
 import java.sql.SQLClientInfoException;
+import java.util.ArrayList;
 
 import org.junit.After;
 import org.junit.Before;
@@ -58,13 +59,23 @@ public class DALHelperTest {
 	
 	@Test
 	public void testGetPrimaryKey() {
-		String exp =  "0";
-		
-		
-		DALHelper.getPrimaryKey("pm_log", "log");
-		DALHelper.getPrimaryKey("STUDENT", "test");
+		String exp = "log_id";
+		ArrayList<String> ret = DALHelper.getPrimaryKey("pm_log", "log");
+		//DALHelper.getPrimaryKey("STUDENT", "test");
 		//DALHelper.getPrimaryKey("pfs_usermessage", "pfs");
-		assertEquals(exp, "0");
+		
+		assertTrue(ret.contains(exp));
+	
 		//DALHelper.ToXml(rs);
+	}
+	
+	@Test
+	public void testQueryJSON() {
+		int exp =  0;
+		//String sqlString  = "select * from pm_log";
+		String sqlString  = "select * from view_userm where user_id=181241";
+		String ret = DALHelper.QueryJSON(sqlString, "pfs");
+		
+		assertEquals(exp, ret.indexOf('{'));
 	}
 }

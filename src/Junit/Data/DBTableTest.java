@@ -37,8 +37,17 @@ public class DBTableTest {
 		DBTable tb = new DBTable();
 		tb.setDatabaseName("log");
 		tb.setTableName("pm_log");
-		//tb.setDataSourceName("STUDENT");
 		tbSchema = tb.getTableSchema();
+		
+		tb.setDatabaseName("pfs");
+		tb.setTableName("pfs_userm");
+		tbSchema = tb.getTableSchema();
+		
+		tb.setDatabaseName("test");
+		tb.setTableName("student");
+		tbSchema = tb.getTableSchema();
+
+		
 		Document doc =tbSchema.getDocument();
 		String act = doc.selectSingleNode(exp).getName();
 		

@@ -25,16 +25,15 @@ public class JsonHelper {
 
 	/**
 	 * 
-	 * 功能概述：  
-	 * @param rs_data ResultSet資料集合
+	 * 功能概述：
+	 * 
+	 * @param rs_data
+	 *            ResultSet資料集合
 	 * @return 数据转换成JSON格式后的字符，以records开头
-	 * @author lucky  
-	 * 创建时间：Jun 11, 2013 2:53:12 PM  
-	 * 修改人：lucky
-	 * 修改时间：Jun 11, 2013 2:53:12 PM  
-	 * 修改备注：字段名称全部转换成小写，  
-	 * @version  
-	 *
+	 * @author lucky 创建时间：Jun 11, 2013 2:53:12 PM 修改人：lucky 修改时间：Jun 11, 2013
+	 *         2:53:12 PM 修改备注：字段名称全部转换成小写，
+	 * @version
+	 * 
 	 */
 	public static String DataSetToJson(ResultSet rs_data) {
 		String ret = "";
@@ -52,8 +51,8 @@ public class JsonHelper {
 					jsonBuilder.append("{");
 					for (int j = 0; j < cols; j++) {
 						jsonBuilder.append("\"");
-						//暂时取消
-						//jsonBuilder.append(Helper.Tools.SafeJSON(rsmd.getColumnName(i).toLowerCase()));
+						// 暂时取消
+						// jsonBuilder.append(Helper.Tools.SafeJSON(rsmd.getColumnName(i).toLowerCase()));
 						jsonBuilder.append(rsmd.getColumnName(i).toLowerCase());
 						jsonBuilder.append("\":\"");
 						jsonBuilder.append(stringToJson(rs_data.getString(i)));
@@ -112,7 +111,8 @@ public class JsonHelper {
 				for (Object obj : ((Map<?, ?>) o).keySet()) {
 					Element keyElement = nodeElement.addElement("key");
 					keyElement.addAttribute("label", String.valueOf(obj));
-					keyElement.setText(String.valueOf(((Map<?, ?>) o).get(obj)));
+					keyElement
+							.setText(String.valueOf(((Map<?, ?>) o).get(obj)));
 				}
 			} else {
 				Element keyElement = nodeElement.addElement("key");
@@ -210,9 +210,10 @@ public class JsonHelper {
 	 * @param xml
 	 * @return
 	 */
-	public static String xmltoJson(String xml) {
-		XMLSerializer xmlSerializer = new XMLSerializer();
-		return xmlSerializer.read(xml).toString();
+	public static String xmltoJson(String s_xml) {
+		XMLSerializer x = new XMLSerializer();
+		JSON json = x.read(s_xml);
+		return json.toString();
 	}
 
 	/**
@@ -235,100 +236,102 @@ public class JsonHelper {
 		}
 		return s;
 	}
-	
+
 	/**
-     * 生成js数据
-     * @param 元数据map
-     * @return js数据
-     */
-    @SuppressWarnings("unchecked")
-    public static String createJsData(Object obj) {
-        if (null == obj) {
-            return "\"\"";
-        }
-        StringBuffer resultStr = new StringBuffer();
-        if (obj instanceof Collection) {    // 集合List、Set等类型
-            resultStr.append("[");
-            Collection collection = (Collection) obj;
-            if (collection.size() > 0) {
-                Object[] collectionObj = collection.toArray();
-                for (int i = 0; i < collectionObj.length; i++) {
-                    resultStr.append(createJsData(collectionObj[i]) + ",");
-                }
-                resultStr.deleteCharAt(resultStr.lastIndexOf(","));
-            }
-            resultStr.append("]");
-        } else if (obj instanceof Map) {    // Map类型
-            resultStr.append("{");
-            Map map = (Map) obj;
-            if (map.size() > 0) {
-                Iterator<Entry> iter = map.entrySet().iterator();
-                while (iter.hasNext()) {
-                    Map.Entry entry = iter.next();
-                    String key = entry.getKey().toString();
-                    resultStr.append("\"" + key + "\":");    // jquery1.4以上要求双引号包裹
-                    Object tempObj = entry.getValue();
-                    resultStr.append(createJsData(tempObj) + ",");
-                }
-                resultStr.deleteCharAt(resultStr.lastIndexOf(","));
-            }
-            resultStr.append("}");
-        } else {    // 基本类型
-            try {
-                int arrLength = Array.getLength(obj);
-                resultStr.append("[");
-                if (arrLength > 0) {
-                    for (int i = 0; i < arrLength; i++) {
-                        resultStr.append(createJsData(Array.get(obj, i)) + ",");
-                    }
-                    resultStr.deleteCharAt(resultStr.lastIndexOf(","));
-                }
-                resultStr.append("]");
-            } catch (IllegalArgumentException e) {    // 不是数组，是最基本的数据
-                resultStr.append("\"" + stringToJson(obj + "") + "\"");
-            }
-        }
-        return resultStr.toString();
-    }
-    
-    /**
-     * 处理特殊字符
-     * @param json字符串
-     * @return 处理过的字符串
-     */
-    public static String stringToJson(String str) {
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < str.length(); i++) {
-            char c = str.charAt(i);
-            switch (c) {
-                case '\"':
-                    sb.append("\\\"");
-                    break;
-                case '\\':
-                    sb.append("\\\\");
-                    break;
-                case '/':
-                    sb.append("\\/");
-                    break;
-                case '\b':
-                    sb.append("\\b");
-                    break;
-                case '\f':
-                    sb.append("\\f");
-                    break;
-                case '\n':
-                    sb.append("\\n");
-                    break;
-                case '\r':
-                    sb.append("\\r");
-                    break;
-                case '\t':
-                    sb.append("\\t");
-                    break;
-                default:
-                    sb.append(c);
-            }
-        }
-        return sb.toString();
-    }
+	 * 生成js数据
+	 * 
+	 * @param 元数据map
+	 * @return js数据
+	 */
+	@SuppressWarnings("unchecked")
+	public static String createJsData(Object obj) {
+		if (null == obj) {
+			return "\"\"";
+		}
+		StringBuffer resultStr = new StringBuffer();
+		if (obj instanceof Collection) { // 集合List、Set等类型
+			resultStr.append("[");
+			Collection collection = (Collection) obj;
+			if (collection.size() > 0) {
+				Object[] collectionObj = collection.toArray();
+				for (int i = 0; i < collectionObj.length; i++) {
+					resultStr.append(createJsData(collectionObj[i]) + ",");
+				}
+				resultStr.deleteCharAt(resultStr.lastIndexOf(","));
+			}
+			resultStr.append("]");
+		} else if (obj instanceof Map) { // Map类型
+			resultStr.append("{");
+			Map map = (Map) obj;
+			if (map.size() > 0) {
+				Iterator<Entry> iter = map.entrySet().iterator();
+				while (iter.hasNext()) {
+					Map.Entry entry = iter.next();
+					String key = entry.getKey().toString();
+					resultStr.append("\"" + key + "\":"); // jquery1.4以上要求双引号包裹
+					Object tempObj = entry.getValue();
+					resultStr.append(createJsData(tempObj) + ",");
+				}
+				resultStr.deleteCharAt(resultStr.lastIndexOf(","));
+			}
+			resultStr.append("}");
+		} else { // 基本类型
+			try {
+				int arrLength = Array.getLength(obj);
+				resultStr.append("[");
+				if (arrLength > 0) {
+					for (int i = 0; i < arrLength; i++) {
+						resultStr.append(createJsData(Array.get(obj, i)) + ",");
+					}
+					resultStr.deleteCharAt(resultStr.lastIndexOf(","));
+				}
+				resultStr.append("]");
+			} catch (IllegalArgumentException e) { // 不是数组，是最基本的数据
+				resultStr.append("\"" + stringToJson(obj + "") + "\"");
+			}
+		}
+		return resultStr.toString();
+	}
+
+	/**
+	 * 处理特殊字符
+	 * 
+	 * @param json字符串
+	 * @return 处理过的字符串
+	 */
+	public static String stringToJson(String str) {
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < str.length(); i++) {
+			char c = str.charAt(i);
+			switch (c) {
+			case '\"':
+				sb.append("\\\"");
+				break;
+			case '\\':
+				sb.append("\\\\");
+				break;
+			case '/':
+				sb.append("\\/");
+				break;
+			case '\b':
+				sb.append("\\b");
+				break;
+			case '\f':
+				sb.append("\\f");
+				break;
+			case '\n':
+				sb.append("\\n");
+				break;
+			case '\r':
+				sb.append("\\r");
+				break;
+			case '\t':
+				sb.append("\\t");
+				break;
+			default:
+				sb.append(c);
+			}
+		}
+		return sb.toString();
+	}
 }

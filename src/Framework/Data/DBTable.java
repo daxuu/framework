@@ -196,30 +196,7 @@ public class DBTable {
 	// / Database类别，如SqlServer，Sqlite，Oracle，DB2,MySql等
 	// / </summary>
 	public dbType getDatabaseType() {
-		dbType ret = dbType.sqlserver;
-		String provider = Global.AppConfig("log_url").toLowerCase();
-
-		if (provider.indexOf("sqlite") > 0) {
-			ret = dbType.sqlite;
-		} else if (provider.indexOf("oracle") > 0) {
-			ret = dbType.oracle;
-		} else if (provider.indexOf("sqlserver") > 0) {
-			ret = dbType.sqlserver;
-		} else if (provider.indexOf("mysql") > 0) {
-			ret = dbType.mysql;
-		} else if (provider.indexOf("db2") > 0) {
-			ret = dbType.db2;
-		} else if (provider.indexOf("sybase") > 0) {
-			ret = dbType.sybase;
-		} else if (provider.indexOf("Informix") > 0) {
-			ret = dbType.Informix;
-		} else if (provider.indexOf("postgresql") > 0) {
-			ret = dbType.postgresql;
-		} else if (provider.indexOf("access") > 0) {
-			ret = dbType.access;
-		}
-
-		return ret;
+		return DALHelper.getDbType();
 	}
 
 	/**
@@ -366,10 +343,10 @@ public class DBTable {
 
 	public String QueryJson(String s_fields, String s_cond) {
 		String ret = null;
-
-		XmlDocModel xData = QueryXml(s_fields, s_cond);
-
-		ret = JsonHelper.xmltoJson(xData.toString());
+		//XmlDocModel xData = QueryXml(s_fields, s_cond);
+		//ret = JsonHelper.xmltoJson(xData.toString());
+		DALHelper.Query(this.getDatabaseName(), this.getDataSourceName(), s_fields,  s_cond);
+		
 
 		return ret;
 	}

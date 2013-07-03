@@ -118,14 +118,13 @@ public class DALHelper {
 	 * @version
 	 * 
 	 */
-	private static boolean closeDatabase(Connection conn) {
+	public static boolean closeDatabase(Connection conn) {
 		boolean ret = false;
 		if (conn != null) {
 			try {
 				conn.close();
 				ret = true;
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -144,14 +143,13 @@ public class DALHelper {
 	 * @version
 	 * 
 	 */
-	private static boolean closeReultSet(ResultSet rs) {
+	public static boolean closeReultSet(ResultSet rs) {
 		boolean ret = false;
 		if (rs != null) {
 			try {
 				rs.close();
 				ret = true;
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -170,7 +168,7 @@ public class DALHelper {
 	 * @version
 	 * 
 	 */
-	private static boolean closeStatement(Statement st) {
+	public static boolean closeStatement(Statement st) {
 		boolean ret = false;
 		if (st != null) {
 			try {
@@ -184,31 +182,53 @@ public class DALHelper {
 		return ret;
 	}
 
-	public static ArrayList<String> getPrimaryKey(String s_tableName, String s_dbName){
+	/**
+	 * 
+	 * 功能概述：取得TABLE的Primary Key 字段列表
+	 * 
+	 * [示例] <blockquote>
+	 * 
+	 * <pre>
+	 *  ArrayList<String> pks = getPrimaryKey("pm_log","log");
+	 * 	pks.contains(colElement.getName())?"true":"false")
+	 * </pre>
+	 * 
+	 * </blockquote>
+	 * 
+	 * @param s_tableName
+	 *            表名
+	 * @param s_dbName
+	 *            database名称
+	 * @return 为Primary Key的子段清单
+	 * @author rayd 创建时间：Jul 2, 2013 8:21:31 AM 修改人：rayd 修改时间：Jul 2, 2013
+	 *         8:21:31 AM 修改备注：
+	 * @throws
+	 * @see
+	 * @since 1.0
+	 * 
+	 */
+	public static ArrayList<String> getPrimaryKey(String s_tableName,
+			String s_dbName) {
 		ArrayList<String> ret = new ArrayList<String>();
 		Connection db = null;
 		ResultSet ids = null;
 		DatabaseMetaData dbmd = null;
-		
+
 		try {
 			db = CreateDatabase(s_dbName);
 			dbmd = db.getMetaData();
 			ids = dbmd.getPrimaryKeys(null, null, s_tableName.toUpperCase());
 			while (ids != null && ids.next()) {
 				String col = ids.getString("COLUMN_NAME");
-				
 				ret.add(col.toLowerCase());
-				//String key = ids.getString("PK_NAME");
-				//System.out.println(col + "########" + key);
+				// String key = ids.getString("PK_NAME");
+				// System.out.println(col + "########" + key);
 			}
 
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
-			// TODO: handle exception
-		}catch (Exception e2) {
+		} catch (Exception e2) {
 			System.out.println(e2.getMessage());
-				// TODO: handle exception
-			
 		} finally {
 			closeReultSet(ids);
 			closeDatabase(db);
@@ -217,21 +237,32 @@ public class DALHelper {
 		return ret;
 	}
 
-	// 判斷是否為Primary Key欄
-	private static boolean isPrimaryKey(ResultSet rsKeys, String fldName)
-			throws SQLException {
-		boolean ret = false;
-		// int i =1;
-		// MyLogger.Write(rsKeys.);
-		while (rsKeys != null && rsKeys.next()) {
-			String pk = rsKeys.getString(1);
-			if (rsKeys.getString("column_name").toLowerCase() == fldName
-					.toLowerCase()) {
-				ret = true;
-			}
-			// i++;
+	//取得database type
+	public static dbType getDbType(){
+		dbType ret = null;
+		//java.sql.DatabaseMetaData dbmd = conn.getMetaData();
+		//String provider = dbmd.getURL().toLowerCase();
+		String provider = Global.AppConfig("log_url").toLowerCase();
+				
+		if (provider.indexOf("sqlite") >= 0) {
+			ret = dbType.sqlite;
+		} else if (provider.indexOf("oracle") >= 0) {
+			ret = dbType.oracle;
+		} else if (provider.indexOf("sqlserver") >= 0) {
+			ret = dbType.sqlserver;
+		} else if (provider.indexOf("mysql") >= 0) {
+			ret = dbType.mysql;
+		} else if (provider.indexOf("db2") >= 0) {
+			ret = dbType.db2;
+		} else if (provider.indexOf("sybase") >= 0) {
+			ret = dbType.sybase;
+		} else if (provider.indexOf("informix") >= 0) {
+			ret = dbType.Informix;
+		} else if (provider.indexOf("postgresql") >= 0) {
+			ret = dbType.postgresql;
+		} else if (provider.indexOf("access") >= 0) {
+			ret = dbType.access;
 		}
-
 		return ret;
 	}
 
@@ -318,7 +349,7 @@ public class DALHelper {
 		ResultSet rs = null;
 		ResultSet rsKeys = null;
 		Connection conn = null;
-
+		String colType = "system.string";
 		String sql = String.format("select * from %1$s where 1>1", dsn);
 		XmlDocModel xSchema = new XmlDocModel();
 		// ResultSet rs;
@@ -347,11 +378,127 @@ public class DALHelper {
 									"s",
 									String.format("%1$s",
 											rsmd.getColumnDisplaySize(i)));
-					colElement.addAttribute("d", String.format("%1$s", rsmd
-							.getColumnTypeName(i).toLowerCase()));
+					//column type
+					switch (rsmd.getColumnType(i)) {
+					case Types.ARRAY:
+						colType = "array";
+						break;
+					case Types.BINARY:
+						colType = "binary";
+						break;
+					case Types.VARBINARY:
+						colType = "binary";
+						break;
+					case Types.BIT:
+						colType = "bit";
+						break;
+					case Types.BLOB:
+						colType = "blob";
+						break;
+					case Types.BOOLEAN:
+						colType = "boolean";
+						break;
+					case Types.CLOB:
+						colType = "clob";
+						break;
+					case Types.DATALINK:
+						colType = "datalink";
+						break;
+					case Types.DISTINCT:
+						colType = "distinct";
+						break;
+					case Types.JAVA_OBJECT:
+						colType = "object";
+						break;
+					case Types.LONGVARBINARY:
+						colType = "binary";
+						break;
+					case Types.NCLOB:
+						colType = "nclob";
+						break;
+					case Types.NULL:
+						colType = "null";
+						break;
+					case Types.OTHER:
+						colType = "other";
+						break;
+					case Types.REF:
+						colType = "ref";
+						break;
+					case Types.ROWID:
+						colType = "rowid";
+						break;
+					case Types.SQLXML:
+						colType = "sqlxml";
+						break;
+					case Types.STRUCT:
+						colType = "struct";
+						
+						break;
+					case Types.DATE:
+						colType = "system.datetime";
+						break;
+					case Types.TIME:
+						colType = "system.datetime";
+						break;
+					case Types.TIMESTAMP:
+						colType = "system.datetime";
+						break;
+
+					case Types.DECIMAL:
+						colType = "system.decimal";
+						break;
+					case Types.NUMERIC:
+						colType = "system.decimal";
+						break;
+					case Types.BIGINT:
+						colType = "system.decimal";
+						break;
+					case Types.DOUBLE:
+						colType = "system.decimal";
+						break;
+					case Types.FLOAT:
+						colType = "system.decimal";
+						break;
+					case Types.SMALLINT:
+						colType = "system.decimal";
+						break;
+					case Types.INTEGER:
+						colType = "system.decimal";
+						break;
+					case Types.TINYINT:
+						colType = "system.decimal";
+						break;
+					case Types.CHAR:
+						colType = "system.String";
+						break;
+					case Types.LONGNVARCHAR:
+						colType = "system.String";
+						break;
+					case Types.NCHAR:
+						colType = "system.String";
+						break;
+					case Types.NVARCHAR:
+						colType = "system.String";
+						break;
+					case Types.VARCHAR:
+						colType = "system.String";
+						break;
+					case Types.LONGVARCHAR:
+						colType = "system.String";
+						break;
+					default:
+						break;
+					}
+					//sqlite 全部为string type
+					if(getDbType()==dbType.sqlite){
+						colType = "system.String";
+					}
+					colElement.addAttribute("d", String.format("%1$s",colType));
 					colElement.addAttribute("n",
 							rsmd.isNullable(i) == 0 ? "false" : "true");
-					colElement.addAttribute("k",pksArrayList.contains(colElement.getName())?"true":"false");
+					colElement.addAttribute("k", pksArrayList
+							.contains(colElement.getName()) ? "true" : "false");
 				}
 			}
 		} catch (SQLException exSql) {
@@ -428,7 +575,64 @@ public class DALHelper {
 			// this.setDocument(doc);
 		return xm;
 	}
+	/**
+	 * 
+	 * 功能概述：
+	 *
+	 *[示例] 
+	 * <blockquote><pre>
+	 *{"xconfig":{"records":{"redord":[{"id":"1","stu_no":"001","name":"jerry","sex":"M","age":"12","birthday":"2001-12-01","update_date":"2001-12-01"},{"id":"2","stu_no":"002","name":"sunny","sex":"F","age":"12","birthday":"2001-12-02","update_date":"2001-12-02"},{"id":"3","stu_no":"003","name":"rayd","sex":"M","age":"23","birthday":"2001-12-03","update_date":"2001-12-03"}]}},"info":{"count":"3"}}
+	 *</pre></blockquote> 
+	 * @param rs
+	 * @return
+	 * @throws SQLException
+	 * @author rayd 
+	 * 创建时间：Jul 3, 2013 4:50:24 PM  
+	 * 修改人：rayd
+	 * 修改时间：Jul 3, 2013 4:50:24 PM  
+	 * 修改备注：
+	 * @throws 
+	 * @see   
+	 * @since 1.0 
+	 *
+	 */
+	public static String ToJSON(ResultSet rs) throws SQLException {
+		String ret = "";
+		String sb_start = "{\"xconfig\":{\"records\":{\"record\":[{";
+		String sb_end = "]}},\"info\":{\"count\":\"%1$s\"}}";
+		String tmpl_keyvalue = "\"%1$s\":\"%2$s\"";
+		StringBuffer sbData = new StringBuffer(sb_start);
+		
+		ResultSetMetaData rsmd = rs.getMetaData();
+		int cols = rsmd.getColumnCount(); // 得到数据集的列数
+		int row=0;
 
+		// every row
+		while (rs.next()) {
+			if(row>0){
+				sbData.append(",{");
+			}
+			// every col
+			for (int i = 1; i <= cols; i++) {
+				if (rsmd.getColumnName(i) != null) {
+					if(i>1){
+						sbData.append(",");
+					}
+					sbData.append(String.format(tmpl_keyvalue, rsmd.getColumnName(i).toLowerCase(),rs.getString(i)));
+				}
+			}// end for
+			
+			sbData.append("}");
+			
+			row++;
+		}// end while
+		
+		sbData.append(String.format(sb_end, Integer.toString(row)));
+		
+		ret = sbData.toString();
+		return ret;
+		
+	}
 	/*
 	 * XmlDocModel中有Save方法，直接使用 /// <summary> /// 保存XML文檔到提定目的地 /// </summary>
 	 * /// <param name="argXml">待保存的XMLDocument Object</param> /// <param
@@ -647,47 +851,40 @@ public class DALHelper {
 		return Query(sql, argDbName);
 	}
 
-	/*
-	 * /// <summary> /// 取得資料，以JSON格式返回，指定DB，TABLE，Field,條件，封裝類型 /// </summary>
-	 * /// <param name="argDbName">资料庫名称</param> /// <param
-	 * name="argDataSourceName">资料来源名称，如TABLE、View名称</param> /// <param
-	 * name="argFields">栏位清单，以","号分隔</param> /// <param
-	 * name="argCond">条件表达式，如：LastName = 'Rose' AND Birday =
-	 * '2000/09/01'</param> /// <param name="argIsFlat">將欄位的節點變成屬性</param> ///
-	 * <param
-	 * name="argIsText">true:若单独取一个栏位，且只有一笔资料时直接取得返回；false:將结果封装成XML</param> ///
-	 * <returns>将资料以文字形体返回.</returns> /// <remarks> /// <para>[規格說明] ///
-	 * 指定DB，TABLE，Field,條件，封裝類型 /// </para> /// <para>[異動記錄] /// AUTHOR DATE
-	 * NOTE /// ========== ========== ========================================
-	 * /// Rayd 2012-11-07 Create /// </para> /// <example> /// <code> ///
-	 * String cond = String.format("projectid={0}",new String[]{'1'}); ///
-	 * String jsonProject = Query("CRM","PROJECT","PROJECTID,PROJECTNAME",cond);
-	 * /// </code> /// </example> /// </remarks> public static String
-	 * Query(String argDbName, String argDataSourceName, String argFields,
-	 * String argCond) { String ret = null;
-	 * 
-	 * Database db = DALHelper.CreateDatabase(argDbName);
-	 * 
-	 * 
-	 * String sql = "SELECT {0} FROM {1} WHERE {2}";
-	 * 
-	 * sql = String.Format(sql, argFields, argDataSourceName, argCond);
-	 * 
-	 * DbCommand dbCommand = db.GetSqlStringCommand(sql);
-	 * dbCommand.CommandTimeout = 6000; try {
-	 * 
-	 * using (DataSet ds = db.ExecuteDataSet(dbCommand)) { //转换成JSON格式字串 ret =
-	 * Convert2.DataSetToJson(ds);
-	 * 
-	 * } } catch (Exception ex) { MyException.DbAccessException exDb = new
-	 * MyException.DbAccessException("DB00", argDataSourceName, ex, sql); throw
-	 * exDb; } finally { //若在Config中設定開啟Log功能 if
-	 * (Manuan.eBridge.Framework.Data.Global.AppConfig("open_log") == "1") {
-	 * Manuan.eBridge.Framework.MyLogger.Write(sql, "", "Message",
-	 * argDataSourceName); } }
-	 * 
-	 * return ret; }
-	 */
+	public static String QueryJSON(String argSql, String argDbName) {
+		String ret = null;
+		Connection db = null;
+		Statement st = null;
+		ResultSet rs = null;
+		// DbCommand dbCommand = db.GetSqlStringCommand(argSql);
+		try {
+			if (argDbName == "_DEFAULT_DATABASE") {
+				db = CreateDatabase();
+			} else {
+				db = CreateDatabase(argDbName);
+
+			}
+
+			st = db.createStatement();
+			rs = st.executeQuery(argSql);
+			ret = ToJSON(rs);
+			
+		} catch (Exception ex) {
+			String dsn = getDSN(argSql, true);
+			DALException exDb = new DALException("DB01", dsn, ex, argSql);
+			// throw exDb;
+		} finally {
+			closeReultSet(rs);
+			closeStatement(st);
+			closeDatabase(db);
+			// 若在Config中設定開啟Log功能
+			if (Global.AppConfig("open_log").equals("1")) {
+				MyLogger.Write(argSql, "", "Message", argDbName);
+			}
+		}
+
+		return ret;
+	}
 
 	/**
 	 * 
@@ -1216,8 +1413,7 @@ public class DALHelper {
 						list.put(rsmd.getColumnName(i).toLowerCase(),
 								Boolean.toString(rs.getBoolean(i)));
 						break;
-					case Types.CHAR:
-						break;
+
 					case Types.CLOB:
 						break;
 					case Types.DATALINK:
@@ -1291,7 +1487,10 @@ public class DALHelper {
 						list.put(rsmd.getColumnName(i).toLowerCase(),
 								Integer.toString(rs.getInt(i)));
 						break;
-
+					case Types.CHAR:
+						list.put(rsmd.getColumnName(i).toLowerCase(),
+								rs.getNString(i));
+						break;
 					case Types.LONGNVARCHAR:
 						list.put(rsmd.getColumnName(i).toLowerCase(),
 								rs.getNString(i));
