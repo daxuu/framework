@@ -1,5 +1,6 @@
 package Framework.Data;
 
+import java.sql.SQLClientInfoException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.locks.Condition;
@@ -318,7 +319,7 @@ public class DBTable {
 
 	public XmlDocModel QueryXml(String s_condorsql) {
 		XmlDocModel ret = null;
-		ret = DALHelper.Query(s_condorsql);
+		ret = DALHelper.Query(s_condorsql,this.getDatabaseName());
 		return ret;
 	}
 
@@ -332,22 +333,34 @@ public class DBTable {
 	// #endregion
 
 	// #region QueryJson
-	public String QueryJson(String s_condorsql) {
+	public String QueryJson(String s_condorsql,int i_page,int i_pageSize) {
 		String ret = null;
-		XmlDocModel xData = QueryXml(s_condorsql);
-
-		ret = JsonHelper.xmltoJson(xData.toString());
-
+		String sql = "";
+		//完整的SELECT 语句
+		if(s_condorsql.toLowerCase().indexOf("select")==0 && s_condorsql.toLowerCase().indexOf("from")>0){
+			sql = s_condorsql;
+		}else{//条件
+			sql = String.format("select %1$s from %2$s where %3$s", "*",this.getDataSourceName(),s_condorsql);
+		}
+		ret  = DALHelper.QueryJson(sql,this.getDatabaseName(),i_page,i_pageSize);
 		return ret;
 	}
 
-	public String QueryJson(String s_fields, String s_cond) {
+	public String QueryJson(String s_fields, String s_cond,int i_page,int i_pageSize) {
 		String ret = null;
-		//XmlDocModel xData = QueryXml(s_fields, s_cond);
-		//ret = JsonHelper.xmltoJson(xData.toString());
-		DALHelper.Query(this.getDatabaseName(), this.getDataSourceName(), s_fields,  s_cond);
+
+		String sql = String.format("select %1$s from %2$s where %3$s", s_fields,this.getDataSourceName(),s_cond);
+		
+		ret = QueryJson(sql,i_page,i_pageSize);
 		
 
+		return ret;
+	}
+	public String QueryJson(String s_fields, String s_cond) {
+		String ret = null;
+
+		String sql = String.format("select %1$s from %2$s where %3$s", s_fields,this.getDataSourceName(),s_cond);
+		ret = QueryJson(sql,this.getDatabaseName());
 		return ret;
 	}
 

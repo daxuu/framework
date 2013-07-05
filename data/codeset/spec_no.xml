@@ -6,5 +6,5 @@
   <sec value="00" format="MM" needbegin="0">$DATE</sec>  
   <sec value="00" format="mm" needbegin="0">$DATE</sec>  
   <sec>-</sec>  
-  <sec value="177" format="0000">$SERIAL</sec> 
+  <sec value="178" format="0000">$SERIAL</sec> 
 </coderule>

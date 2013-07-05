@@ -37,21 +37,21 @@ public class BLLInterface {
 	// / 分页xsl文件路径
 	// / </summary>
 	public String getPosXslPath() {
-		return Global.AppDir() + "data\\xslt\\position.xsl";
+		return Global.AppDir() + "/data/xslt/position.xsl";
 	}
 
 	// / <summary>
 	// / 分页xsl文件路径
 	// / </summary>
 	public String getSortXslPath() {
-		return Global.AppDir() + "data\\xslt\\sort.xsl";
+		return Global.AppDir() + "/data/xslt/sort.xsl";
 	}
 
 	// / <summary>
 	// / 分页xsl文件路径
 	// / </summary>
 	public String getReportXslPath() {
-		return Global.AppDir() + "data\\xslt\\ReportTemplate.xslt";
+		return Global.AppDir() + "/data/xslt/ReportTemplate.xslt";
 	}
 
 	// / <summary>
@@ -154,21 +154,24 @@ public class BLLInterface {
 		}
 		this.setDataID(obj_id + Global.getAccountId());
 
-		//取消Cache,一次只要查詢一頁數據
+		// 取消Cache,一次只要查詢一頁數據
 		if (request_type.trim().toLowerCase().equals("query")) {
-			//直接将数据用JSON格式返回；
-			XmlDocModel xData = o_dal.QueryXml(s_fields, s_conds);
+			// 直接将数据用JSON格式返回；
+			// XmlDocModel xData = o_dal.QueryXml(s_fields, s_conds);
 			// cache data
-			//SetData(this.getDataID(), xData);
+			// SetData(this.getDataID(), xData);
 
-			//ret = TurnPage("1", size, xOptions);
+			// ret = TurnPage("1", size, xOptions);
+			ret = o_dal.QueryJson(s_fields, s_conds, 1, Integer.parseInt(size));
 
 		} else if (request_type.trim().toLowerCase().equals("page")) {
-			//分页是条件不变，取得不同页次的数据
-			//ret = TurnPage(curr_pages, size, xOptions);
+			// 分页是条件不变，取得不同页次的数据
+			// ret = TurnPage(curr_pages, size, xOptions);
+			ret = o_dal.QueryJson(s_fields, s_conds,
+					Integer.parseInt(curr_pages), Integer.parseInt(size));
 
 		} else if (request_type.trim().toLowerCase().equals("sort")) {
-			//排序需仅将本页数据进行排序，并记忆排序字段与类型
+			// 排序需仅将本页数据进行排序，并记忆排序字段与类型
 			// sortType option
 			if (xOptions.selectSingleNode("xconfig/sortType") != null) {
 				sortType = xOptions.selectSingleNode("xconfig/sortType")
@@ -184,14 +187,16 @@ public class BLLInterface {
 				fldname = xOptions.selectSingleNode("xconfig/fldname")
 						.getText();
 			}
-			//ret = Sort(curr_pages, size, fldname, dataType, sortType, xOptions);
+			// ret = Sort(curr_pages, size, fldname, dataType, sortType,
+			// xOptions);
 		} else if (request_type.trim().toLowerCase().equals("export")) {
-			//导出数据不分页，需将符合条件的数据全部导出；	
+			// 导出数据不分页，需将符合条件的数据全部导出；
 			// fldname option
 			if (xOptions.selectSingleNode("xconfig/id") != null) {
 				grid_id = xOptions.selectSingleNode("xconfig/id").getText();
 			}
-			//ret = Export(grid_id, fields);
+			XmlDocModel xDataDocModel = o_dal.QueryXml(s_fields, s_conds);
+			ret = Export(xDataDocModel,grid_id, fields);
 
 		}
 
@@ -221,9 +226,9 @@ public class BLLInterface {
 	// / </code>
 	// / </example>
 	// / </remarks>
-	// protected String TurnPage(String s_currpages, String s_size ,Element
-	// x_options)
-	// {
+
+	// protected String TurnPage(String s_currpages, String s_size,
+	// Element x_options) {
 	// String ret = "";
 	// int size = 10, curr = 0;
 	//
@@ -235,14 +240,14 @@ public class BLLInterface {
 	// int end = start + size;
 	//
 	// String info = "count=" + Integer.toString(xData.Count());
-	// //分割數據
-	// ret = Helper.Tools.XmlToJSON(xData.GetData(start, end,
-	// this.getPosXslPath()), info);
-	// //若Client端设定了解密，返回的资料需加密
-	// if(x_options.selectSingleNode("xconfig/decrypt")!=null &&
-	// x_options.selectSingleNode("xconfig/decrypt").getText()=="true"){
-	// ret =
-	// eBridge.Framework.Security.DES.encrypt(ret,eBridge.Framework.Helper.NumberConvert.getPrivateKey());
+	// // 分割數據
+	// ret = Helper.Tools.XmlToJSON(
+	// xData.GetData(start, end, this.getPosXslPath()), info);
+	// // 若Client端设定了解密，返回的资料需加密
+	// if (x_options.selectSingleNode("xconfig/decrypt") != null
+	// && x_options.selectSingleNode("xconfig/decrypt").getText() == "true") {
+	// ret = eBridge.Framework.Security.DES.encrypt(ret,
+	// eBridge.Framework.Helper.NumberConvert.getPrivateKey());
 	// }
 	// return ret;
 	// }
@@ -307,48 +312,51 @@ public class BLLInterface {
 	// return ret;
 	// }
 	//
-	// /// <summary>
-	// /// 轉出成Excel格式資料
-	// /// </summary>
-	// /// <returns>產生的文件路徑</returns>
-	// /// <remarks>
-	// /// <para>[規格說明]
-	// /// 1.size:
-	// /// 2.curr:
-	// /// 3.fldname:
-	// /// 4.sorttype:
-	// /// </para>
-	// /// <para>
-	// /// Change Log:
-	// /// Date Athor Remark
-	// /// ----------- ---------- ----------
-	// /// 2012-11-17 Rayd create
-	// ///
-	// /// </para>
-	// /// <example>
-	// /// <code>
-	// ///
-	// /// </code>
-	// /// </example>
-	// /// </remarks>
-	// protected String Export(String s_grid_id, String s_fields)
-	// {
-	// String ret = "";
-	// String elementId = s_grid_id;
-	// //String path = "\\data\\xslt\\report\\";
-	// String path = "/data/xslt/report/";
-	//
-	// String xslPath = elementId + ".xslt";
-	// String htmlPath = path + xslPath + ".xls";
-	//
-	// xslPath = Global.getAppDir() + path + xslPath;
-	// XmlDocModel xData = GetData(this.getDataID());
-	// XmlDocModel xCol = new XmlDocModel(s_fields);
-	//
-	// xData.GetExportXsltFile(xslPath, this.getReportXslPath(), xCol);
-	// ret = xData.Transform(xslPath);
-	// return htmlPath;
-	// }
+	
+	
+	
+	// / <summary>
+	// / 轉出成Excel格式資料
+	// / </summary>
+	// / <returns>產生的文件路徑</returns>
+	// / <remarks>
+	// / <para>[規格說明]
+	// / 1.size:
+	// / 2.curr:
+	// / 3.fldname:
+	// / 4.sorttype:
+	// / </para>
+	// / <para>
+	// / Change Log:
+	// / Date Athor Remark
+	// / ----------- ---------- ----------
+	// / 2012-11-17 Rayd create
+	// /
+	// / </para>
+	// / <example>
+	// / <code>
+	// /
+	// / </code>
+	// / </example>
+	// / </remarks>
+	public  String Export(XmlDocModel x_data,String s_grid_id, String s_fields) {
+		String ret = "";
+		String elementId = s_grid_id;
+		// String path = "\\data\\xslt\\report\\";
+		String path = "/data/xslt/report/";
+
+		String xslPath = elementId + ".xslt";
+		String htmlPath = path + xslPath + ".xls";
+
+		xslPath = Global.getAppDir() + path + xslPath;
+		//XmlDocModel xData = GetData(this.getDataID());
+		
+		XmlDocModel xCol = new XmlDocModel(s_fields);
+
+		 x_data.GetExportXsltFile(xslPath, this.getReportXslPath(), xCol);
+		ret = x_data.Transform(xslPath);
+		return htmlPath;
+	}
 	//
 	// /// <summary>
 	// /// 保存数据,分别调用增删改对应方法

@@ -73,8 +73,12 @@ public class DALHelperTest {
 	public void testQueryJSON() {
 		int exp =  0;
 		//String sqlString  = "select * from pm_log";
-		String sqlString  = "select * from view_userm where user_id=181241";
-		String ret = DALHelper.QueryJSON(sqlString, "pfs");
+		//String sqlString  = "select * from pfs_userm where user_id=181241";
+		String sqlString  = "select * from student";
+		String ret = DALHelper.QueryJson(sqlString, "test");
+		
+		sqlString  = "select * from student";
+		ret = DALHelper.QueryJson(sqlString, "test",1,10);
 		
 		assertEquals(exp, ret.indexOf('{'));
 	}

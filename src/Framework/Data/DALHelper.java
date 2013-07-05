@@ -64,8 +64,7 @@ public class DALHelper {
 		String user = Global.AppConfig(dbName.toLowerCase() + "_user");
 		String pwd = Global.AppConfig(dbName.toLowerCase() + "_pwd");
 		String url = Global.AppConfig(dbName.toLowerCase() + "_url");
-		String className = Global.AppConfig(dbName.toLowerCase()
-				+ "_class_name");
+		String className = Global.AppConfig(dbName.toLowerCase() + "_class_name");
 
 		try {
 			Class.forName(className);
@@ -633,6 +632,89 @@ public class DALHelper {
 		return ret;
 		
 	}
+	
+	/**
+	 * 
+	 * 功能概述：
+	 *
+	 *[示例] 
+	 * <blockquote><pre>
+	 * 
+	 *</pre></blockquote> 
+	 * @param rs
+	 * @param i_page 页次
+	 * @param i_pageSize 每页笔数
+	 * @return
+	 * @throws SQLException
+	 * @author rayd 
+	 * 创建时间：Jul 4, 2013 11:15:30 AM  
+	 * 修改人：rayd
+	 * 修改时间：Jul 4, 2013 11:15:30 AM  
+	 * 修改备注：
+	 * @throws 
+	 * @see   
+	 * @since 1.0 
+	 *
+	 */
+	public static String ToJSON(ResultSet rs ,int i_page,int i_pageSize) throws SQLException {
+		String ret = "";
+		String sb_start = "{\"xconfig\":{\"records\":{\"record\":[{";
+		String sb_end = "]}},\"info\":{\"count\":\"%1$s\"}}";
+		String tmpl_keyvalue = "\"%1$s\":\"%2$s\"";
+		StringBuffer sbData = new StringBuffer(sb_start);
+		
+		ResultSetMetaData rsmd = rs.getMetaData();
+		int cols = rsmd.getColumnCount(); // 得到数据集的列数
+		int row=0;
+		int start=0;
+		int pageSize = 10;
+		
+		//int start = (curr - 1) * size + 1;
+		//int end = start + size;
+		
+		if (i_pageSize>0){
+			pageSize = i_pageSize;
+		}
+		if(i_page==1){
+			start = 1;
+		}else{
+			start = (i_page-1) * i_pageSize + 1;
+		}
+		// every row
+		
+		while (rs.next()) {
+		//for(int r =start;r<= pageSize;r++){
+			//rs.next();
+			row++;
+			//跳到指定页次的记录
+			if(row < start){
+				continue;
+			}else if(row > (start+pageSize))//取一页后跳出
+			{
+				break;
+			}
+			
+			if(row > start){
+				sbData.append(",{");
+			}
+			// every col
+			for (int i = 1; i <= cols; i++) {
+				if (rsmd.getColumnName(i) != null) {
+					if(i>1){
+						sbData.append(",");
+					}
+					sbData.append(String.format(tmpl_keyvalue, rsmd.getColumnName(i).toLowerCase(),rs.getString(i)));
+				}
+			}// end for
+			
+		}// end while
+		
+		sbData.append(String.format(sb_end, Integer.toString(row)));
+		
+		ret = sbData.toString();
+		return ret;
+		
+	}
 	/*
 	 * XmlDocModel中有Save方法，直接使用 /// <summary> /// 保存XML文檔到提定目的地 /// </summary>
 	 * /// <param name="argXml">待保存的XMLDocument Object</param> /// <param
@@ -851,7 +933,7 @@ public class DALHelper {
 		return Query(sql, argDbName);
 	}
 
-	public static String QueryJSON(String argSql, String argDbName) {
+	public static String QueryJson(String argSql, String argDbName) {
 		String ret = null;
 		Connection db = null;
 		Statement st = null;
@@ -862,12 +944,46 @@ public class DALHelper {
 				db = CreateDatabase();
 			} else {
 				db = CreateDatabase(argDbName);
-
 			}
 
 			st = db.createStatement();
 			rs = st.executeQuery(argSql);
 			ret = ToJSON(rs);
+			
+		} catch (Exception ex) {
+			String dsn = getDSN(argSql, true);
+			DALException exDb = new DALException("DB01", dsn, ex, argSql);
+			// throw exDb;
+		} finally {
+			closeReultSet(rs);
+			closeStatement(st);
+			closeDatabase(db);
+			// 若在Config中設定開啟Log功能
+			if (Global.AppConfig("open_log").equals("1")) {
+				MyLogger.Write(argSql, "", "Message", argDbName);
+			}
+		}
+
+		return ret;
+	}
+
+	
+	public static String QueryJson(String argSql, String argDbName,int i_page,int i_pageSize) {
+		String ret = null;
+		Connection db = null;
+		Statement st = null;
+		ResultSet rs = null;
+		// DbCommand dbCommand = db.GetSqlStringCommand(argSql);
+		try {
+			if (argDbName == "_DEFAULT_DATABASE") {
+				db = CreateDatabase();
+			} else {
+				db = CreateDatabase(argDbName);
+			}
+
+			st = db.createStatement();
+			rs = st.executeQuery(argSql);
+			ret = ToJSON(rs,i_page,i_pageSize);
 			
 		} catch (Exception ex) {
 			String dsn = getDSN(argSql, true);
