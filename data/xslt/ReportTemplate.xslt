@@ -2,16 +2,14 @@
 <xsl:stylesheet version="1.0"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:msxsl="urn:schemas-microsoft-com:xslt"
 	exclude-result-prefixes="msxsl">
-
 	<xsl:template match="/">
-		<html xmlns="http://www.w3.org/1999/xhtml">
+		<html>
 			<head>
 				<title>export data</title>
 			</head>
 			<body>
 				<div>
 					<xsl:for-each select="/xconfig/records">
-
 						<table cellpadding="0" cellspacing="0" border="0" frame="border"
 							width="100%" style="font-size: 10pt">
 							<tr>
@@ -36,8 +34,5 @@
 				</div>
 			</body>
 		</html>
-
 	</xsl:template>
-
-
 </xsl:stylesheet>

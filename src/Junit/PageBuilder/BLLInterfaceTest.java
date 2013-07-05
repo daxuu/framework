@@ -27,7 +27,7 @@ public class BLLInterfaceTest {
 		PM_LOG log = new PM_LOG();
 		String sql =  "select * from pm_log";
 		XmlDocModel x_data = log.QueryXml(sql); 
-		String act = bll.Export(x_data, "pm_log", "<pm_msg/><pm_obj/><pm_content/><datatime/>");
+		String act = bll.Export(x_data, "pm_log", "<log_msg/><log_obj/><log_content/><datatime/>");
 		
 		assertEquals(exp, act);
 		

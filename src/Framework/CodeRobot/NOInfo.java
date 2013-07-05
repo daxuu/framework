@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.io.*;
 
 import Framework.Data.Global;
+import Framework.Helper.Tools;
 import Framework.Xml.*;
 //dom4j包
 import Framework.logger.MyLogger;
@@ -163,9 +164,9 @@ public class NOInfo {
 				oldValue = el.attribute("value").getValue();
 				// format 格式参考JDK API 的 java.text.SimpleDateFormat类
 				if (el.attribute("format") != null) {
-					newValue = formatDate(el.attribute("format").getValue());
+					newValue = Tools.formatDate(el.attribute("format").getValue());
 				} else {
-					newValue = formatDate(el.attribute("yyyyMMdd").getValue());
+					newValue = Tools.formatDate(el.attribute("yyyyMMdd").getValue());
 				}
 				// 若當前日期與記錄值不一致，則返回當前值，並要更新
 				// 若兩個值不等，則更新為新值。
@@ -221,36 +222,6 @@ public class NOInfo {
 		return sbCode.toString();
 	}
 
-	/**
-	 * 
-	 * 功能概述：格式化日期
-	 * 
-	 * @param s_format
-	 *            格式样式字串
-	 * @return 格式化日期后的日期，若有异常返回错误
-	 * @author lucky 
-	 * @创建时间：Jun 7, 2013 2:54:10 PM
-	 * @修改人：lucky 修改时间：Jun 7, 2013 2:54:10 PM 
-	 * @note：
-	 * @version
-	 * 
-	 */
-	public String formatDate(String s_format) {
-		String ret = "";
-		String defaultFormat = "yyMMdd";
-		SimpleDateFormat sFormat = new SimpleDateFormat(s_format);
-		try {
-			ret = sFormat.format(System.currentTimeMillis());
-		} catch (NullPointerException e) {
-			sFormat = new SimpleDateFormat(defaultFormat);
-			ret = sFormat.format(System.currentTimeMillis());
-			e.printStackTrace();
-		} catch (IllegalArgumentException e2) {
-			sFormat = new SimpleDateFormat(defaultFormat);
-			ret = sFormat.format(System.currentTimeMillis());
-			e2.printStackTrace();
-		}
-		return ret;
-	}
+
 
 }

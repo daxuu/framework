@@ -1,11 +1,28 @@
 package Framework.Helper;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.Iterator;
+
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.dom4j.*;
 
 import Framework.Data.JsonHelper;
 import Framework.Xml.XmlDocModel;
+import Framework.logger.MyLogger;
 
 public class Tools {
 
@@ -70,6 +87,265 @@ public class Tools {
     	return ret;
     	
     }
+    
+	/**
+	 * 
+	 * 功能概述：格式化日期
+	 * 
+	 * @param s_format
+	 *            格式样式字串
+	 * @return 格式化日期后的日期，若有异常返回错误
+	 * @author lucky 
+	 * @创建时间：Jun 7, 2013 2:54:10 PM
+	 * @修改人：lucky 修改时间：Jun 7, 2013 2:54:10 PM 
+	 * @note：
+	 * @version
+	 * 
+	 */
+	public static String formatDate(String s_format) {
+		String ret = "";
+		String defaultFormat = "yyMMdd";
+		SimpleDateFormat sFormat = new SimpleDateFormat(s_format);
+		try {
+			ret = sFormat.format(System.currentTimeMillis());
+		} catch (NullPointerException e) {
+			sFormat = new SimpleDateFormat(defaultFormat);
+			ret = sFormat.format(System.currentTimeMillis());
+			e.printStackTrace();
+		} catch (IllegalArgumentException e2) {
+			sFormat = new SimpleDateFormat(defaultFormat);
+			ret = sFormat.format(System.currentTimeMillis());
+			e2.printStackTrace();
+		}
+		return ret;
+	}
+
+	// / <summary>
+	// / 將Xml資料用指定的ＸＳＬＴ文件進行轉換。
+	// / </summary>
+	// / <param name="argXsltPath">Xslt文件名稱與路徑</param>
+	// / <param name="argXmlData">Xml資料</param>
+	// / <returns>轉換結果</returns>
+	// / <remarks>
+	// / <para>[規格說明]
+	// / </para>
+	// / <para>[異動記錄]
+	// / AUTHOR DATE NOTE
+	// / ========== ========== ========================================
+	// / Rayd 2008-09-20 Create
+	// / </para>
+	// / <example>
+	// / <code>
+	// /
+	// / </code>
+	// / </example>
+	// / </remarks>
+	// public String Transform(String argXsltPath, XmlDocModel argXmlData)
+	// {
+	// int pos = argXsltPath.LastIndexOf("\\");
+	// int pos2 = argXsltPath.LastIndexOf(".");
+	// String HtmlFilePath = argXsltPath + ".xls";
+	// XPathNavigator xpData = argXmlData.CreateNavigator(); ;
+	// XmlTextWriter myWriter;
+	// XslCompiledTransform xslTran = new XslCompiledTransform();
+	// try
+	// {
+	// //XslTransform xslTran = new XslTransform();//for 2003
+	// xslTran.Load(argXsltPath);
+	//
+	// }
+	// catch (Exception e)
+	// {
+	//
+	// }
+	// // This is for generating the output in new HTML
+	// myWriter = new XmlTextWriter(HtmlFilePath, System.Text.Encoding.Unicode);
+	//
+	// try
+	// {
+	// xslTran.Transform(xpData, null, myWriter);
+	// }
+	// catch (Exception ex)
+	// {
+	//
+	// }
+	// finally
+	// {
+	// myWriter.Close();
+	//
+	// }
+	//
+	// //return reader.ReadToEnd();
+	// return HtmlFilePath;
+	//
+	// }
+
+	/**
+	 * This method applies the xsl file to in file,and writes the output to out file.
+	 * 
+	 * @paraminFilename infilepath
+	 * @paramoutFilename outfilepath
+	 * @paramxslFilename xslfilepath
+	 */
+	public static String Transform(String argXsltPath,XmlDocModel x_doc) {
+		String HtmlFilePath = argXsltPath + ".xls";
+		String outFilename = HtmlFilePath;
+		String inFilename = argXsltPath + ".xml";
+		
+		try {
+			x_doc.Save(x_doc.getDocument(), inFilename);
+			// Create transformer factory
+			TransformerFactory factory = TransformerFactory.newInstance();
+
+			// Use the factory to create a template containing the xsl file
+			Templates template = factory.newTemplates(new StreamSource(
+					new FileInputStream(argXsltPath)));
+
+			// Use the template to create a transformer
+			Transformer xformer = template.newTransformer();
+
+			// Prepare the input and output files
+			Source source = new StreamSource(new FileInputStream(inFilename));
+			//new FileInputStream()
+			Result result = new StreamResult(new FileOutputStream(outFilename));
+
+			// Apply the xsl file to the source file and write the result to the
+			// output file
+			xformer.transform(source, result);
+			
+		} catch (FileNotFoundException e) {
+			MyLogger.Write(e.getMessage());
+			// File not found
+		} catch (TransformerConfigurationException e) {
+			MyLogger.Write(e.getMessage());
+			// An error occurred in the XSL file
+		} catch (TransformerException e) {
+			MyLogger.Write(e.getMessage());
+			// An error occurred while applying the XSL file
+			// Get location of error in input file
+		}
+		return HtmlFilePath;
+	}
+
+
+
+	// / <summary>
+	// / 取得XSLT文件。
+	// / </summary>
+	// / <param name="argXsltPath">Xslt文件名稱與路徑</param>
+	// / <returns>XSLT文件Path，如D:\Data\XsltFiles</returns>
+	// / <remarks>
+	// / <para>[規格說明]
+	// / 1.若存在則直接返回。
+	// / 2.若不存在，則依ReportRemplate.Xslt產生。
+	// / </para>
+	// / <para>[異動記錄]
+	// / AUTHOR DATE NOTE
+	// / ========== ========== ========================================
+	// / Rayd 2008-09-23 Create
+	// / </para>
+	// / <example>
+	// / <code>
+	// / --ReportTemplate.xslt文件片段
+	// / <div>
+	// / <xsl:for-each select="/xconfig/records">
+	// / <table cellpadding="0" cellspacing="0" border="0" frame="border"
+	// width="100%" style="font-size: 10pt">
+	// / <tr>
+	// / <td>
+	// / <table cellpadding="8" cellspacing="0" border="1" frame="border"
+	// width="100%">
+	// / <thead>
+	// / <tr>
+	// / <!--動態替換
+	// / <td nowrap="nowrap" align="center" >代號</td>
+	// / -->
+	// / </tr>
+	// / </thead>
+	// / <tbody>
+	// / <xsl:for-each select="record">
+	// / <tr>
+	// / <!--動態替換
+	// / <td>
+	// / <xsl:value-of select="proj_no"/>
+	// / </td>
+	// / -->
+	// / </tr>
+	// / </xsl:for-each>
+	// / </tbody>
+	// / </table>
+	// / </td>
+	// / </tr>
+	// / </table>
+	// / </xsl:for-each>
+	// / </div>
+	// / </code>
+	// / </example>
+	// / </remarks>
+	public static String GetExportXsltFile(String argXsltPath, String argTemplatePath,
+			XmlDocModel argXnConf) {
+		String ret = null;
+		// int p1 = argXsltPath.LastIndexOf('\\');
+		// String xslFile = argXsltPath.Substring(p1+1);
+		// String xslTpl = argXsltPath.Substring(0,p1+1) +
+		// "ReportTemplate.xslt";
+		Node xnTR, xnTD;
+		boolean isShowFld = false;
+		Element xnCol;
+
+		Document doc = argXnConf.getDocument();
+		Element root = doc.getRootElement();
+
+		File xslFlile = new File(argXsltPath);
+		// 文件存在直接返回
+		if (xslFlile.exists()) {
+			ret = argXsltPath;
+		} else// 文件不存在
+		{
+			XmlDocModel xslTemplate = new XmlDocModel();
+			xslTemplate.load(argTemplatePath);
+			Element xnTheads = (Element)xslTemplate.getDocument().getRootElement().selectSingleNode("//xsl:template/html/body/div/xsl:for-each/table/tr/td/table/thead/tr");
+			Element xnTBodys = (Element)xslTemplate.getDocument().getRootElement().selectSingleNode("//xsl:template/html/body/div/xsl:for-each/table/tr/td/table/tbody/xsl:for-each/tr");
+
+			for (Iterator<?> it = root.elementIterator(); it.hasNext();) {
+
+				xnCol = (Element) it.next();
+				isShowFld = (xnCol.attribute("hidden") == null)
+						|| (xnCol.attribute("hidden").getValue().equals("0"));
+				if (isShowFld) {
+					if (xnCol.attribute("iskey") != null
+							&& xnCol.attribute("iskey").getValue().equals("1")) {
+						isShowFld = false;
+					}
+				}
+
+				//
+				if (isShowFld) {
+					// thead
+					Element td = xnTheads.addElement("td");
+					//xnTheads.
+					if(xnCol.attribute("name")!=null){
+						td.setText(xnCol.attribute("name").getValue());
+					}else{
+						td.setText(xnCol.getName());
+					}
+					
+					// tbody
+					td = xnTBodys.addElement("td");
+					Element val = td.addElement("xsl:value-of");
+					if(xnCol.attribute("id")!=null){
+						val.addAttribute("select", xnCol.attribute("id").getValue());
+					}else{
+						val.addAttribute("select", xnCol.getName());
+					}
+					
+				}
+			}
+			xslTemplate.Save(xslTemplate.getDocument(), argXsltPath);
+		}
+		return ret;
+	}
+    
     /// <summary>
     /// 將XMLDoc轉換成JSON
     /// </summary>
