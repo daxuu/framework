@@ -25,14 +25,14 @@ import Framework.logger.MyLogger;
  */
 public class DBTable {
 
-	//private static final String DEF_FLD_ADDER = "adder";
+	// private static final String DEF_FLD_ADDER = "adder";
 
 	String tableName;
 	XmlDocModel tableSchema;
 	XmlDocModel viewSchema;
 	String currentKeyValue;
 	String keyName;
-	String keyValue ;
+	String keyValue;
 	String nextKeyValue;
 	String databaseName;
 	String dataSourceName = "";
@@ -43,8 +43,6 @@ public class DBTable {
 	// String
 	int dataBaseType;
 
-	
-	
 	public String getFieldAdder() {
 		return FieldAdder;
 	}
@@ -319,7 +317,7 @@ public class DBTable {
 
 	public XmlDocModel QueryXml(String s_condorsql) {
 		XmlDocModel ret = null;
-		ret = DALHelper.Query(s_condorsql,this.getDatabaseName());
+		ret = DALHelper.Query(s_condorsql, this.getDatabaseName());
 		return ret;
 	}
 
@@ -333,34 +331,40 @@ public class DBTable {
 	// #endregion
 
 	// #region QueryJson
-	public String QueryJson(String s_condorsql,int i_page,int i_pageSize) {
+	public String QueryJson(String s_condorsql, int i_page, int i_pageSize) {
 		String ret = null;
 		String sql = "";
-		//完整的SELECT 语句
-		if(s_condorsql.toLowerCase().indexOf("select")==0 && s_condorsql.toLowerCase().indexOf("from")>0){
+		// 完整的SELECT 语句
+		if (s_condorsql.toLowerCase().indexOf("select") == 0
+				&& s_condorsql.toLowerCase().indexOf("from") > 0) {
 			sql = s_condorsql;
-		}else{//条件
-			sql = String.format("select %1$s from %2$s where %3$s", "*",this.getDataSourceName(),s_condorsql);
+		} else {// 条件
+			sql = String.format("select %1$s from %2$s where %3$s", "*",
+					this.getDataSourceName(), s_condorsql);
 		}
-		ret  = DALHelper.QueryJson(sql,this.getDatabaseName(),i_page,i_pageSize);
+		ret = DALHelper.QueryJson(sql, this.getDatabaseName(), i_page,
+				i_pageSize);
 		return ret;
 	}
 
-	public String QueryJson(String s_fields, String s_cond,int i_page,int i_pageSize) {
+	public String QueryJson(String s_fields, String s_cond, int i_page,
+			int i_pageSize) {
 		String ret = null;
 
-		String sql = String.format("select %1$s from %2$s where %3$s", s_fields,this.getDataSourceName(),s_cond);
-		
-		ret = QueryJson(sql,i_page,i_pageSize);
-		
+		String sql = String.format("select %1$s from %2$s where %3$s",
+				s_fields, this.getDataSourceName(), s_cond);
+
+		ret = QueryJson(sql, i_page, i_pageSize);
 
 		return ret;
 	}
+
 	public String QueryJson(String s_fields, String s_cond) {
 		String ret = null;
 
-		String sql = String.format("select %1$s from %2$s where %3$s", s_fields,this.getDataSourceName(),s_cond);
-		ret = QueryJson(sql,this.getDatabaseName());
+		String sql = String.format("select %1$s from %2$s where %3$s",
+				s_fields, this.getDataSourceName(), s_cond);
+		ret = QueryJson(sql, this.getDatabaseName());
 		return ret;
 	}
 
@@ -522,8 +526,9 @@ public class DBTable {
 	 * [示例] <blockquote>
 	 * 
 	 * <pre>
-	 *  Strnig s_data = "<log_id>"+ Framework.CodeRobot.NORobot.Guid() +"</log_id><log_msg>Test MSG for xml data</log_msg>";
-	 *  int count = AddRow(s_data);
+	 * Strnig s_data = &quot;&lt;log_id&gt;&quot; + Framework.CodeRobot.NORobot.Guid()
+	 * 		+ &quot;&lt;/log_id&gt;&lt;log_msg&gt;Test MSG for xml data&lt;/log_msg&gt;&quot;;
+	 * int count = AddRow(s_data);
 	 * </pre>
 	 * 
 	 * </blockquote>
@@ -533,8 +538,9 @@ public class DBTable {
 	 * @return 新增成功的记录笔数
 	 * @author rayd 创建时间：Jul 1, 2013 9:06:51 AM 修改人：rayd 修改时间：Jul 1, 2013
 	 *         9:06:51 AM 修改备注：
-	 * @throws N/A
-	 *             
+	 * @throws N
+	 *             /A
+	 * 
 	 * @see
 	 * @since 1.0
 	 * 
@@ -551,27 +557,28 @@ public class DBTable {
 	// / <param name="argFieldList">栏位清单</param>
 	// / <param name="argValueList">值清单</param>
 	// / <returns>成功新增行数</returns>
-	
-	
+
 	/**
 	 * 
 	 * 功能概述：新增一笔资料记录，以xml包传入数据
-	 *
-	 *[示例] 
-	 * <blockquote><pre>
-	 * int count = AddRow(xdata.getDocument().selectSingleNode("xconfig"));
-	 *</pre></blockquote> 
+	 * 
+	 * [示例] <blockquote>
+	 * 
+	 * <pre>
+	 * int count = AddRow(xdata.getDocument().selectSingleNode(&quot;xconfig&quot;));
+	 * </pre>
+	 * 
+	 * </blockquote>
+	 * 
 	 * @param argData
 	 * @return
-	 * @author rayd 
-	 * 创建时间：Jul 1, 2013 11:49:33 AM  
-	 * 修改人：rayd
-	 * 修改时间：Jul 1, 2013 11:49:33 AM  
-	 * 修改备注：
-	 * @throws N/A
-	 * @see   
-	 * @since 1.0 
-	 *
+	 * @author rayd 创建时间：Jul 1, 2013 11:49:33 AM 修改人：rayd 修改时间：Jul 1, 2013
+	 *         11:49:33 AM 修改备注：
+	 * @throws N
+	 *             /A
+	 * @see
+	 * @since 1.0
+	 * 
 	 */
 	public int AddRow(org.dom4j.Node argData) {
 
@@ -665,9 +672,10 @@ public class DBTable {
 				}
 			}
 		}
-		//记录数据新增人员
-		if (sbFields.toString().indexOf(this.getFieldAdder()) == -1 && has_adder) {
-			sbFields.append(" , "+this.getFieldAdder());
+		// 记录数据新增人员
+		if (sbFields.toString().indexOf(this.getFieldAdder()) == -1
+				&& has_adder) {
+			sbFields.append(" , " + this.getFieldAdder());
 			sbValues.append(" ,'" + Global.getAccountId() + "'");
 		}
 
@@ -788,28 +796,53 @@ public class DBTable {
 	// / <summary>
 	// / 删除一资料行，依KEY栏
 	// / </summary>
-	/*
-	 * public int DeleteRow(Node argData, Node argConf) { int j = 0; String tp =
-	 * "", iskey = ""; String firstName = argData.FirstChild.getName(); String
-	 * firstValue = argData.FirstChild.getText();
-	 * 
-	 * StringBuilder sbWhere = new StringBuilder();
-	 * 
-	 * foreach (Node xRow in argData.ChildNodes) {
-	 * 
-	 * Node xdCol = argData.SelectSingleNode(xRow.getName()); //已有設定 if (xdCol
-	 * != null) { tp = (xRow.attribute("d") == null) ? "system.String" :
-	 * xRow.attribute("d").getValue(); iskey = (xRow.attribute("n") == null) ?
-	 * "0" : (xRow.attribute("n").getValue() == "false") ? "1" : "0"; if (iskey
-	 * == "1") { if (j > 0) { sbWhere.append(" and "); }
-	 * sbWhere.append(xdCol.getName()
-	 * ).append("='").append(xdCol.getText()).append("'"); j++; } } else {
-	 * //設定PCM //SetPCM(); } } //當沒有產生條件時，default為第一個欄位為KEY的條件 if
-	 * (sbWhere.Length == 0) {
-	 * sbWhere.append(firstName).append("='").append(firstValue).append("'"); }
-	 * 
-	 * return this.DeleteRow(sbWhere.toString(), false); }
-	 */
+
+	public int DeleteRow(Element argData) {
+		int j = 0;
+		int ret = 0 ;
+		String iskey = "";
+
+		StringBuilder sbWhere = new StringBuilder();
+
+		Element xRow;
+
+		Document doc = this.getTableSchema().getDocument();
+		Element root = doc.getRootElement();
+
+		//every node for fields
+		for (Iterator<?> iter = root.elementIterator(); iter.hasNext();) {
+			Element e = (Element) iter.next();
+			for (Iterator<?> it = e.elementIterator(); it.hasNext();) {
+
+				xRow = (Element) it.next();
+				Node xdCol = argData.selectSingleNode(xRow.getName());
+				// 已有設定
+				if (xdCol != null) {
+					iskey = (xRow.attribute("n") == null) ? "0" : (xRow
+							.attribute("n").getValue() == "false") ? "1" : "0";
+					if (iskey.equals("1")) {
+						if (j > 0) {
+							sbWhere.append(" and ");
+						}
+						sbWhere.append(xdCol.getName()).append("='")
+						.append(xdCol.getText()).append("'");
+						
+					}
+				}
+				j++;
+
+			}
+		}
+
+		// 當有條件時執行SQL
+		if (sbWhere.length() > 0) {
+			ret = this.DeleteRow(this.getTableName(), sbWhere.toString(), true);	
+		}
+		return ret; 
+		
+		
+	}
+
 	// <summary>
 	// / 删除一资料行，依KEY栏
 	// / </summary>

@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import Framework.CodeRobot.NOInfo;
+import Framework.Helper.Tools;
 
 public class NOInfoTest {
 
@@ -26,7 +27,7 @@ public class NOInfoTest {
 	public void testFormatDate() {
 		int act = 10;
 		NOInfo noInfo = new NOInfo();
-		String ret = noInfo.formatDate("yyyy-MM-dd");
+		String ret = Tools.formatDate("yyyy-MM-dd");
 		//asser
 		assertSame(ret.length(),act);
 		

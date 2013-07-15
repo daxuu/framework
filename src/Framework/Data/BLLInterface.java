@@ -506,7 +506,7 @@ public class BLLInterface {
 	// / </code>
 	// / </example>
 	// / </remarks>
-	public String AddRow(Element xdData, XmlDocModel x_fieldinfo, DBTable o_dal) {
+	public String AddRow(Element xdData, Element x_fieldinfo, DBTable o_dal) {
 		String msg = "";
 		int ret = 0;
 
@@ -517,17 +517,17 @@ public class BLLInterface {
 			if (msg == "") {
 				ret = o_dal.AddRow(xdData);
 			}
-		} catch (DALException exdb) {
-			MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
-					"AddRow", exdb.getUserMessage(), o_dal.getDatabaseName()
-							+ "." + o_dal.getTableName()));
-			msg = exdb.getUserMessage();
-			// throw exdb;
-		} catch (PFException exbll) {
-			MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
-					"AddRow", exbll.getUserMessage(), o_dal.getDatabaseName()
-							+ "." + o_dal.getTableName()));
-			msg = exbll.getUserMessage();
+//		} catch (DALException exdb) {
+//			MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
+//					"AddRow", exdb.getUserMessage(), o_dal.getDatabaseName()
+//							+ "." + o_dal.getTableName()));
+//			msg = exdb.getUserMessage();
+//			// throw exdb;
+//		} catch (PFException exbll) {
+//			MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
+//					"AddRow", exbll.getUserMessage(), o_dal.getDatabaseName()
+//							+ "." + o_dal.getTableName()));
+//			msg = exbll.getUserMessage();
 			// throw exbll;
 		} catch (Exception ex) {
 			MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
@@ -540,261 +540,242 @@ public class BLLInterface {
 		return msg;
 	}
 
-	 /// <summary>
-	 /// 修改行
-	 /// </summary>
-	 /// <param name="xdData">用XmlNode封裝的一行資料</param>
-	 /// <param name="xdConf">配置信息，來著PCM</param>
-	 /// <returns>受影響的資料行數</returns>
-	 /// <remarks>
-	 /// <para>[規格說明]
-	 /// nothing
-	 /// </para>
-	 /// <para>
-	 /// Change Log:
-	 /// Date Athor Remark
-	 /// ----------- ---------- ----------
-	 /// 2012-11-12 Rayd create
-	 ///
-	 /// </para>
-	 /// <example>
-	 /// <code>
-	 /// nothing
-	 /// </code>
-	 /// </example>
-	 /// </remarks>
-	 public String UpdateRow(Element xdData, XmlDocModel x_fieldinfo,
-	 DBTable o_dal)
-	 {
-	 String msg = "";
-	 int ret = 0;
-	 try
-	 {
-	 msg = validate(xdData, x_fieldinfo, o_dal);
-	
-	 //是否验证有错误信息返回
-	 if (msg == "")
-	 {
-	 ret = o_dal.UpdateRow(xdData);
-	 }
-	
-	 }
-	 catch (DALException exdb)
-	 {
-	 MyLogger.Log(String.format("調用此方法失敗：%1$s，Table=%3$s,錯誤信息：%2$s",
-	 "AddRow", exdb.getUserMessage(), o_dal.getDatabaseName() + "." +
-	 o_dal.getTableName()));
-	 msg = exdb.getUserMessage();
-	 //throw exdb;
-	 }
-	 catch (PFException exbll)
-	 {
-		 
-	 MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
-	 "AddRow", exbll.getUserMessage(), o_dal.getDatabaseName() + "." +
-	 o_dal.getTableName()));
-	 msg = exbll.getUserMessage();
-	 //throw exbll;
-	 }
-	 catch (Exception ex)
-	 {
-	 MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
-	 "AddRow", ex.getMessage(), o_dal.getDatabaseName() + "." +
-	 o_dal.getTableName()));
-	 msg = ex.getMessage();
-	 //throw ex;
-	 }
-	
-	 return msg;
-	
-	 }
-	
-	
-	
-	 /// <summary>
-	 /// 刪除行
-	 /// </summary>
-	 /// <param name="xdData">用XmlNode封裝的一行資料</param>
-	 /// <param name="xdConf">配置信息，來著PCM</param>
-	 /// <returns>受影響的資料行數</returns>
-	 /// <remarks>
-	 /// <para>[規格說明]
-	 /// nothing
-	 /// </para>
-	 /// <para>
-	 /// Change Log:
-	 /// Date Athor Remark
-	 /// ----------- ---------- ----------
-	 /// 2012-11-12 Rayd create
-	 ///
-	 /// </para>
-	 /// <example>
-	 /// <code>
-	 /// nothing
-	 /// </code>
-	 /// </example>
-	 /// </remarks>
-	 public String RemoveRow(Element xdData, XmlDocModel x_fieldinfo,
-	 DBTable o_dal)
-	 {
-	 String msg = "";
-	 int ret = 0;
-	 try
-	 {
-	 msg = validate(xdData, x_fieldinfo, o_dal);
-	
-	 //是否验证有错误信息返回
-	 if (msg == "")
-	 {
-	 ret = o_dal.DeleteRow(xdData);
-	 }
-	 }
-	 catch (DbAccessException exdb)
-	 {
-	 MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
-	 "AddRow", exdb.getUserMessage(), o_dal.getDatabaseName() + "." +
-	 o_dal.getTableName()));
-	 msg = exdb.getUserMessage();
-	 //throw exdb;
-	 }
-	 catch (BLLException exbll)
-	 {
-	 MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
-	 "AddRow", exbll.getUserMessage(), o_dal.getDatabaseName() + "." +
-	 o_dal.getTableName()));
-	 msg = exbll.getUserMessage();
-	 //throw exbll;
-	 }
-	 catch (Exception ex)
-	 {
-	 MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
-	 "AddRow", ex.getMessage(), o_dal.getDatabaseName() + "." +
-	 o_dal.getTableName()));
-	 msg = ex.getMessage();
-	 //throw ex;
-	 }
-	
-	 return msg;
-	 }
-	
-	
-	 /// <summary>
-	 /// 资料提交到DB前检验合法性
-	 /// </summary>
-	 /// <param name="xdData">资料记录</param>
-	 /// <param name="x_fieldinfo">栏位信息</param>
-	 /// <param name="o_dal">DAL 对象</param>
-	 /// <returns>错误信息，若通过检查，返回空值</returns>
-	 private String validate(Element xdData, XmlDocModel x_fieldinfo, DBTable	 o_dal)
-	 {
-	 String msg = "";
-	 int i = 0;
-	 String unique_fld = "";
-	 String unique_val = "";
-	 String key_fld = "";
-	 String key_val = "";
-	
-	 HashMap<String, String> sdUnique = new HashMap<String, String>();
-	 
-	 XmlDocModel xUnique = new XmlDocModel();
-	
-	 //資料提交前判断
-//	 if (xdData != null 
-//			 && x_fieldinfo != null 
-//			 && xdData.HasChildNodes 
-//			 && x_fieldinfo.selectSingleNode("/xconfig").HasChildNodes)
-	 if(xdData != null && x_fieldinfo != null)
-	 {
-	 //每栏
+	// / <summary>
+	// / 修改行
+	// / </summary>
+	// / <param name="xdData">用XmlNode封裝的一行資料</param>
+	// / <param name="xdConf">配置信息，來著PCM</param>
+	// / <returns>受影響的資料行數</returns>
+	// / <remarks>
+	// / <para>[規格說明]
+	// / nothing
+	// / </para>
+	// / <para>
+	// / Change Log:
+	// / Date Athor Remark
+	// / ----------- ---------- ----------
+	// / 2012-11-12 Rayd create
+	// /
+	// / </para>
+	// / <example>
+	// / <code>
+	// / nothing
+	// / </code>
+	// / </example>
+	// / </remarks>
+	public String UpdateRow(Element xdData, Element x_fieldinfo, DBTable o_dal) {
+		String msg = "";
+		int ret = 0;
+		try {
+			msg = validate(xdData, x_fieldinfo, o_dal);
+
+			// 是否验证有错误信息返回
+			if (msg == "") {
+				ret = o_dal.UpdateRow(xdData);
+			}
+
+//		} catch (DALException exdb) {
+//			MyLogger.Log(String.format("調用此方法失敗：%1$s，Table=%3$s,錯誤信息：%2$s",
+//					"AddRow", exdb.getUserMessage(), o_dal.getDatabaseName()
+//							+ "." + o_dal.getTableName()));
+//			msg = exdb.getUserMessage();
+//			// throw exdb;
+//		} catch (PFException exbll) {
+//
+//			MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
+//					"AddRow", exbll.getUserMessage(), o_dal.getDatabaseName()
+//							+ "." + o_dal.getTableName()));
+//			msg = exbll.getUserMessage();
+			// throw exbll;
+		} catch (Exception ex) {
+			MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
+					"AddRow", ex.getMessage(), o_dal.getDatabaseName() + "."
+							+ o_dal.getTableName()));
+			msg = ex.getMessage();
+			// throw ex;
+		}
+
+		return msg;
+
+	}
+
+	// / <summary>
+	// / 刪除行
+	// / </summary>
+	// / <param name="xdData">用XmlNode封裝的一行資料</param>
+	// / <param name="xdConf">配置信息，來著PCM</param>
+	// / <returns>受影響的資料行數</returns>
+	// / <remarks>
+	// / <para>[規格說明]
+	// / nothing
+	// / </para>
+	// / <para>
+	// / Change Log:
+	// / Date Athor Remark
+	// / ----------- ---------- ----------
+	// / 2012-11-12 Rayd create
+	// /
+	// / </para>
+	// / <example>
+	// / <code>
+	// / nothing
+	// / </code>
+	// / </example>
+	// / </remarks>
+	public String RemoveRow(Element xdData, Element x_fieldinfo, DBTable o_dal) {
+		String msg = "";
+		int ret = 0;
+		try {
+			msg = validate(xdData, x_fieldinfo, o_dal);
+
+			// 是否验证有错误信息返回
+			if (msg == "") {
+				ret = o_dal.DeleteRow(xdData);
+			}
+//		} catch (DbAccessException exdb) {
+//			MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
+//					"AddRow", exdb.getUserMessage(), o_dal.getDatabaseName()
+//							+ "." + o_dal.getTableName()));
+//			msg = exdb.getUserMessage();
+//			// throw exdb;
+//		} catch (BLLException exbll) {
+//			MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
+//					"AddRow", exbll.getUserMessage(), o_dal.getDatabaseName()
+//							+ "." + o_dal.getTableName()));
+//			msg = exbll.getUserMessage();
+			// throw exbll;
+		} catch (Exception ex) {
+			MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
+					"AddRow", ex.getMessage(), o_dal.getDatabaseName() + "."
+							+ o_dal.getTableName()));
+			msg = ex.getMessage();
+			// throw ex;
+		}
+
+		return msg;
+	}
+
+	// / <summary>
+	// / 资料提交到DB前检验合法性
+	// / </summary>
+	// / <param name="xdData">资料记录</param>
+	// / <param name="x_fieldinfo">栏位信息</param>
+	// / <param name="o_dal">DAL 对象</param>
+	// / <returns>错误信息，若通过检查，返回空值</returns>
+	private String validate(Element xdData, Element x_fieldinfo, DBTable o_dal) {
+		String msg = "";
+		int i = 0;
+		String unique_fld = "";
+		String unique_val = "";
+		String key_fld = "";
+		String key_val = "";
+
+		HashMap<String, String> sdUnique = new HashMap<String, String>();
+
+		XmlDocModel xUnique = new XmlDocModel();
+
+		// 資料提交前判断
+		// if (xdData != null
+		// && x_fieldinfo != null
+		// && xdData.HasChildNodes
+		// && x_fieldinfo.selectSingleNode("/xconfig").HasChildNodes)
+		if (xdData != null && x_fieldinfo != null) {
+			// 每栏
 			for (Iterator<?> iter = xdData.elementIterator(); iter.hasNext();) {
 				Element xdRecord = (Element) iter.next();
 
-	 //for (Node xdRecord : xdData.ChildNodes)
-	 //{
-	 Element fld = (Element)x_fieldinfo.selectSingleNode("/xconfig/" + xdRecord.getName());
-	
-	 //找到
-	 if (fld != null)
-	 {
-	 //KEY值
-	 if (fld.attribute("iskey") != null)
-	 {
-	 key_fld = fld.getName();
-	 key_val = xdRecord.getText();
-	 }
-	
-	 //不能为空值判断
-	 if (fld.attribute("min") != null && fld.attribute("min").getValue().equals("1"))
-	 {
-	 if (xdRecord.getText().equals(""))
-	 {
-	 msg += "\r\n" +
-	 Translator.GetUserMessage("cant_empty", new
-	 String[] { fld.attribute("name").getValue() });
-	 }
-	 }
-	
-	 //指定栏值是否重复判断
-	 if (fld.attribute("unique") != null)
-	 {
-	 //group 实现多栏重复判断
-	 if (sdUnique.containsKey(fld.attribute("unique").getValue()))
-	 {
-		 sdUnique.get(fld.attribute("unique").getValue().toString()) += "<" + fld.Name + " val=\"" + xdRecord.getText() + "\"/>";
-	 }
-	 else
-	 {
-	 sdUnique.put(fld.attribute("unique").getValue().toString(), "<" + fld.getName() +
-	 " val=\"" + xdRecord.getText() + "\"/>");
-	 }
-	 }
-	 //指定栏值是否需加密保存
-	 if (fld.attribute("encrypt") != null &&
-	 fld.attribute("encrypt").getValue().toString().toLowerCase()=="true")
-	 {
-	 xdRecord.setText(DES.encrypt(xdRecord.getText(),xdRecord.getName()));
-	 }
-	 }
-	 }//every field
-	
-	 if (key_val.trim() == "")
-	 {
-	 msg += "\r\n" +
-	 Translator.GetUserMessage("notkeyvalue", new String[] { key_fld });
-	 }
-	
-	 //每组判断，指定栏值是否重复
-	 foreach (DictionaryEntry de in sdUnique)
-	 {
-	 xUnique = new XmlDocModel(de.Value.ToString());
-	
-	 foreach (XmlNode xdFld in xUnique.selectSingleNode("xconfig").ChildNodes)
-	 {
-	
-	 if (i == 0)
-	 {
-	 unique_fld = xdFld.getName();
-	 unique_val = xdFld.attribute("val").getValue();
-	 }
-	 else
-	 {
-	 unique_fld += "+" + xdFld.getName();
-	 unique_val += "+" + xdFld.attribute("val").getValue();
-	
-	 }
-	 i++;
-	 }
-	 if (o_dal.IsExist(unique_fld, unique_val))
-	 {
-	 msg += "\r\n" +
-	 Translator.GetUserMessage("exist", new
-	 String[] { unique_val });
-	 }
-	 //}//group
-	 //}
-	 return msg;
-	 }
-	
+				Element fld = (Element) x_fieldinfo
+						.selectSingleNode("/xconfig/" + xdRecord.getName());
+
+				// 找到
+				if (fld != null) {
+					// KEY值
+					if (fld.attribute("iskey") != null) {
+						key_fld = fld.getName();
+						key_val = xdRecord.getText();
+					}
+
+					// 不能为空值判断
+					if (fld.attribute("min") != null
+							&& fld.attribute("min").getValue().equals("1")) {
+						if (xdRecord.getText().equals("")) {
+							msg += "\r\n"
+									+ Translator.GetUserMessage("cant_empty",
+											new String[] { fld
+													.attribute("name")
+													.getValue() });
+						}
+					}
+
+					// 指定栏值是否重复判断
+					if (fld.attribute("unique") != null) {
+						// group 实现多栏重复判断
+						if (sdUnique.containsKey(fld.attribute("unique").getValue())) {
+							sdUnique.get(fld.attribute("unique").getValue().toString()) ;//+= "<" + fld.Name + " val=\"" + xdRecord.getText() + "\"/>";
+						} else {
+							sdUnique.put(fld.attribute("unique").getValue()
+									.toString(), "<" + fld.getName()
+									+ " val=\"" + xdRecord.getText() + "\"/>");
+						}
+					}
+					//暂时间不提供
+					// 指定栏值是否需加密保存
+//					if (fld.attribute("encrypt") != null
+//							&& fld.attribute("encrypt").getValue().toString()
+//									.toLowerCase() == "true") {
+//						xdRecord.setText(DES.encrypt(xdRecord.getText(),
+//								xdRecord.getName()));
+//					}
+				}
+			}// every field
+
+			if (key_val.trim() == "") {
+				msg += "\r\n"
+						+ Translator.GetUserMessage("notkeyvalue",
+								new String[] { key_fld });
+			}
+
+			Iterator<?> iterator = sdUnique.keySet().iterator();
+			
+			while(iterator.hasNext()) {
+				String de = sdUnique.get(iterator.next());
+				xUnique = new XmlDocModel(de);
+				
+				
+			}
+			// //每组判断，指定栏值是否重复
+			// foreach (DictionaryEntry de in sdUnique)
+			// {
+			// xUnique = new XmlDocModel(de.Value.ToString());
+			//
+			// foreach (XmlNode xdFld in
+			// xUnique.selectSingleNode("xconfig").ChildNodes)
+			// {
+			//
+			// if (i == 0)
+			// {
+			// unique_fld = xdFld.getName();
+			// unique_val = xdFld.attribute("val").getValue();
+			// }
+			// else
+			// {
+			// unique_fld += "+" + xdFld.getName();
+			// unique_val += "+" + xdFld.attribute("val").getValue();
+			//
+			// }
+			// i++;
+			// }
+			// if (o_dal.IsExist(unique_fld, unique_val))
+			// {
+			// msg += "\r\n" +
+			// Translator.GetUserMessage("exist", new
+			// String[] { unique_val });
+			// }
+			// }//group
+		}
+		return msg;
+	}
+
 	// /// <summary>
 	// /// 將資料保存到Cache
 	// /// </summary>
