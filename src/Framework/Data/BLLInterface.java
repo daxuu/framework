@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.dom4j.Document;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.jaxen.dom4j.Dom4jXPath;
 
 import Framework.Helper.Tools;
@@ -517,17 +519,17 @@ public class BLLInterface {
 			if (msg == "") {
 				ret = o_dal.AddRow(xdData);
 			}
-//		} catch (DALException exdb) {
-//			MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
-//					"AddRow", exdb.getUserMessage(), o_dal.getDatabaseName()
-//							+ "." + o_dal.getTableName()));
-//			msg = exdb.getUserMessage();
-//			// throw exdb;
-//		} catch (PFException exbll) {
-//			MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
-//					"AddRow", exbll.getUserMessage(), o_dal.getDatabaseName()
-//							+ "." + o_dal.getTableName()));
-//			msg = exbll.getUserMessage();
+			// } catch (DALException exdb) {
+			// MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
+			// "AddRow", exdb.getUserMessage(), o_dal.getDatabaseName()
+			// + "." + o_dal.getTableName()));
+			// msg = exdb.getUserMessage();
+			// // throw exdb;
+			// } catch (PFException exbll) {
+			// MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
+			// "AddRow", exbll.getUserMessage(), o_dal.getDatabaseName()
+			// + "." + o_dal.getTableName()));
+			// msg = exbll.getUserMessage();
 			// throw exbll;
 		} catch (Exception ex) {
 			MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
@@ -574,18 +576,18 @@ public class BLLInterface {
 				ret = o_dal.UpdateRow(xdData);
 			}
 
-//		} catch (DALException exdb) {
-//			MyLogger.Log(String.format("調用此方法失敗：%1$s，Table=%3$s,錯誤信息：%2$s",
-//					"AddRow", exdb.getUserMessage(), o_dal.getDatabaseName()
-//							+ "." + o_dal.getTableName()));
-//			msg = exdb.getUserMessage();
-//			// throw exdb;
-//		} catch (PFException exbll) {
-//
-//			MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
-//					"AddRow", exbll.getUserMessage(), o_dal.getDatabaseName()
-//							+ "." + o_dal.getTableName()));
-//			msg = exbll.getUserMessage();
+			// } catch (DALException exdb) {
+			// MyLogger.Log(String.format("調用此方法失敗：%1$s，Table=%3$s,錯誤信息：%2$s",
+			// "AddRow", exdb.getUserMessage(), o_dal.getDatabaseName()
+			// + "." + o_dal.getTableName()));
+			// msg = exdb.getUserMessage();
+			// // throw exdb;
+			// } catch (PFException exbll) {
+			//
+			// MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
+			// "AddRow", exbll.getUserMessage(), o_dal.getDatabaseName()
+			// + "." + o_dal.getTableName()));
+			// msg = exbll.getUserMessage();
 			// throw exbll;
 		} catch (Exception ex) {
 			MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
@@ -632,17 +634,17 @@ public class BLLInterface {
 			if (msg == "") {
 				ret = o_dal.DeleteRow(xdData);
 			}
-//		} catch (DbAccessException exdb) {
-//			MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
-//					"AddRow", exdb.getUserMessage(), o_dal.getDatabaseName()
-//							+ "." + o_dal.getTableName()));
-//			msg = exdb.getUserMessage();
-//			// throw exdb;
-//		} catch (BLLException exbll) {
-//			MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
-//					"AddRow", exbll.getUserMessage(), o_dal.getDatabaseName()
-//							+ "." + o_dal.getTableName()));
-//			msg = exbll.getUserMessage();
+			// } catch (DbAccessException exdb) {
+			// MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
+			// "AddRow", exdb.getUserMessage(), o_dal.getDatabaseName()
+			// + "." + o_dal.getTableName()));
+			// msg = exdb.getUserMessage();
+			// // throw exdb;
+			// } catch (BLLException exbll) {
+			// MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
+			// "AddRow", exbll.getUserMessage(), o_dal.getDatabaseName()
+			// + "." + o_dal.getTableName()));
+			// msg = exbll.getUserMessage();
 			// throw exbll;
 		} catch (Exception ex) {
 			MyLogger.Log(String.format("調用此方法失敗：%1%s，Table=%3%s,錯誤信息：%2%s",
@@ -710,22 +712,27 @@ public class BLLInterface {
 					// 指定栏值是否重复判断
 					if (fld.attribute("unique") != null) {
 						// group 实现多栏重复判断
-						if (sdUnique.containsKey(fld.attribute("unique").getValue())) {
-							sdUnique.get(fld.attribute("unique").getValue().toString()) ;//+= "<" + fld.Name + " val=\"" + xdRecord.getText() + "\"/>";
+						if (sdUnique.containsKey(fld.attribute("unique")
+								.getValue())) {
+							sdUnique.get(fld.attribute("unique").getValue()
+									.toString());// += "<" + fld.Name +
+													// " val=\"" +
+													// xdRecord.getText() +
+													// "\"/>";
 						} else {
 							sdUnique.put(fld.attribute("unique").getValue()
 									.toString(), "<" + fld.getName()
 									+ " val=\"" + xdRecord.getText() + "\"/>");
 						}
 					}
-					//暂时间不提供
+					// 暂时间不提供
 					// 指定栏值是否需加密保存
-//					if (fld.attribute("encrypt") != null
-//							&& fld.attribute("encrypt").getValue().toString()
-//									.toLowerCase() == "true") {
-//						xdRecord.setText(DES.encrypt(xdRecord.getText(),
-//								xdRecord.getName()));
-//					}
+					// if (fld.attribute("encrypt") != null
+					// && fld.attribute("encrypt").getValue().toString()
+					// .toLowerCase() == "true") {
+					// xdRecord.setText(DES.encrypt(xdRecord.getText(),
+					// xdRecord.getName()));
+					// }
 				}
 			}// every field
 
@@ -736,13 +743,43 @@ public class BLLInterface {
 			}
 
 			Iterator<?> iterator = sdUnique.keySet().iterator();
-			
-			while(iterator.hasNext()) {
+
+			// 每一字段
+			while (iterator.hasNext()) {
 				String de = sdUnique.get(iterator.next());
 				xUnique = new XmlDocModel(de);
-				
-				
+
+				Element xRow;
+
+				Document doc = xUnique.getDocument();
+				Element root = doc.getRootElement();
+
+				for (Iterator<?> iter = root.elementIterator(); iter.hasNext();) {
+					Element e = (Element) iter.next();
+					for (Iterator<?> it = e.elementIterator(); it.hasNext();) {
+						xRow = (Element) it.next();
+						// Node xdCol =
+						// argData.selectSingleNode(xRow.getName().toLowerCase());
+						if (i == 0) {
+							unique_fld = xRow.getName();
+							unique_val = xRow.attribute("val").getValue();
+						} else {
+							unique_fld += "+" + xRow.getName();
+							unique_val += "+"
+									+ xRow.attribute("val").getValue();
+						}
+						i++;
+
+					}
+				}
+				if (o_dal.IsExist(unique_fld, unique_val)) {
+					msg += "\r\n"
+							+ Translator.GetUserMessage("exist",
+									new String[] { unique_val });
+				}
 			}
+
+
 			// //每组判断，指定栏值是否重复
 			// foreach (DictionaryEntry de in sdUnique)
 			// {
